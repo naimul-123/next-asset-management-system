@@ -12,8 +12,6 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url)
         const department = searchParams.get("department")
         const section = searchParams.get("section")
-        console.log(department);
-        console.log(section);
         if (!department || !section) {
             return NextResponse.json({ error: "Missing department or section" }, { status: 400 });
         }
