@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Administration",
+        "sections": [
+            "staff",
+            "ict-cell",
+            "BPS",
+            "Deadstock",
+            "Stationary",
+            "Engineering",
+            "Medical",
+            "Welfare",
+            "Verification"
+        ]
+    },
+    {
+        "name": "Inspection",
+        "sections": [
+            "Inspection"
+        ]
+    },
+    {
+        "name": "Banking",
+        "sections": [
+            "Prizebond/Sanchaypatra",
+            "PAD",
+            "DAB",
+            "Currency",
+            "Cash"
+        ]
+    },
+    {
+        "name": "FICSD",
+        "sections": [
+            "FISD"
+        ]
+    }
+]

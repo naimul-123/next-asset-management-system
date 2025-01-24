@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".", // Base directory (project root)
+    "paths": {
+      "@/*": [
+        "./*"
+      ] // Alias all directories
+    }
+  }
+}
