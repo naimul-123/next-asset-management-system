@@ -1,6 +1,6 @@
 
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import clientPromise from "../../../lib/mongodb";
 import jwt from "jsonwebtoken";
 const secretKey = process.env.SECRET_KEY;
 const client = await clientPromise;

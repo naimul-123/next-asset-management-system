@@ -3,7 +3,7 @@ import { TiDelete } from "react-icons/ti";
 const DataTable = ({ tableData, handleAction }) => {
     if (tableData.length > 0) {
         return (
-            <div className="overflow-auto min-w-full border-2 rounded-b-lg">
+            <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
                 <table className="table table-zebra table-md">
                     <thead className=''>
                         <tr className='bg-[#d3efe1] text-[#007f40] sticky top-0 shadow-md py-7 '>

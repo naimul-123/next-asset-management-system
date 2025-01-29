@@ -16,7 +16,10 @@ const Navbar = () => {
                 <Link className={` py-5 px-4  flex items-center  hover:bg-[#022d17] ${pathname === "/" ? ' bg-[#022d17] ' : ''}  `} href="/"><FaHome className='' /></Link>
 
                 {user &&
-                    <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/asset_entry" ? ' bg-[#022d17] ' : ''}  `} href="/private/asset_entry">Asset Entry</Link>
+                    <>
+                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/asset_entry" ? ' bg-[#022d17] ' : ''}  `} href="/private/asset_entry">Asset Entry</Link>
+                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/add_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/add_user">Add User</Link>
+                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/manage_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/manage_user">Manage User</Link></>
                 }
                 <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === '/section_assets' ? ' bg-[#022d17] ' : ''}  `} href='/section_assets'>Section Asset</Link>
 

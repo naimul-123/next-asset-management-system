@@ -5,9 +5,9 @@ import assetGroup from '../../public/assetGroup.json';
 
 
 import { useAssetContext } from '../../contexts/assetContext'
-import axios from 'axios';
 import { getData } from '../../lib/api';
 import Button from '../reusable/Button';
+import { useQuery } from '@tanstack/react-query';
 
 
 const AssetEntryForm = ({ getFormData }) => {
@@ -16,6 +16,7 @@ const AssetEntryForm = ({ getFormData }) => {
     const [assetType, setAssetType] = useState([]);
     const [assetInfo, setAssetInfo] = useState({})
     const [assetError, setAssetError] = useState('')
+
 
 
     const getAssetInfo = async (assetNo) => {

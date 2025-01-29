@@ -19,10 +19,12 @@ export async function POST(req) {
                 ...assetLocation,
                 createdAt: new Date()
             }
+            let existingAsset = null
+            if (assetNumber && assetNumber.length === 12) {
+                existingAsset = await assetInfoDb.findOne({ assetNumber })
+            };
 
-            const existingAsset = await assetInfoDb.findOne({ assetNumber });
             if (existingAsset) {
-
                 const locationExists = existingAsset.assetLocation.some(
                     (loc) =>
                         loc.assetUser === assetLocation.assetUser &&
@@ -50,6 +52,7 @@ export async function POST(req) {
                     ...rest
                 });
             }
+
 
 
         });

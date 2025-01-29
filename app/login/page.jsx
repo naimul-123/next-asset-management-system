@@ -1,59 +1,79 @@
 "use client"
-import { useRouter } from 'next/navigation'
-import React from 'react'
+import { redirect, useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 import { useAuth } from '../../contexts/authContext';
+import { postData } from '../../lib/api';
+import Swal from 'sweetalert2';
+import Button from '../../components/reusable/Button';
 
 const Login = () => {
     const router = useRouter();
+    const [loginerror, setLoginError] = useState('')
     const { getUser } = useAuth()
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoginError('')
         const form = e.target;
         const sap = form.sapid.value;
         const password = form.password.value;
-        const res = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ sap })
-        });
+        try {
+            const res = await postData("/api/login", {
+                sap, password
+            })
 
-        if (res.ok) {
-            getUser();
-            router.push("/")
+            if (res?.data?.redirected) {
+                router.push(res.data.url)
+                return
+            }
+
+            if (res.data.success) {
+                Swal.fire({
+                    title: res.data.message,
+                    timer: 1500,
+                    icon: "success"
+                });
+                getUser();
+                router.push("/")
+            }
+
+        } catch (error) {
+            setLoginError(error.response?.data?.error);
         }
+
+
+
 
     }
 
     return (
-        <div className="hero bg-base-200 min-h-screen">
+        <div className="hero bg-base-200">
             <div className="hero-content flex-col lg:flex-row-reverse">
-                <div className="text-center lg:text-left">
-                    <h1 className="text-5xl font-bold">Login now!</h1>
-                    <p className="py-6">
-                        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
-                        quasi. In deleniti eaque aut repudiandae et a id nisi.
-                    </p>
-                </div>
+
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                     <form className="card-body" onSubmit={handleLogin}>
+
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">SAP ID</span>
                             </label>
-                            <input name='sapid' type="text" placeholder="SAP ID" className="input input-bordered" required />
+                            <input name='sapid' type="text" placeholder="SAP ID" className="input input-bordered input-sm" required />
                         </div>
+
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Password</span>
                             </label>
-                            <input name='password' type="password" placeholder="password" className="input input-bordered" required />
+                            <input name='password' type="password" placeholder="password" className="input input-bordered input-sm" required />
 
                         </div>
-                        <div className="form-control mt-6">
-                            <button className="btn btn-primary">Login</button>
+                        <div className="form-control mt-2">
+                            <Button btnText="Log In" />
                         </div>
+                        {loginerror &&
+                            <div className="label flex-col max-w-xs ">
+                                <span className='text-xs text-red-500' >{loginerror}</span>
+                            </div>}
+
                     </form>
                 </div>
             </div>

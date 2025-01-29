@@ -30,7 +30,7 @@ export default function RootLayout({
 
                 <Header />
                 <Navbar />
-                <div className="mx-auto px-4 min-h-[75vh]" >
+                <div className="mx-auto px-4 h-[calc(100vh-220px)]" >
                   {children}
                 </div>
                 <footer >

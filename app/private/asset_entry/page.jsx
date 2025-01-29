@@ -4,11 +4,21 @@ import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import DeptForm from '../../../components/forms/DeptForm';
 import DataTable from '../../../components/DataTable';
-import { useMutation } from '@tanstack/react-query';
-import { postData } from '../../../lib/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getData, postData } from '../../../lib/api';
+import axios from 'axios';
 
 const AssetEntry = () => {
     const [assetData, setAssetData] = useState([])
+
+
+
+
+
+
+
+
+
     const assetMutation = useMutation({
         mutationFn: async (data) => postData('/api/assetInfo', data),
         onSuccess: async (result) => {
@@ -45,9 +55,11 @@ const AssetEntry = () => {
 
         const localAssetData = localStorage.getItem('assetData');
         const localAsset = localAssetData ? JSON.parse(localAssetData) : [];
-        const isExist = localAsset?.find(asset => asset.assetNumber === val.assetNumber)
+        const isExist = localAsset?.find(asset => val.assetNumber && asset.assetNumber === val.assetNumber)
         if (isExist) {
-            alert("This asset already added to list of this section")
+
+            Swal.fire("This asset already added to list of this section")
+            return
         }
         else {
             const updateAssets = [...localAsset, val];
@@ -67,7 +79,10 @@ const AssetEntry = () => {
         e.preventDefault();
         const form = e.target;
         const department = form.department.value;
-        const section = form.section.value;
+        const loctype = form.loctype.value;
+        const selectedLocation = form[loctype]?.value || '';
+
+
         if (assetData.length <= 0) {
             Swal.fire({
                 position: "top-end",
@@ -79,11 +94,11 @@ const AssetEntry = () => {
             return
         }
 
-        else if (!department || !section) {
+        else if (!department || !selectedLocation) {
             Swal.fire({
                 position: "top-end",
                 icon: "error",
-                title: "Please select department and section first!.",
+                title: `Please select department and ${loctype} first!.`,
                 showConfirmButton: false,
                 timer: 1500
             });
@@ -92,23 +107,21 @@ const AssetEntry = () => {
 
         else {
             const assetfinalData = assetData.map((data) => {
-                const assetLocation = {
-                    department,
-                    section,
-                    assetUser: data.assetUser
-                }
                 const asset = {
                     assetNumber: data.assetNumber,
                     assetGroup: data.assetGroup,
                     assetType: data.assetType,
                     assetDescription: data.assetDescription,
-                    assetLocation
+                    assetLocation: {
+                        department,
+                        [loctype]: selectedLocation,
+                        assetUser: data.assetUser
+                    }
                 }
                 return asset
             })
             assetMutation.mutate(assetfinalData)
         }
-
 
     }
 

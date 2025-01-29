@@ -11,13 +11,17 @@ const SectionAsset = () => {
 
   const [deptInfo, setDeptInfo] = useState({})
   const [deptAssets, setDeptAssets] = useState([])
+  const [location, setLocation] = useState('')
+
 
   const handleDeptForm = async (e) => {
     e.preventDefault();
     const form = e.target;
     const department = form.department.value;
-    const section = form.section.value;
-    if (!department || !section) {
+    const loctype = form.loctype.value;
+    const selectedLocation = form[loctype]?.value || '';
+
+    if (!department || !selectedLocation) {
       Swal.fire({
         position: "top-end",
         icon: "error",
@@ -29,8 +33,16 @@ const SectionAsset = () => {
     }
 
     else {
-      setDeptInfo({ department, section })
-      const data = await getData(`/api/sectionAsset/?department=${department}&section=${section}`)
+
+      const deptInfo = {
+        department,
+        [loctype]: selectedLocation,
+      }
+      setLocation(loctype)
+
+      setDeptInfo(deptInfo)
+
+      const data = await getData(`/api/sectionAsset/?department=${department}&${loctype}=${selectedLocation}`);
       if (data) {
         setDeptAssets(data)
       }
@@ -44,13 +56,13 @@ const SectionAsset = () => {
 
     <div className='mx-auto h-[calc(100vh-220px)] flex gap-2 '>
       <div className=' grow mx-auto flex flex-col'>
-        <div className='border-2 rounded-t-lg shadow-md p-4 text-xl font-bold'>
-          <h2>Department: {deptInfo?.department}</h2>
-          <h2>Section: {deptInfo?.section}</h2>
-        </div>
+        {deptInfo[location] && <div className=' rounded-t-lg text-center py-4 border-2 my-2 shadow-lg  text-2xl font-bold'>
+          <h2> Asset list of {`${deptInfo[location]} ${location} of ${deptInfo.department} department.`} </h2>
+
+        </div>}
         <DataTable tableData={deptAssets} />
       </div>
-      <div className='max-w-60 w-full   p-2 border shadow-md rounded-md'>
+      <div className='max-w-xs w-full   p-2 border shadow-md rounded-md'>
         <DeptForm handleSubmit={handleDeptForm} btnText="Search" />
       </div>
 

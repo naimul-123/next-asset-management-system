@@ -3,7 +3,6 @@
         "name": "Administration",
         "sections": [
             "staff",
-            "ict-cell",
             "BPS",
             "Deadstock",
             "Stationary",
@@ -11,6 +10,22 @@
             "Medical",
             "Welfare",
             "Verification"
+        ],
+        "chembers": [
+            "Director-Admin",
+            "Additional Director(admin-1)",
+            "Additional Director(admin-2)",
+            "Additional Director(Verification Unit)",
+            "Joint Director(admin-1)",
+            "Joint Director(admin-2)",
+            "Joint Director(VU-1)",
+            "Joint Director(VU-2)",
+            "Joint Director(VU-3)",
+            "Joint Director(VU-4)"
+        ],
+        "cells": [
+            "ICT cell",
+            "Security Unit"
         ]
     },
     {
