@@ -2,9 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import assetGroup from '../../public/assetGroup.json';
-
-
-import { useAssetContext } from '../../contexts/assetContext'
 import { getData } from '../../lib/api';
 import Button from '../reusable/Button';
 import { useQuery } from '@tanstack/react-query';
@@ -12,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const AssetEntryForm = ({ getFormData }) => {
     const [hasNoAssetNumber, sethasNoAssetNumber] = useState(false)
-    const [group, setGroup] = useState([]);
+
     const [assetType, setAssetType] = useState([]);
     const [assetInfo, setAssetInfo] = useState({})
     const [assetError, setAssetError] = useState('')
@@ -25,21 +22,22 @@ const AssetEntryForm = ({ getFormData }) => {
         if (assetNo?.length === 12) {
             const data = await getData(`/api/getAsset/?assetNo=${assetNo}`);
             if (data) {
-
                 setAssetInfo(data);
             }
             else {
                 setAssetError('No data found!')
             }
-
-
         }
     };
 
-    useEffect(() => {
-        const groupName = assetGroup.map((g) => g.assetGroup)
-        setGroup(groupName)
-    }, []);
+    const { data: assetClasses = [] } = useQuery({
+        queryKey: ['assetClasses'],
+        queryFn: () => getData('/api/assetClass')
+    })
+
+
+    const group = assetClasses?.map((g) => g.assetGroup).sort((a, b) => a.localeCompare(b))
+
 
 
 
@@ -61,7 +59,7 @@ const AssetEntryForm = ({ getFormData }) => {
         setAssetType([])
         const selectedGroup = assetGroup.find(g => g.assetGroup === value);
         if (selectedGroup) {
-            const assetTypeData = selectedGroup?.assetType;
+            const assetTypeData = selectedGroup?.assetType.sort((a, b) => a.localeCompare(b));
             setAssetType(assetTypeData)
         }
 

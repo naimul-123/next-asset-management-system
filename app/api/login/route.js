@@ -15,7 +15,7 @@ export async function POST(req) {
         const { sap, password } = await req.json();
         const query = { sap: sap, password: password }
         const user = await userDb.findOne(query);
-        console.log("User data", user);
+
 
         if (!user) {
             return NextResponse.json({ error: 'Invalid SAP ID or password' }, { status: 401 });

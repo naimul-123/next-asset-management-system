@@ -7,9 +7,11 @@ import DataTable from '../../../components/DataTable';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getData, postData } from '../../../lib/api';
 import axios from 'axios';
+import Button from '../../../components/reusable/Button';
 
 const AssetEntry = () => {
     const [assetData, setAssetData] = useState([])
+
 
 
 
@@ -126,6 +128,8 @@ const AssetEntry = () => {
     }
 
 
+
+
     return (
 
         <div className='mx-auto h-[calc(100vh-220px)] flex gap-2 '>
@@ -133,8 +137,10 @@ const AssetEntry = () => {
                 <AssetEntryForm getFormData={getFormData} />
                 <DataTable tableData={assetData} handleAction={handleRemove} />
             </div>
-            <div className='max-w-60 w-full   p-2 border shadow-md rounded-md'>
-                <DeptForm handleSubmit={handleFinalSubmit} />
+            <div className='max-w-xs w-full h-full overflow-auto  p-2 border shadow-md rounded-md'>
+                <DeptForm handleSubmit={handleFinalSubmit} isAssetEntry />
+
+
             </div>
 
         </div>
