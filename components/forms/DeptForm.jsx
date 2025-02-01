@@ -46,7 +46,7 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
 
     const handleAddNewLocationType = async (e) => {
         e.preventDefault();
-        const locType = e.target.loctype.value;
+        const locType = e.target.loctype.value.toLowerCase();
         if (!locType) {
             alert('Input a location type');
             return
@@ -121,7 +121,7 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
                     </div>
                     <select name='department' className="select select-sm select-bordered" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
                         <option value="" >---Select---</option>
-                        {departments && departments?.map((dept) => <option key={dept} value={dept}>{dept}</option>)}
+                        {departments && departments?.map((dept) => <option key={dept} className='capitalize' value={dept}>{dept.toUpperCase()}</option>)}
                     </select>
                 </label>
                 <div className="form-control">

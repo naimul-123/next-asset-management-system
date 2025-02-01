@@ -21,7 +21,7 @@ const Navbar = () => {
                         <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/add_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/add_user">Add User</Link>
                         <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/manage_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/manage_user">Manage User</Link></>
                 }
-                <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === '/section_assets' ? ' bg-[#022d17] ' : ''}  `} href='/section_assets'>Section Asset</Link>
+                <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === '/view_asset' ? ' bg-[#022d17] ' : ''}  `} href='/view_asset'>View Asset</Link>
 
             </div>
             <div className='flex px-4 gap-2 items-center'>

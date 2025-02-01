@@ -6,7 +6,7 @@ const db = client.db('deadstock');
 const userDb = db.collection('users')
 export async function GET(req) {
     try {
-        const users = await userDb.find({}, { projection: { _id: 0, name: 1, role: 1, sap: 1 } }).toArray();
+        const users = await userDb.find({ $or: [{ isSuperAdmin: null }, { isSuperAdmin: false }] }, { projection: { _id: 0, name: 1, role: 1, sap: 1 } }).toArray();
         const response = NextResponse.json(users, { status: 200 });
         return response
 
