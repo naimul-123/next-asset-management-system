@@ -7,7 +7,8 @@ import clientPromise from "../../../lib/mongodb";
 
 const client = await clientPromise;
 const db = client.db('deadstock');
-const assetInfoDb = db.collection('assetInfo')
+const assetInfoDb = db.collection('assetInfo');
+
 
 export async function POST(req) {
     try {
@@ -70,12 +71,71 @@ export async function POST(req) {
 
 export async function GET(req) {
     try {
-        const sectionInfo = await req.json();
+        const assetsCollection = db.collection('assets');
+        const { searchParams } = new URL(req.url)
+        const assetType = searchParams.get("assetType")
 
-        // const query = { sap: parseInt(sapid) };
-        // const result = await employeesData.findOne(query);
+        const result = await assetsCollection.aggregate([
+            {
+                $match: {
 
-        return NextResponse.json(sectionInfo)
+                    assetType: assetType
+                }
+            },
+            {
+                $lookup: {
+                    from: "assetInfo",
+                    localField: "AssetNumber",
+                    foreignField: "assetNumber",
+                    as: "assetInfoData"
+                }
+            },
+            {
+                $match: {
+                    assetInfoData: { $size: 0 },
+
+                }
+            },
+            // Convert 2-digit year to 4-digit format and then parse to Date
+            {
+                $addFields: {
+                    capDateConverted: {
+                        $dateFromString: {
+                            dateString: {
+                                $concat: [
+                                    { $arrayElemAt: [{ $split: ["$capDate", "/"] }, 0] }, // MM
+                                    "/",
+                                    { $arrayElemAt: [{ $split: ["$capDate", "/"] }, 1] }, // DD
+                                    "/",
+                                    {
+                                        $cond: {
+                                            if: { $gte: [{ $toInt: { $arrayElemAt: [{ $split: ["$capDate", "/"] }, 2] } }, 50] },
+                                            then: { $concat: ["19", { $arrayElemAt: [{ $split: ["$capDate", "/"] }, 2] }] },
+                                            else: { $concat: ["20", { $arrayElemAt: [{ $split: ["$capDate", "/"] }, 2] }] }
+                                        }
+                                    }
+                                ]
+                            },
+                            format: "%m/%d/%Y"
+                        }
+                    }
+                }
+            },
+            {
+                $sort: { capDateConverted: -1 } // Sort in descending order (earlier date first)
+            },
+            {
+                $project: {
+                    capDateConverted: 0,
+                    // Remove temporary converted field from output
+                }
+            }
+        ]
+        ).toArray();
+
+
+
+        return NextResponse.json(result)
 
     } catch (error) {
         console.error('Error to get document:', error); // Log error

@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TiDelete } from "react-icons/ti";
-const DataTable = ({ tableData, handleAction }) => {
+import UserInput from "./input/UserInput"
+const DataTable = ({ tableData, handleAction, handleEditLocation }) => {
+
+
     if (tableData.length > 0) {
         return (
             <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
@@ -19,13 +22,19 @@ const DataTable = ({ tableData, handleAction }) => {
                     <tbody>
                         {tableData?.map((data, idx) => <tr key={idx}>
                             <th>{idx + 1}</th>
-                            <td>{data.assetNumber}</td>
+                            <td>{data.assetNumber || data.AssetNumber}</td>
                             <td>{data.assetGroup}</td>
                             <td>{data.assetType}</td>
                             <td>{data.assetDescription}</td>
-                            <td>{data?.assetUser || data?.currentLocation?.assetUser}</td>
+                            <td >
+
+                                <UserInput handleEdit={handleEditLocation} data={data?.assetUser || data?.currentLocation?.assetUser} />
+
+                            </td>
                             {
-                                handleAction && <td onClick={() => handleAction(data.assetNumber)}><TiDelete className='text-3xl text-red-500' /></td>
+                                handleAction && <td onClick={() => handleAction(data.assetNumber)}>
+                                    <TiDelete className='text-3xl text-red-500' />
+                                </td>
                             }
 
                         </tr>)}

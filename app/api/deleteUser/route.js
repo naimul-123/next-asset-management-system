@@ -9,7 +9,7 @@ export async function DELETE(req) {
     try {
         const { searchParams } = new URL(req.url)
         const sap = searchParams.get("sap")
-        console.log(sap);
+
         const query = { sap: sap };
         const result = await userDb.deleteOne(query);
         if (result.deletedCount) {

@@ -60,7 +60,15 @@ const AssetEntry = () => {
         const isExist = localAsset?.find(asset => val.assetNumber && asset.assetNumber === val.assetNumber)
         if (isExist) {
 
-            Swal.fire("This asset already added to list of this section")
+            Swal.fire({
+                position: "top",
+                title: "This asset already added to list of this section",
+                showConfirmButton: false,
+                timer: 1500,
+                customClass: {
+                    container: 'rounded-lg z-[9999]'
+                }
+            })
             return
         }
         else {
@@ -132,15 +140,13 @@ const AssetEntry = () => {
 
     return (
 
-        <div className='mx-auto h-[calc(100vh-220px)] flex gap-2 '>
+        <div className='mx-auto  h-[calc(100vh-220px)] flex gap-2 '>
             <div className='grow flex flex-col'>
                 <AssetEntryForm getFormData={getFormData} />
                 <DataTable tableData={assetData} handleAction={handleRemove} />
             </div>
             <div className='max-w-xs w-full h-full overflow-auto  p-2 border shadow-md rounded-md'>
                 <DeptForm handleSubmit={handleFinalSubmit} isAssetEntry />
-
-
             </div>
 
         </div>
