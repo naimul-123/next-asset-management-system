@@ -20,24 +20,33 @@ const DataTable = ({ tableData, handleAction, handleEditLocation }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {tableData?.map((data, idx) => <tr key={idx}>
-                            <th>{idx + 1}</th>
-                            <td>{data.assetNumber || data.AssetNumber}</td>
-                            <td>{data.assetGroup}</td>
-                            <td>{data.assetType}</td>
-                            <td>{data.assetDescription}</td>
-                            <td >
-
-                                <UserInput handleEdit={handleEditLocation} data={data?.assetUser || data?.currentLocation?.assetUser} />
-
-                            </td>
-                            {
-                                handleAction && <td onClick={() => handleAction(data.assetNumber)}>
-                                    <TiDelete className='text-3xl text-red-500' />
-                                </td>
+                        {tableData.length > 0 && tableData.map((data, idx) => {
+                            const handleEdit = (assetUser) => {
+                                const assetInfo = {
+                                    assetNumber: data?.assetNumber,
+                                    assetUser: assetUser
+                                }
+                                handleEditLocation(assetInfo)
                             }
+                            return (<tr key={idx}>
+                                <th>{idx + 1}</th>
+                                <td>{data.assetNumber || data?.AssetNumber}</td>
+                                <td>{data.assetGroup}</td>
+                                <td>{data.assetType}</td>
+                                <td>{data.assetDescription}</td>
+                                <td >
 
-                        </tr>)}
+                                    <UserInput handleEdit={handleEdit} data={data?.assetUser || data?.currentLocation?.assetUser} />
+
+                                </td>
+                                {
+                                    handleAction && <td onClick={() => handleAction(data?.assetNumber || data?.AssetNumber)}>
+                                        <TiDelete className='text-3xl text-red-500' />
+                                    </td>
+                                }
+
+                            </tr>)
+                        })}
 
                     </tbody>
                 </table>

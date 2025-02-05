@@ -135,7 +135,19 @@ const AssetEntry = () => {
 
     }
 
+    const handleEditLocation = (assetInfo) => {
+        const localAssetData = localStorage.getItem('assetData');
+        const localAsset = localAssetData ? JSON.parse(localAssetData) : [];
+        const updatedAssets = localAsset?.map((asset) => {
 
+            if (assetInfo.assetNumber && asset.assetNumber === assetInfo.assetNumber) {
+                return { ...asset, assetUser: assetInfo.assetUser }
+            }
+
+        })
+        localStorage.setItem("assetData", JSON.stringify(updatedAssets))
+        setAssetData(updatedAssets)
+    }
 
 
     return (
@@ -143,7 +155,7 @@ const AssetEntry = () => {
         <div className='mx-auto  h-[calc(100vh-220px)] flex gap-2 '>
             <div className='grow flex flex-col'>
                 <AssetEntryForm getFormData={getFormData} />
-                <DataTable tableData={assetData} handleAction={handleRemove} />
+                <DataTable tableData={assetData} handleEditLocation={handleEditLocation} handleAction={handleRemove} />
             </div>
             <div className='max-w-xs w-full h-full overflow-auto  p-2 border shadow-md rounded-md'>
                 <DeptForm handleSubmit={handleFinalSubmit} isAssetEntry />
