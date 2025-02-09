@@ -8,7 +8,7 @@ export async function GET(request) {
     try {
         const { searchParams } = new URL(request.url)
         const assetNo = searchParams.get("assetNo")
-        const query = { AssetNumber: assetNo };
+        const query = { assetNumber: assetNo };
         const result = await assetsCollection.findOne(query);
         return NextResponse.json(result)
 

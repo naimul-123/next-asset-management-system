@@ -12,13 +12,13 @@ export async function GET(req) {
     try {
         const assetsCollection = db.collection('assets');
         const { searchParams } = new URL(req.url)
-        const assetGroup = searchParams.get("assetGroup")
-        console.log(assetGroup);
+        const assetClass = searchParams.get("assetClass")
+        console.log(assetClass);
         const result = await assetsCollection.aggregate([
             {
                 $match: {
 
-                    assetGroup: assetGroup
+                    assetClass: assetClass
                 }
             },
 

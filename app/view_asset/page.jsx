@@ -21,11 +21,11 @@ const SectionAsset = () => {
     const loctype = form.loctype.value;
     const selectedLocation = form[loctype]?.value || '';
 
-    if (!department || !selectedLocation) {
+    if (!department || !selectedLocation || !loctype) {
       Swal.fire({
         position: "top-end",
         icon: "error",
-        title: "Please select department and section first!.",
+        title: "Please select department and location first!.",
         showConfirmButton: false,
         timer: 1500
       });
@@ -42,7 +42,7 @@ const SectionAsset = () => {
 
       setDeptInfo(deptInfo)
 
-      const data = await getData(`/api/sectionAsset/?department=${department}&${loctype}=${selectedLocation}`);
+      const data = await getData(`/api/getassetsbytype/?department=${department}&loctype=${loctype}&location=${selectedLocation}`);
       if (data) {
         setDeptAssets(data)
       }
@@ -51,7 +51,7 @@ const SectionAsset = () => {
 
   }
 
-
+  console.log(deptAssets);
   return (
 
     <div className='mx-auto h-[calc(100vh-220px)] flex gap-2 '>

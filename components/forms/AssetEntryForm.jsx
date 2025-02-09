@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react'
 import { getData } from '../../lib/api';
 import Button from '../reusable/Button';
 import { useQuery } from '@tanstack/react-query';
+import { FaPlus } from 'react-icons/fa';
 
 const AssetEntryForm = ({ getFormData }) => {
-    const [hasNoAssetNumber, sethasNoAssetNumber] = useState(false)
+    const [hasNoassetNumber, sethasNoassetNumber] = useState(false)
     const [remainingAssets, setRemainingAssets] = useState([])
     const [assetType, setAssetType] = useState([]);
     const [assetInfo, setAssetInfo] = useState({})
@@ -36,15 +37,10 @@ const AssetEntryForm = ({ getFormData }) => {
     })
 
 
-    const group = assetClasses?.map((g) => g.assetGroup).sort((a, b) => a.localeCompare(b))
+    const Class = assetClasses?.map((g) => g.assetClass).sort((a, b) => a.localeCompare(b))
 
-
-    console.log(remainingAssets);
-
-
-
-    const handleHasNoAssetNumber = (e) => {
-        sethasNoAssetNumber(e.target.checked)
+    const handleHasNoassetNumber = (e) => {
+        sethasNoassetNumber(e.target.checked)
         document.getElementById('entryForm').reset()
         setAssetInfo({})
         setAssetError('')
@@ -55,9 +51,9 @@ const AssetEntryForm = ({ getFormData }) => {
 
 
 
-    const handleGroupChange = async (assetGroup) => {
+    const handleClassChange = async (assetClass) => {
         setAssetType([])
-        const assetTypeData = await getData(`/api/getAssetType?assetGroup=${assetGroup}`)
+        const assetTypeData = await getData(`/api/getAssetType?assetClass=${assetClass}`)
         setAssetType(assetTypeData)
     }
 
@@ -70,13 +66,13 @@ const AssetEntryForm = ({ getFormData }) => {
         }
         const form = e.target;
         const assetNumber = form.assetNumber.value;
-        const assetGroup = form.assetGroup.value;
+        const assetClass = form.assetClass.value;
         const assetType = form.assetType.value;
         const assetDescription = form.assetDescription.value;
         const assetUser = form.assetUser.value;
 
         const assetData = {
-            assetNumber, assetGroup, assetType, assetDescription, assetUser
+            assetNumber, assetClass, assetType, assetDescription, assetUser
         }
 
         getFormData(assetData);
@@ -93,21 +89,22 @@ const AssetEntryForm = ({ getFormData }) => {
 
 
 
-    hasNoAssetNumber && document.getElementById('my_modal_4').showModal()
+    hasNoassetNumber && document.getElementById('my_modal_4').showModal()
+
     return (
         <div className='border-2 rounded-t-lg shadow-md  text-sm'>
             <div className='flex p-4 items-center '>
                 <label className='label coursor-pointer'>
                     <span className="text-primary font-bold text-2xl" >Has no asset number?</span>
-                    <input type="checkbox" name='hasNoAssetNumber' className="toggle toggle-warning toggle-lg" onChange={(e) => handleHasNoAssetNumber(e)} checked={hasNoAssetNumber} />
+                    <input type="checkbox" name='hasNoassetNumber' className="toggle toggle-warning toggle-lg" onChange={(e) => handleHasNoassetNumber(e)} checked={hasNoassetNumber} />
                 </label>
             </div>
             <dialog id="my_modal_4" className="modal">
-                <div className="modal-box w-10/12 flex flex-col  z-[99]   max-w-5xl h-full">
+                <div className="modal-box w-11/12 flex flex-col  z-[99]   max-w-5xl h-full">
                     <div className='flex'>
                         <h2 className='text-center grow text-2xl font-bold'>Pick Asset from database</h2>
                         <form method="dialog" className='flex justify-end' >
-                            <button className="btn " onClick={() => sethasNoAssetNumber(false)}>Close</button>
+                            <button className="btn " onClick={() => sethasNoassetNumber(false)}>Close</button>
                         </form>
                     </div>
 
@@ -116,12 +113,11 @@ const AssetEntryForm = ({ getFormData }) => {
 
                         <label className="form-control w-full">
                             <div className="label">
-                                <span className="label-text">Asset Group</span>
+                                <span className="label-text">Asset Class</span>
                             </div>
-
-                            <select name='assetGroup' defaultValue="" onChange={(e) => handleGroupChange(e.target.value)} className="select select-sm bg-inherit  select-bordered" required>
+                            <select name='assetClass' defaultValue="" onChange={(e) => handleClassChange(e.target.value)} className="select select-sm bg-inherit  select-bordered" required>
                                 <option value="" >---Select---</option>
-                                {group.map((g) => <option key={g} value={g}>{g}</option>)}
+                                {Class.map((g) => <option key={g} value={g}>{g}</option>)}
                             </select>
                         </label>
                         <label className="form-control w-full">
@@ -133,42 +129,54 @@ const AssetEntryForm = ({ getFormData }) => {
                                 {assetType.map((t) => <option key={t} value={t}>{t}</option>)}
                             </select>
                         </label>
+
                     </form>
                     <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
-                        <table className="table table-zebra static  table-md">
-                            <thead className=' '>
-                                <tr className='bg-[#d3efe1] text-[#007f40] sticky top-0   shadow-md py-7 '>
-                                    <th>SL</th>
-                                    <th>Asset Number</th>
-                                    <th>Asset Group</th>
-                                    <th>Asset Type</th>
-                                    <th>Asset Description</th>
-                                    <th>Asset User</th>
 
+                        <table className="table static table-md ">
+                            <thead className=' '>
+                                <tr className='text-primary bg-secondary sticky top-0  gird grid-cols-3 font-extrabold shadow-md '>
+                                    <th>SL</th>
+                                    <th className='text-center'>Asset info</th>
+                                    <th className='flex justify-between max-w-xs'><span>Asset User</span> <span>Total Assets= {remainingAssets.length}</span>  </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {remainingAssets?.map((data, idx) => <tr key={idx}>
+                                {remainingAssets?.map((data, idx) => <tr key={idx} className={`even:bg-[#fdf7f4]  hover:bg-secondary`}>
                                     <th>{idx + 1}</th>
-                                    <td>{data.assetNumber || data.AssetNumber}</td>
-                                    <td>{data.assetGroup}</td>
-                                    <td>{data.assetType}</td>
-                                    <td>{data.assetDescription}</td>
+                                    <td >
+                                        <div className="grid grid-cols-3  gap-3">
+                                            <div>
+                                                <div className="font-bold">Number: {data.assetNumber}</div>
+                                                <div className="font-bold">Class: {data.assetClass}</div>
+                                            </div>
+                                            <div>
+                                                <div className="font-bold">Type: {data.assetType}</div>
+                                                <div className="font-bold">Name: {data.assetType}</div>
+                                            </div>
+                                            <div>
+                                                <div className="font-bold">Acquis. Val: {data.acquisVal}</div>
+                                                <div className="font-bold">Cap. Date: {data.capDate}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+
                                     <td className=''>
                                         <form id='entryForm' className="flex items-center gap-2" onSubmit={handleSubmitForm}>
                                             <div className="form-control">
-                                                <input value={data.assetNumber || data.AssetNumber} type="hidden" name='assetNumber' />
-                                                <input value={data.assetGroup} name='assetGroup' type='hidden' />
+                                                <input value={data.assetNumber} type="hidden" name='assetNumber' />
+                                                <input value={data.assetClass} name='assetClass' type='hidden' />
                                                 <input value={data.assetType} name='assetType' type='hidden' />
                                                 <input value={data.assetDescription} name='assetDescription' type='hidden' />
-                                                <input value={data.assetUser} type="text" name='assetUser' placeholder="Asset user name or section" className="input input-sm input-success " required />
+                                                <input value={data.assetUser} type="text" name='assetUser' placeholder="Asset user name or section" className="input input-ghost  input-success" required />
 
                                             </div>
-                                            <button type='submit' className='btn btn-sm text-primary bg-secondary hover:bg-[#c8ecda]'>Add</button>
+                                            <button type='submit' className=' btn btn-circle btn-ghost hover:bg-secondary text-primary text-lg'><FaPlus /></button>
 
                                         </form>
 
                                     </td>
+
                                 </tr>)}
 
                             </tbody>
@@ -176,19 +184,19 @@ const AssetEntryForm = ({ getFormData }) => {
                     </div>
                 </div>
             </dialog>
-            {!hasNoAssetNumber && <form id='entryForm' className="grid grid-cols-6 items-end gap-2 my-2 border-b  p-4 " onSubmit={handleSubmitForm}>
+            {!hasNoassetNumber && <form id='entryForm' className="grid grid-cols-6 items-end gap-2 my-2 border-b  p-4 " onSubmit={handleSubmitForm}>
                 <div className="form-control">
                     <label className="label label-sm">
                         <span className="label-text">Asset Numbar</span>
                     </label>
-                    <input type="text" name='assetNumber' placeholder="Asset Number" onBlur={(e) => getAssetInfo(e.target.value)} disabled={hasNoAssetNumber} className="input text-sm input-sm bg-inherit input-bordered" required />
+                    <input type="text" name='assetNumber' placeholder="Asset Number" onBlur={(e) => getAssetInfo(e.target.value)} disabled={hasNoassetNumber} className="input text-sm input-sm bg-inherit input-bordered" required />
                 </div>
                 <label className="form-control w-full">
                     <div className="label">
-                        <span className="label-text">Asset Group</span>
+                        <span className="label-text">Asset Class</span>
                     </div>
 
-                    <output name='assetGroup' className="input input-sm text-sm  bg-inherit " >{assetInfo?.assetGroup ? assetInfo?.assetGroup : ''}</output>
+                    <output name='assetClass' className="input input-sm text-sm  bg-inherit " >{assetInfo?.assetClass ? assetInfo?.assetClass : ''}</output>
 
                 </label>
                 <label className="form-control w-full">

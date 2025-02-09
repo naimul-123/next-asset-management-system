@@ -6,7 +6,7 @@ const db = client.db('deadstock');
 const assetClassCollection = db.collection('assetClass')
 export async function GET(req) {
     try {
-        const assetClasses = await assetClassCollection.find({}, { projection: { _id: 0, assetGroup: 1, assetType: 1 } }).toArray();
+        const assetClasses = await assetClassCollection.find({}, { projection: { _id: 0, assetClass: 1, assetType: 1 } }).toArray();
         const response = NextResponse.json(assetClasses);
         return response
 

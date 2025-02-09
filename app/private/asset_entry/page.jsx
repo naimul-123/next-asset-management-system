@@ -119,7 +119,7 @@ const AssetEntry = () => {
             const assetfinalData = assetData.map((data) => {
                 const asset = {
                     assetNumber: data.assetNumber,
-                    assetGroup: data.assetGroup,
+                    assetClass: data.assetClass,
                     assetType: data.assetType,
                     assetDescription: data.assetDescription,
                     assetLocation: {
@@ -136,6 +136,7 @@ const AssetEntry = () => {
     }
 
     const handleEditLocation = (assetInfo) => {
+        console.log(assetInfo);
         const localAssetData = localStorage.getItem('assetData');
         const localAsset = localAssetData ? JSON.parse(localAssetData) : [];
         const updatedAssets = localAsset?.map((asset) => {
@@ -143,6 +144,7 @@ const AssetEntry = () => {
             if (assetInfo.assetNumber && asset.assetNumber === assetInfo.assetNumber) {
                 return { ...asset, assetUser: assetInfo.assetUser }
             }
+            else return asset
 
         })
         localStorage.setItem("assetData", JSON.stringify(updatedAssets))
@@ -155,7 +157,7 @@ const AssetEntry = () => {
         <div className='mx-auto  h-[calc(100vh-220px)] flex gap-2 '>
             <div className='grow flex flex-col'>
                 <AssetEntryForm getFormData={getFormData} />
-                <DataTable tableData={assetData} handleEditLocation={handleEditLocation} handleAction={handleRemove} />
+                <DataTable isEditable={true} tableData={assetData} handleEditLocation={handleEditLocation} handleAction={handleRemove} />
             </div>
             <div className='max-w-xs w-full h-full overflow-auto  p-2 border shadow-md rounded-md'>
                 <DeptForm handleSubmit={handleFinalSubmit} isAssetEntry />

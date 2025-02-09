@@ -19,7 +19,11 @@ const Navbar = () => {
                     <>
                         <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/asset_entry" ? ' bg-[#022d17] ' : ''}  `} href="/private/asset_entry">Asset Entry</Link>
                         <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/add_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/add_user">Add User</Link>
-                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/manage_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/manage_user">Manage User</Link></>
+                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/manage_user" ? ' bg-[#022d17] ' : ''}  `} href="/private/manage_user">Manage User</Link>
+                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/asset_summary" ? ' bg-[#022d17] ' : ''}  `} href="/private/asset_summary">Asset Summary</Link>
+                        <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === "/private/upload_assets" ? ' bg-[#022d17] ' : ''}  `} href="/private/upload_assets">Upload Assets</Link>
+                    </>
+
                 }
                 <Link className={` py-5 px-3  hover:bg-[#022d17] ${pathname === '/view_asset' ? ' bg-[#022d17] ' : ''}  `} href='/view_asset'>View Asset</Link>
 

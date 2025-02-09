@@ -11,27 +11,34 @@ export async function GET(request) {
         const assetInfoDb = db.collection('assetInfo');
         const { searchParams } = new URL(request.url);
         const department = searchParams.get("department");
-        const section = searchParams.get("section");
-        const cell = searchParams.get("cell");
-        const chember = searchParams.get("chember");
-        if (!department && (!section || !cell || !chember)) {
-            return NextResponse.json({ error: "Missing department or location (section, cell or chember)" }, { status: 400 });
-        }
+        const loctype = searchParams.get("loctype");
+        const location = searchParams.get("location");
 
-        let locationFilter = { "currentLocation.department": department }
-        section ? locationFilter["currentLocation.section"] = section :
-            cell ? locationFilter["currentLocation.cell"] = cell :
-                chember ? locationFilter["currentLocation.chember"] = chember : ''
+        if (!department && loctype && location) {
+            return NextResponse.json({ error: "Missing department , location type or location." }, { status: 400 });
+        }
 
 
         const pipeline = [
             {
                 $addFields: {
-                    currentLocation: { $arrayElemAt: ["$assetLocation", -1] }
+                    lastLocation: { $arrayElemAt: ["$assetLocation", -1] }
                 }
             },
             {
-                $match: locationFilter
+                $match: {
+                    "lastLocation.department": department,
+                    [`lastLocation.${loctype}`]: location
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    assetNumber: 1,
+                    assetType: 1,
+                    assetDescription: 1,
+                    assetUser: "$lastLocation.assetUser"
+                }
             }
         ]
 

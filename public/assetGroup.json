@@ -1,6 +1,6 @@
 [
     {
-        "assetGroup": "Electrical Equipment- Office",
+        "assetClass": "Electrical Equipment- Office",
         "glCode": 1320510010,
         "Class": 1400,
         "assetCode": 16,
@@ -27,7 +27,7 @@
         ]
     },
     {
-        "assetGroup": "Electrical Equipment- Residence",
+        "assetClass": "Electrical Equipment- Residence",
         "glCode": 1320510020,
         "Class": 1450,
         "assetCode": 17,
@@ -44,7 +44,7 @@
         ]
     },
     {
-        "assetGroup": "Mechanical Equipment- Office",
+        "assetClass": "Mechanical Equipment- Office",
         "glCode": 1320410010,
         "Class": 1300,
         "assetCode": 13,
@@ -83,7 +83,7 @@
         ]
     },
     {
-        "assetGroup": "Mechanical Equipment- Residence",
+        "assetClass": "Mechanical Equipment- Residence",
         "glCode": 1320410020,
         "Class": 1350,
         "assetCode": 14,
@@ -100,7 +100,7 @@
         ]
     },
     {
-        "assetGroup": "Fixture and Fittings- Office",
+        "assetClass": "Fixture and Fittings- Office",
         "glCode": 1320310010,
         "Class": 1600,
         "assetCode": 20,
@@ -172,7 +172,7 @@
         ]
     },
     {
-        "assetGroup": "Fixture and Fittings- Residence",
+        "assetClass": "Fixture and Fittings- Residence",
         "glCode": 1320310020,
         "Class": 1650,
         "assetCode": 21,
@@ -209,7 +209,7 @@
         ]
     },
     {
-        "assetGroup": "Motor Vehicles",
+        "assetClass": "Motor Vehicles",
         "glCode": 1320410010,
         "Class": 1700,
         "assetCode": 22,
@@ -219,7 +219,7 @@
         ]
     },
     {
-        "assetGroup": "Computer and Networking",
+        "assetClass": "Computer and Networking",
         "glCode": 1320410030,
         "Class": 1375,
         "assetCode": 15,
@@ -238,7 +238,7 @@
         ]
     },
     {
-        "assetGroup": "Security Equipment",
+        "assetClass": "Security Equipment",
         "glCode": 1320810010,
         "Class": 2100,
         "assetCode": 51,

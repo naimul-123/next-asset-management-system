@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TiDelete } from "react-icons/ti";
 import UserInput from "./input/UserInput"
-const DataTable = ({ tableData, handleAction, handleEditLocation }) => {
+const DataTable = ({ tableData, handleAction, handleEditLocation, isEditable }) => {
 
 
     if (tableData.length > 0) {
@@ -12,7 +12,7 @@ const DataTable = ({ tableData, handleAction, handleEditLocation }) => {
                         <tr className='bg-[#d3efe1] text-[#007f40] sticky top-0 shadow-md py-7 '>
                             <th>SL</th>
                             <th>Asset Number</th>
-                            <th>Asset Group</th>
+                            <th>Asset Class</th>
                             <th>Asset Type</th>
                             <th>Asset Description</th>
                             <th>Asset User</th>
@@ -20,27 +20,27 @@ const DataTable = ({ tableData, handleAction, handleEditLocation }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {tableData.length > 0 && tableData.map((data, idx) => {
+                        {tableData.length > 0 && tableData?.map((data, idx) => {
                             const handleEdit = (assetUser) => {
                                 const assetInfo = {
                                     assetNumber: data?.assetNumber,
                                     assetUser: assetUser
                                 }
-                                handleEditLocation(assetInfo)
+                                handleEditLocation && handleEditLocation(assetInfo)
                             }
                             return (<tr key={idx}>
                                 <th>{idx + 1}</th>
-                                <td>{data.assetNumber || data?.AssetNumber}</td>
-                                <td>{data.assetGroup}</td>
+                                <td>{data.assetNumber}</td>
+                                <td>{data.assetClass}</td>
                                 <td>{data.assetType}</td>
                                 <td>{data.assetDescription}</td>
                                 <td >
 
-                                    <UserInput handleEdit={handleEdit} data={data?.assetUser || data?.currentLocation?.assetUser} />
+                                    <UserInput isEditable handleEdit={handleEdit} data={data?.assetUser || data?.currentLocation?.assetUser} />
 
                                 </td>
                                 {
-                                    handleAction && <td onClick={() => handleAction(data?.assetNumber || data?.AssetNumber)}>
+                                    handleAction && <td onClick={() => handleAction(data?.assetNumber)}>
                                         <TiDelete className='text-3xl text-red-500' />
                                     </td>
                                 }

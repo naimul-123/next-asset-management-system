@@ -1,6 +1,7 @@
 
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
+import { format } from "path";
 
 
 
@@ -85,7 +86,7 @@ export async function GET(req) {
             {
                 $lookup: {
                     from: "assetInfo",
-                    localField: "AssetNumber",
+                    localField: "assetNumber",
                     foreignField: "assetNumber",
                     as: "assetInfoData"
                 }
@@ -116,17 +117,40 @@ export async function GET(req) {
                                     }
                                 ]
                             },
-                            format: "%m/%d/%Y"
+                            format: "%m/%d/%Y",
+                            timezone: "Asia/Dhaka"
                         }
-                    }
+                    },
+
+
                 }
             },
             {
                 $sort: { capDateConverted: -1 } // Sort in descending order (earlier date first)
             },
             {
+                $addFields: {
+                    formatedCapDate: {
+                        $dateToString: {
+                            format: '%d-%m-%Y',
+                            date: "$capDateConverted",
+                            timezone: "Asia/Dhaka"
+                        }
+                    }
+                }
+            },
+            {
                 $project: {
-                    capDateConverted: 0,
+
+                    assetNumber: 1,  // Include renamed field
+                    capDate: "$formatedCapDate", // Rename capDateConverted -> capDate
+                    accumDep: 1,
+                    acquisVal: 1,
+                    assetDescription: 1,
+                    assetClass: 1,
+                    assetType: 1,
+                    bookVal: 1,
+
                     // Remove temporary converted field from output
                 }
             }
