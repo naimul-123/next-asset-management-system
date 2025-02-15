@@ -32,9 +32,15 @@ export async function GET(request) {
                 }
             },
             {
+                $sort: {
+                    assetType: 1
+                }
+            },
+            {
                 $project: {
                     _id: 0,
                     assetNumber: 1,
+                    assetClass: 1,
                     assetType: 1,
                     assetDescription: 1,
                     assetUser: "$lastLocation.assetUser"

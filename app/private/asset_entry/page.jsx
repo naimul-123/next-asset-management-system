@@ -154,15 +154,12 @@ const AssetEntry = () => {
 
     return (
 
-        <div className='mx-auto  h-[calc(100vh-220px)] flex gap-2 '>
+        <div className='flex'>
             <div className='grow flex flex-col'>
                 <AssetEntryForm getFormData={getFormData} />
                 <DataTable isEditable={true} tableData={assetData} handleEditLocation={handleEditLocation} handleAction={handleRemove} />
             </div>
-            <div className='max-w-xs w-full h-full overflow-auto  p-2 border shadow-md rounded-md'>
-                <DeptForm handleSubmit={handleFinalSubmit} isAssetEntry />
-            </div>
-
+            <DeptForm handleSubmit={handleFinalSubmit} isAssetEntry />
         </div>
 
 

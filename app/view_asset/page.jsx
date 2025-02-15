@@ -6,6 +6,7 @@ import DeptForm from '../../components/forms/DeptForm';
 import DataTable from '../../components/DataTable';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { getData, postData } from '../../lib/api';
+import { FaPrint } from 'react-icons/fa';
 
 const SectionAsset = () => {
 
@@ -51,20 +52,21 @@ const SectionAsset = () => {
 
   }
 
-  console.log(deptAssets);
+  // console.log(deptAssets);
   return (
 
-    <div className='mx-auto h-[calc(100vh-220px)] flex gap-2 '>
-      <div className=' grow mx-auto flex flex-col'>
-        {deptInfo[location] && <div className=' rounded-t-lg text-center py-4 border-2 my-2 shadow-lg  text-2xl font-bold'>
-          <h2> Asset list of {`${deptInfo[location]} ${location} of ${deptInfo.department} department.`} </h2>
-
-        </div>}
+    <div className='mx-auto flex h-full'>
+      <div className=' grow mx-auto flex flex-col px-4'>
+        {deptInfo[location] &&
+          <div className='flex justify-between px-4 py-2 items-center'>
+            <h2 className='text-center grow font-bold text-xl'> Asset list of {`${deptInfo[location]} ${location} of ${deptInfo.department} department.`} </h2>
+            <button className='btn btn-warning' onClick={() => window.print()}><FaPrint /></button>
+          </div>}
         <DataTable tableData={deptAssets} />
       </div>
-      <div className='max-w-xs w-full   p-2 border shadow-md rounded-md'>
-        <DeptForm handleSubmit={handleDeptForm} btnText="Search" />
-      </div>
+
+      <DeptForm handleSubmit={handleDeptForm} btnText="Search" />
+
 
     </div>
 

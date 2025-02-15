@@ -35,42 +35,41 @@ const AddUser = () => {
 
     }
     return (
-        <div className="hero bg-base-200">
-            <div className="hero-content flex-col lg:flex-row-reverse">
-                <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-                    <form className="card-body" onSubmit={handleAddUser}>
-                        {userMessage && <p className="font-bold text-primary text-xs">{userMessage}</p>}
-                        {userError && <p className="font-bold text-red-500 text-xs">{userError}</p>}
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">User Name</span>
-                            </label>
-                            <input name='name' type="text" placeholder="Name" className="input input-xs input-bordered" required />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">SAP ID</span>
-                            </label>
-                            <input name='sap' type="text" placeholder="SAP ID" className="input input-xs input-bordered" required />
-                        </div>
-                        <div className="form-control w-full">
-                            <div className="label">
-                                <span className="label-text">Role</span>
-                            </div>
-                            <select name='role' className="select select-bordered select-xs" required >
-                                <option value="">---Select---</option>
-                                <option value="admin">Admin</option>
-                                <option value="moderator">Moderator</option>
-                                <option value="user">User</option>
-                            </select>
-                        </div>
-                        <div className="form-control xs">
-                            <Button btnText="Add" />
-                        </div>
-                    </form>
+
+        <div className="flex flex-col max-w-screen-lg mx-auto  min-h-full justify-center">
+            <form className="bg-[#f7f7f7] p-8 rounded-xl" onSubmit={handleAddUser}>
+                {userMessage && <p className="font-bold text-primary text-xs">{userMessage}</p>}
+                {userError && <p className="font-bold text-red-500 text-xs">{userError}</p>}
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">User Name</span>
+                    </label>
+                    <input name='name' type="text" placeholder="Name" className="input input-sm input-bordered rounded-full" required />
                 </div>
-            </div>
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">SAP ID</span>
+                    </label>
+                    <input name='sap' type="text" placeholder="SAP ID" className="input input-sm input-bordered rounded-full" required />
+                </div>
+                <div className="form-control w-full">
+                    <div className="label">
+                        <span className="label-text">Role</span>
+                    </div>
+                    <select name='role' className="select select-bordered select-sm rounded-full" required >
+                        <option value="">---Select---</option>
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="visitor">Visitor</option>
+                    </select>
+                </div>
+                <div className="form-control">
+                    <Button btnText="Add" />
+                </div>
+            </form>
         </div>
+
+
     )
 }
 

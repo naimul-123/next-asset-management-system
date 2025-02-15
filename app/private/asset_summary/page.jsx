@@ -21,10 +21,12 @@ const AssetSummary = () => {
 
     return (
 
-        <div className="mx-auto h-[calc(100vh-220px)]  overflow-auto min-w-full grow rounded-b-lg">
-            <table className="table border-none  static table-md max-w-screen-lg mx-auto  ">
+
+
+        <div className='overflow-auto h-full print:overflow-hidden'>
+            <table className="table h-full   table-md table-pin-rows  ">
                 <thead className=' '>
-                    <tr className='text-primary bg-secondary sticky top-0 z-10 font-extrabold shadow-md '>
+                    <tr className='text-primary bg-secondary font-extrabold shadow-md '>
                         <th>
                             <div className='grid grid-cols-6'>
                                 <h2>SL</h2>
@@ -51,7 +53,7 @@ const AssetSummary = () => {
                                         <h2 className='text-right'>{data.totalAcquisVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                                         <h2 className='text-right'>{data.totalBookVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                                     </div>
-                                    <div className='collapse-content bg-white !min-h-0 max-h-96 overflow-auto'>
+                                    <div className='collapse-content bg-white !min-h-0 print:min-h-fit max-h-96 overflow-auto'>
                                         {
                                             data?.assetTypes.map((type, tdx) =>
                                                 <div key={tdx} className={`grid grid-cols-6 py-2 

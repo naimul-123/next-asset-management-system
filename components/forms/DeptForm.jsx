@@ -21,10 +21,6 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
 
     })
 
-
-
-
-
     const departments = departmentData?.map(dept => dept.name)
 
 
@@ -112,75 +108,62 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
 
 
     return (
-        <>
-
-            <form id='' className="" onSubmit={handleSubmit}>
-                <label className="form-control w-full">
-                    <div className="label">
-                        <span className="label-text">Department</span>
+        <div className='max-w-xs w-full  max-h-full overflow-auto px-4 border-l print:hidden'>
+            <form id='' onSubmit={handleSubmit} >
+                <label className="form-control ">
+                    <div className="label ">
+                        <span className="label-text font-bold text-primary ">Department</span>
                     </div>
-                    <select name='department' className="select select-sm select-bordered" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
+                    <select name='department' className="select select-sm" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
                         <option value="" >---Select---</option>
                         {departments && departments?.map((dept) => <option key={dept} className='capitalize' value={dept}>{dept.toUpperCase()}</option>)}
                     </select>
                 </label>
-                <div className="form-control">
-
-                </div>
-
-
-                {/* Location Type Selection */}
-                <label className="form-control w-full border p-2 my-2 rounded-md">
+                <label className="form-control">
                     <div className="label">
-                        <span className="label-text">Location Type</span>
+                        <span className="label-text font-bold text-primary">Location Type</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-1">
+                    <select
+                        name="loctype"  // Dynamic name to ensure correct field submission
+                        className="select select-bordered select-sm "
+                        required
+                        onChange={(e) => setLoctype(e.target.value)}
+                        value={loctype}
+                    >
+                        <option value="">---Select---</option>
                         {loctypes?.map((type) => (
-                            <label key={type} className=" flex  items-center gap-1 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="loctype"
-                                    className="radio checked:bg-primary"
-                                    onChange={() => setLoctype(type)}
-                                    value={type}
-                                    checked={loctype === type}
-                                />
-                                <span className="label-text capitalize">{type}</span>
-                            </label>
+                            <option key={type} value={type} className='capitalize'>{type}</option>
                         ))}
-                    </div>
+                    </select>
                 </label>
-
-                {/* Dynamic Select Based on loctype */}
                 {loctype && (
-                    <label className="form-control w-full">
+                    <label className="form-control">
                         <div className="label">
-                            <span className="label-text capitalize">Select {loctype}</span>
+                            <span className="label-text font-bold text-primary">Select {loctype}</span>
                         </div>
                         <select
                             name={loctype}  // Dynamic name to ensure correct field submission
-                            className="select select-bordered select-sm"
+                            className="select select-bordered select-sm "
                             required
                         >
                             <option value="">---Select---</option>
                             {options.map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
+                                <option key={opt} value={opt} className='capitalize'>{opt}</option>
                             ))}
                         </select>
                     </label>
                 )}
                 <div className='flex justify-end text-center'>
-
                     <Button btnText={btnText} />
                 </div>
             </form>
             {
                 isAssetEntry &&
-                <div className='overflow-auto px-2'>
+                <div className=''>
 
                     <div className="collapse static  collapse-plus">
                         <input type="radio" name="my-accordion-1" />
-                        <summary className="collapse-title after:py-0   text-xs  font-medium">Add Location Type</summary>
+                        <summary className="collapse-title after:py-0   text-sm  font-bold">Add Location Type</summary>
                         <div className='collapse-content my-0'>
                             <form onSubmit={handleAddNewLocationType} className=''>
                                 <div className='form-control'>
@@ -192,7 +175,7 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
                     </div>
                     <div className="collapse static collapse-plus">
                         <input type="radio" name="my-accordion-1" />
-                        <summary className="collapse-title text-sm   font-medium">Add Location</summary>
+                        <summary className="collapse-title text-sm text-primary   font-bold">Add Location</summary>
 
                         <form onSubmit={handleAddNewLocation} className='collapse-content'>
                             <div className='form-control'>
@@ -202,10 +185,8 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
                         </form>
                     </div>
                 </div>
-
-
             }
-        </>
+        </div>
     )
 }
 

@@ -108,7 +108,7 @@ const AssetEntryForm = ({ getFormData }) => {
                         </form>
                     </div>
 
-                    <form className='grid grid-cols-4 gap-2 my-2'>
+                    <form className='grid grid-cols-4 gap-2'>
 
 
                         <label className="form-control w-full">
@@ -132,7 +132,6 @@ const AssetEntryForm = ({ getFormData }) => {
 
                     </form>
                     <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
-
                         <table className="table static table-md ">
                             <thead className=' '>
                                 <tr className='text-primary bg-secondary sticky top-0  gird grid-cols-3 font-extrabold shadow-md '>

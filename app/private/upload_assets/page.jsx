@@ -11,7 +11,6 @@ const UploadAssets = () => {
         setPasteData([]);
         const pastedText = event.clipboardData.getData('text').replace(/\r/g, '');
         setPasteData(pastedText);
-
         const rows = pastedText.trim().split("\n");
         const headers = rows[0].split("\t");
         setHeaders(headers)
@@ -25,12 +24,11 @@ const UploadAssets = () => {
         setData(dataArray)
 
     }
-    console.log(data);
 
     return (
-        <div className='mx-auto  h-[calc(100vh-220px)] flex flex-col gap-2 '>
+        <>
             {
-                data.length > 0 ? (
+                data?.length > 0 ?
                     <div className="flex flex-col mx-auto overflow-x-auto max-w-screen-lg">
                         <table className="table border-none  static table-md  mx-auto  ">
                             <thead>
@@ -60,21 +58,20 @@ const UploadAssets = () => {
                         </table>
                         <button onClick={() => { setData([]); setPasteData(null) }} className='btn'>Clear Table Data</button>
                     </div>
-
-
-                ) : (<div className="flex flex-col grow max-w-screen-lg mx-auto"> <textarea
-                    className="textarea textarea-sm w-ful shrink-0 w-screen-2xl  textarea-bordered"
-                    placeholder="Paste Excel d  Here...."
-                    defaultValue={pasteData}
-                    onPaste={handlePaset}
-                    rows={1}
-                >
-                </textarea></div>)
+                    : <div className="flex flex-col grow max-w-screen-lg mx-auto"> <textarea
+                        className="textarea textarea-sm w-ful shrink-0 w-screen-2xl  textarea-bordered"
+                        placeholder="Paste Excel data  Here...."
+                        defaultValue={pasteData}
+                        onPaste={handlePaset}
+                        rows={1}
+                    >
+                    </textarea></div>
             }
 
+        </>
 
 
-        </div>
+
 
 
 

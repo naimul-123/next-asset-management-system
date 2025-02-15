@@ -15,11 +15,15 @@ const UserTable = ({ tableData, isLoading, handleDelete }) => {
         )
     }
 
+    const handleRoleChange = (data) => {
+        console.log(data);
+    }
+
     return (
         <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
-            <table className="table table-zebra table-md">
+            <table className="table table-zebra table-sm table-pin-rows">
                 <thead className=''>
-                    <tr className='bg-[#d3efe1] text-[#007f40] sticky top-0 shadow-md py-7 '>
+                    <tr className='bg-[#d3efe1] text-[#007f40] shadow-md '>
                         <th>SL</th>
                         <th>User Name</th>
                         <th>SAP ID</th>
@@ -34,10 +38,10 @@ const UserTable = ({ tableData, isLoading, handleDelete }) => {
                         <td>{data.sap}</td>
                         <td>
 
-                            <select name='role' className="select select-bordered select-xs" defaultValue={data.role} >
+                            <select name='role' onChange={(e) => handleRoleChange({ sap: data.sap, role: e.target.value })} className="select select-bordered select-xs" defaultValue={data.role} >
                                 <option value="admin">Admin</option>
                                 <option value="moderator">Moderator</option>
-                                <option value="user">User</option>
+                                <option value="visitor">Visitor</option>
                             </select>
                         </td>
                         <td onClick={() => handleDelete(data.sap)} ><TiDelete className='text-3xl text-red-500' /></td>

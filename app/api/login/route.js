@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 import jwt from "jsonwebtoken";
-import { redirect } from "next/dist/server/api-utils";
+
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -13,6 +13,7 @@ export async function POST(req) {
 
     try {
         const { sap, password } = await req.json();
+
         const query = { sap: sap, password: password }
         const user = await userDb.findOne(query);
 
@@ -24,8 +25,15 @@ export async function POST(req) {
             return NextResponse.json({ redirected: true, url: new URL(`/resetpassword?sap=${user.sap}`, req.url) })
         }
 
+        const payload = {
+            name: user?.name,
+            sap: user?.sap,
+            role: user?.role,
+            isSuperAdmin: user?.isSuperAdmin
+        }
+
         // console.log(user);
-        const token = jwt.sign(user, secretKey, { expiresIn: '30m' });
+        const token = jwt.sign(payload, secretKey, { expiresIn: '30m' });
 
         const response = NextResponse.json({ success: true, message: 'Login successcull' }, { status: 200 });
 
@@ -39,7 +47,6 @@ export async function POST(req) {
         return response
 
     } catch (error) {
-        console.error('Login error:', error);
         return NextResponse.json(
             { error: 'Login failed' },
             { status: 500 }

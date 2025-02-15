@@ -2,17 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@media print {
+  body {
+    margin: 0;
+  }
+
+  @page {
+    size: A4;
+    page-break-before: always;
+    padding: 16mm 16mm 8mm 16mm !important;
+    counter-increment: page;
+
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      margin-top: -8mm;
+      margin-right: 16mm;
+    }
+
+
+    /* Standard margins for A4 */
+  }
+
+
+
+  table {
+    page-break-inside: auto;
+    width: 100%;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  .table-footer {
+    text-align: center;
+    position: fixed;
+    bottom: -8px;
+
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6px;
+    font-weight: bold;
+
+  }
+
+  tbody {
+    display: table-row-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+
+
+
+
+
+
+
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+
 
 body {
   color: var(--foreground);

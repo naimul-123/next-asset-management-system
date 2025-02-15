@@ -46,38 +46,37 @@ const Login = () => {
     }
 
     return (
-        <div className="hero">
-            <div className="hero-content flex-col lg:flex-row-reverse">
 
-                <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-                    <form className="card-body" onSubmit={handleLogin}>
 
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">SAP ID</span>
-                            </label>
-                            <input name='sapid' type="text" placeholder="SAP ID" className="input input-bordered input-sm" required />
-                        </div>
 
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Password</span>
-                            </label>
-                            <input name='password' type="password" placeholder="password" className="input input-bordered input-sm" required />
-
-                        </div>
-                        <div className="form-control mt-2">
-                            <Button btnText="Log In" />
-                        </div>
-                        {loginerror &&
-                            <div className="label flex-col max-w-xs ">
-                                <span className='text-xs text-red-500' >{loginerror}</span>
-                            </div>}
-
-                    </form>
+        <div className="flex flex-col max-w-xs mx-auto  min-h-full justify-center">
+            <form className="bg-[#f7f7f7] p-8 rounded-xl" onSubmit={handleLogin}>
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">SAP ID</span>
+                    </label>
+                    <input name='sapid' type="text" placeholder="SAP ID" className="input input-bordered input-sm" required />
                 </div>
-            </div>
+
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">Password</span>
+                    </label>
+                    <input name='password' type="password" placeholder="password" className="input input-bordered input-sm" required />
+
+                </div>
+                <div className="form-control mt-2">
+                    <Button btnText="Log In" />
+                </div>
+                {loginerror &&
+                    <div className="label flex-col max-w-xs ">
+                        <span className='text-xs text-red-500' >{loginerror}</span>
+                    </div>}
+
+            </form>
         </div>
+
+
     )
 }
 

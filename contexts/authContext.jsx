@@ -5,7 +5,7 @@ import { postData } from '../lib/api';
 import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
 import { useRouter } from 'next/navigation';
-import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react'
+import React, { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import Swal from 'sweetalert2';
 
 
@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 const AuthContext = createContext(undefined);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(true)
     const [isOpenModal, setIsOpemModal] = useState(false)
     const router = useRouter()
     const queryClient = useQueryClient();
@@ -31,15 +32,37 @@ export const AuthProvider = ({ children }) => {
         catch (error) {
             console.error('Logout failed:', error)
         }
+
     }
+
+
+
     const getUser = async () => {
-        const res = await fetch("/api/getUser")
-        if (res.ok) {
-            const data = await res.json();
-            setUser(data.payload)
+        try {
+            const res = await fetch("/api/getUser")
+            if (res.ok) {
+                const data = await res.json();
+                setUser(data.payload)
+            }
+            else {
+                setUser(null)
+            }
+        } catch (error) {
+            console.error("Auth Error:", error)
         }
-        else window.location.href = ('/login')
+        finally {
+            setLoading(false)
+        }
+
     }
+
+    useEffect(() => {
+        getUser();
+    }, [])
+
+
+
+
     const profileMutation = useMutation({
         mutationFn: async (data) => postData('/api/updateUser', data),
         onSuccess: async (result) => {
@@ -66,7 +89,7 @@ export const AuthProvider = ({ children }) => {
             });
         }
     });
-    const authInfo = { user, setUser, getUser, isOpenModal, setIsOpemModal, logout, profileMutation }
+    const authInfo = { user, getUser, logout, loading }
 
 
     return (
