@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import Swal from 'sweetalert2'
 import DeptForm from '../../../components/forms/DeptForm';
 import DataTable from '../../../components/DataTable';
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteData, getData, postData } from '../../../lib/api';
-import { FaPlus, FaPrint } from 'react-icons/fa';
+import { FaPrint } from 'react-icons/fa';
 import AssetEntryByNumber from '../../../components/forms/AssetEntryByNumber';
 import PickAssetFromDatabase from '../../../components/forms/PickAssetFromDatabase';
 
@@ -101,13 +101,10 @@ const ManageAssets = () => {
     const handleRemoveAsset = (assetData) => {
         const assetInfo = {
             assetNumber: assetData?.assetNumber,
-
             assetUser: assetData?.assetUser,
             department: assetLocation?.department,
             loctype: assetLocation?.loctype,
             location: assetLocation?.location
-
-
         }
         Swal.fire({
             title: "Are you sure?",
@@ -121,10 +118,8 @@ const ManageAssets = () => {
 
             if (result.isConfirmed) {
                 const res = await deleteData('/api/removeAssetLocation', assetInfo)
-                // console.log(res);
-
                 if (res.result.deletedCount) {
-                    assetRefetch()
+                    queryClient.invalidateQueries(['assets', 'selectedType', 'assetLocation',])
                     Swal.fire({
                         title: "Deleted!",
                         icon: "success"

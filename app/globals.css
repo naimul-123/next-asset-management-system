@@ -54,7 +54,9 @@
     page-break-inside: avoid;
   }
 
-
+  tfoot {
+    display: table-footer-group;
+  }
 
 
 

@@ -55,6 +55,11 @@ export async function GET(request) {
                     assetType: "$assetInfo.assetType",
                     assetDescription: "$assetInfo.assetDescription"
                 }
+
+            },
+            {
+                $sort: { assetType: 1 }
+
             }
         ]).toArray();
 

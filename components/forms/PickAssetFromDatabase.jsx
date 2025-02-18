@@ -42,15 +42,16 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
         }
         const form = e.target;
         const assetNumber = form.assetNumber.value;
-        const assetClass = form.assetClass.value;
-        const assetType = form.assetType.value;
-        const assetDescription = form.assetDescription.value;
         const assetUser = form.assetUser.value;
         const assetData = {
             assetNumber, assetUser, ...assetLocation
         }
         if (assetData) {
-            assetMutation.mutate(assetData)
+            assetMutation.mutate(assetData, {
+
+                onSuccess: () => remainingRefetch()
+            })
+
         }
         form.reset()
     }
