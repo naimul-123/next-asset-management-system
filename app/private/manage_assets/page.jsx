@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import DeptForm from '../../../components/forms/DeptForm';
 import DataTable from '../../../components/DataTable';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getData, postData } from '../../../lib/api';
+import { deleteData, getData, postData } from '../../../lib/api';
 import { FaPlus, FaPrint } from 'react-icons/fa';
 import AssetEntryByNumber from '../../../components/forms/AssetEntryByNumber';
 import PickAssetFromDatabase from '../../../components/forms/PickAssetFromDatabase';
@@ -14,7 +14,6 @@ import PickAssetFromDatabase from '../../../components/forms/PickAssetFromDataba
 const ManageAssets = () => {
     const [isOpenModal, setIsOpenModal] = useState(null);
     const [assetLocation, setassetLocation] = useState(null)
-    const pageNumberRef = useRef(null);
     const queryClient = useQueryClient();
 
 
@@ -44,7 +43,7 @@ const ManageAssets = () => {
             setassetLocation(assetLocation)
         }
     }
-    const { data: assets, isLoading: assetLoading } = useQuery({
+    const { data: assets, isLoading: assetLoading, refetch: assetRefetch } = useQuery({
         queryKey: ['assets', assetLocation],
         queryFn: () => assetLocation
             ? getData(
@@ -99,7 +98,44 @@ const ManageAssets = () => {
     }
 
 
+    const handleRemoveAsset = (assetData) => {
+        const assetInfo = {
+            assetNumber: assetData?.assetNumber,
 
+            assetUser: assetData?.assetUser,
+            department: assetLocation?.department,
+            loctype: assetLocation?.loctype,
+            location: assetLocation?.location
+
+
+        }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+
+            if (result.isConfirmed) {
+                const res = await deleteData('/api/removeAssetLocation', assetInfo)
+                // console.log(res);
+
+                if (res.result.deletedCount) {
+                    assetRefetch()
+                    Swal.fire({
+                        title: "Deleted!",
+                        icon: "success"
+                    });
+
+                }
+
+            }
+        });
+
+    }
 
     return (
 
@@ -127,7 +163,7 @@ const ManageAssets = () => {
                         <button className='btn btn-warning z-10 print:hidden' onClick={handlePrint}><FaPrint /></button>
                     </div>
                 }
-                <DataTable tableData={assets} assetLoading={assetLoading} pageNumberRef={pageNumberRef} />
+                <DataTable tableData={assets} assetLoading={assetLoading} handleRemoveAsset={handleRemoveAsset} />
 
             </div>
             <DeptForm handleSubmit={handleDeptForm} btnText="Search" isAssetEntry />

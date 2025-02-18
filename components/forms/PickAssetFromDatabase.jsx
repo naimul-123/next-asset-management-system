@@ -47,7 +47,7 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
         const assetDescription = form.assetDescription.value;
         const assetUser = form.assetUser.value;
         const assetData = {
-            assetNumber, assetUser, assetClass, assetType, assetDescription, ...assetLocation
+            assetNumber, assetUser, ...assetLocation
         }
         if (assetData) {
             assetMutation.mutate(assetData)

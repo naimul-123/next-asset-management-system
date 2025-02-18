@@ -1,19 +1,14 @@
 
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
-import { format } from "path";
-
-
-
-
 const client = await clientPromise;
 const db = client.db('deadstock');
-const assetInfoDb = db.collection('assetInfo');
+const assetInfoDb = db.collection('assetLocationInfo');
 
 
 export async function POST(req) {
     try {
-        const { assetNumber, assetUser, department, loctype, location, ...rest } = await req.json();
+        const { assetNumber, assetUser, department, loctype, location } = await req.json();
 
 
         const locationWithTimestamp = {
@@ -26,33 +21,21 @@ export async function POST(req) {
         if (assetNumber && assetNumber.length === 12) {
             const existingAsset = await assetInfoDb.findOne({ assetNumber })
 
-
             if (existingAsset) {
-                const locationExists = existingAsset.assetLocation.some(
-                    (loc) =>
-                        loc.assetUser === assetUser &&
-                        loc.department === department &&
-                        loc[loctype] === location
-                )
-                if (!locationExists) {
-                    result = await assetInfoDb.updateOne({
-                        assetNumber
-                    }, {
-                        $push: {
-                            assetLocation:
-                                locationWithTimestamp
-
+                result = await assetInfoDb.updateOne({ assetNumber },
+                    {
+                        $set: {
+                            assetLocation: locationWithTimestamp
                         }
-                    });
-                }
+                    }
+                )
 
 
             }
             else {
                 result = await assetInfoDb.insertOne({
                     assetNumber,
-                    assetLocation: [locationWithTimestamp],
-                    ...rest
+                    assetLocation: locationWithTimestamp
 
                 });
             }
@@ -60,7 +43,6 @@ export async function POST(req) {
 
         };
 
-        console.log(result);
 
         if (result?.acknowledged) {
             return NextResponse.json({ success: true, message: "Asset info has been saved successfully." }, { status: 200 });

@@ -32,12 +32,10 @@ const AssetEntryByNumber = ({ assetMutation, assetLocation, isOpenModal, setIsOp
         }
         const form = e.target;
         const assetNumber = form.assetNumber.value;
-        const assetClass = form.assetClass.value;
-        const assetType = form.assetType.value;
-        const assetDescription = form.assetDescription.value;
+
         const assetUser = form.assetUser.value;
         const assetData = {
-            assetNumber, assetUser, assetClass, assetType, assetDescription, ...assetLocation
+            assetNumber, assetUser, ...assetLocation
         }
         if (assetData) {
             assetMutation.mutate(assetData)

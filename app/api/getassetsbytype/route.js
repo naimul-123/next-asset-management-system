@@ -8,7 +8,7 @@ export async function GET(request) {
     try {
         const client = await clientPromise;
         const db = client.db('deadstock');
-        const assetInfoDb = db.collection('assetInfo');
+        const assetInfoDb = db.collection('assetLocationInfo');
         const { searchParams } = new URL(request.url);
         const department = searchParams.get("department");
         const loctype = searchParams.get("loctype");
@@ -19,36 +19,45 @@ export async function GET(request) {
         }
 
 
-        const pipeline = [
-            {
-                $addFields: {
-                    lastLocation: { $arrayElemAt: ["$assetLocation", -1] }
-                }
-            },
+        const query = {
+            "assetLocation.department": department,
+            [`assetLocation.${loctype}`]: location
+        }
+
+        // const result = await assetInfoDb.find(query).toArray();
+        const result = await assetInfoDb.aggregate([
             {
                 $match: {
-                    "lastLocation.department": department,
-                    [`lastLocation.${loctype}`]: location
+                    "assetLocation.department": department,
+                    [`assetLocation.${loctype}`]: location
                 }
             },
             {
-                $sort: {
-                    assetType: 1
+                $lookup: {
+                    from: "assets",
+                    localField: "assetNumber",
+                    foreignField: "assetNumber",
+                    as: "assetInfo"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$assetInfo",
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $project: {
-                    _id: 0,
+                    _id: 1,
                     assetNumber: 1,
-                    assetClass: 1,
-                    assetType: 1,
-                    assetDescription: 1,
-                    assetUser: "$lastLocation.assetUser"
+                    assetUser: "$assetLocation.assetUser",
+                    assetClass: "$assetInfo.assetClass",
+                    assetType: "$assetInfo.assetType",
+                    assetDescription: "$assetInfo.assetDescription"
                 }
             }
-        ]
+        ]).toArray();
 
-        const result = await assetInfoDb.aggregate(pipeline).toArray();
 
         return NextResponse.json(result)
 

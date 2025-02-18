@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { GiReturnArrow } from "react-icons/gi";
 import UserInput from "./input/UserInput"
-const DataTable = ({ tableData, handleEditLocation, isEditable, assetLoading, }) => {
+const DataTable = ({ tableData, handleEditLocation, isEditable, assetLoading, handleRemoveAsset }) => {
+
+
+
 
     if (assetLoading) {
         return <div className='flex flex-col h-full items-center justify-center'>
@@ -50,7 +53,7 @@ const DataTable = ({ tableData, handleEditLocation, isEditable, assetLoading, })
                                             />
                                         </td>
                                         <td className="print:hidden ">
-                                            <button className="btn btn-warning">
+                                            <button className="btn btn-warning" onClick={() => handleRemoveAsset(data)}>
                                                 <GiReturnArrow className="text-red-500" />
                                             </button>
                                         </td>
