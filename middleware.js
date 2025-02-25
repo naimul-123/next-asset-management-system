@@ -11,44 +11,43 @@ export async function middleware(request) {
     }
     const user = await decodedToken(token);
 
-    if (!user) {
+    if (!user || (user.exp && user.exp < Math.floor(Date.now() / 1000))) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
     const roleBasedAccess = {
         admin: [
-            "/view_asset",
-            "/private/asset_entry",
-            "/private/manage_assets",
-            "/private/asset_summary",
-            "/private/upload_assets",
-
+            /^\/private\/asset_entry.*/,
+            /^\/private\/manage_assets.*/,
+            /^\/private\/asset_summary.*/,
+            /^\/private\/upload_assets.*/,
         ],
         moderator: [
-            "/view_asset",
-            "/private/asset_entry",
-            "/private/asset_summary",
-            "/private/upload_assets"
-        ],
-        visitor: [
-            "/view_asset",
+
+            /^\/private\/asset_entry.*/,
+            /^\/private\/asset_summary.*/,
+            /^\/private\/upload_assets.*/,
         ]
-    }
+
+    };
 
     if (user.role === "admin" && user.isSuperAdmin) {
-        roleBasedAccess.admin.push("/private/add_user",
-            "/private/manage_user", "/private/manage_user/approve_user")
+        roleBasedAccess.admin.push(
+            /^\/private\/add_user.*/,
+            /^\/private\/manage_user.*/,
+            /^\/private\/manage_user\/approve_user.*/
+        );
     }
-
     const pathName = new URL(request.url).pathname;
     const allowedRoutes = roleBasedAccess[user.role] || [];
-    if (!allowedRoutes.includes(pathName)) {
-        return NextResponse.redirect(new URL('/unauthorized', request.url))
+    const hasAccess = allowedRoutes.some((pattern) => pattern.test(pathName));
+
+    if (!hasAccess) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url));
     }
     return NextResponse.next();
 
-
 }
 export const config = {
-    matcher: ['/private/:path*', "/view_asset"]
+    matcher: ['/private/:path*']
 }

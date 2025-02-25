@@ -4,51 +4,44 @@ import Image from 'next/image'
 import logo from '../../public/bb_logo.png'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/authContext'
-import Navbar from './Navbar'
 import { usePathname } from 'next/navigation'
-import { IoLogInSharp, IoLogOutSharp } from 'react-icons/io5'
+import { IoLogOutSharp } from 'react-icons/io5'
 import { FaHome, FaSignInAlt, FaUser, FaUserPlus } from 'react-icons/fa'
 
 const Header = () => {
-
     const { user, logout } = useAuth()
     const pathname = usePathname();
-
-
     return (
-        <div className='flex justify-between items-center  border-warning bg-primary  border-b-8 shadow-lg print:hidden'>
-            <Link href="/" className='min-w-96 block bg-secondary text-primary border-warning p-3 border-t-0 border-r-[16px] rounded-tr-full'>
-                <div className='flex justify-center items-center '>
+        <div className='flex justify-between items-center border-b-8 border-b-primary text-primary shadow-lg print:hidden'>
+            <Link href="/" className='min-w-96 block py-2 text-primary rounded-r-full border-r-[16px] border-r-primary  rounded-b-none bg-lightGray'>
+                <div className='flex justify-center items-center  '>
                     <Image src={logo} alt="alt" width={80} height={80} />
-                    <div className=''>
-                        <h2>বাংলাদেশ ব্যাংক</h2>
+                    <div className='font-bold'>
+                        <h2 className='text-xl'>বাংলাদেশ ব্যাংক</h2>
                         <hr className='border-[#007f40] border-t-2' />
-                        <h2 className='text-xl'>Asset Management System</h2>
+                        <h2 className='text-lg'>Asset Management System</h2>
                     </div>
                 </div>
             </Link>
-            <div className='flex grow flex-col justify-between p-4 h-full   items-end font-semibold text-sm  text-base-200'>
+            <div className='flex grow  flex-col justify-between py-2 px-4 h-full   items-end font-semibold text-sm '>
                 <div className='grow'>
                     {
                         user ?
                             <div className='flex items-center gap-2'>
                                 <h3 className='flex item-center gap-1'><FaUser /> {user.name}</h3>
-                                <button className='flex item-center btn btn-sm btn-warning' onClick={logout} ><IoLogOutSharp />Log Out</button>
+                                <button className='flex item-center btn btn-xs btn-warning ' onClick={logout} ><IoLogOutSharp />Log Out</button>
                             </div>
                             :
                             <div className='flex items-center gap-2'>
-                                <Link href='/login' className='flex item-center btn btn-sm btn-warning'><FaSignInAlt /> Log In</Link>
-                                <Link href='/register' className='flex item-center btn btn-sm btn-warning'><FaUserPlus /> Register</Link>
+                                <Link href='/login' className='flex item-center btn btn-xs btn-warning '><FaSignInAlt /> Log In</Link>
+                                <Link href='/register' className='flex item-center btn btn-xs btn-warning '><FaUserPlus /> Register</Link>
                             </div>
                     }
                 </div>
-                <div className='flex text-sm gap-2 '>
-                    {
-                        user && <>
-                            <Link className={`flex items-center  hover:link ${pathname === "/" ? ' link ' : ''}  `} href="/"><FaHome className='' /></Link>
-                            <Link className={`hover:link ${pathname === '/view_asset' ? ' link' : ''}  `} href='/view_asset'>View Asset</Link>
-                        </>
-                    }
+                <div className='flex min-w-full text-sm gap-2 text-primary'>
+                    <Link className={`flex items-center  hover:link ${pathname === "/" ? ' link ' : ''}  `} href="/"><FaHome className='' /></Link>
+                    <Link className={`hover:link ${pathname === '/view_asset' ? ' link' : ''}  `} href='/view_asset'>View Asset</Link>
+
 
                     {(user?.role === "admin" || user?.role === "moderator") &&
                         <>
@@ -63,10 +56,7 @@ const Header = () => {
                             <Link className={`hover:link ${pathname === "/private/upload_assets" ? ' link ' : ''}  `} href="/private/upload_assets">Upload Assets</Link>
                         </>
                     }
-
-
                 </div>
-
             </div>
         </div>
     )

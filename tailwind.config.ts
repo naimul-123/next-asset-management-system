@@ -17,18 +17,15 @@ const config: Config = {
       },
       colors: {
         primary: "#007f40",
-        secondary: "#d3efe1",
-        black: {
-          "100": "#333333",
-          "200": "#141413",
-          "300": "#7D8087",
-          DEFAULT: "#000000",
-        },
-        white: {
-          "100": "#F7F7F7",
-          DEFAULT: "#FFFFFF",
-        },
-        warning: "#e7a500"
+        gold: "#F4A825",
+        deepBlue: "#003F5C",
+        lightGray: "#F5F5F5",
+        white: "#FFFFFF",
+        darkGray: "#333333",
+        softGreen: "#A3D9A5",
+        warmRed: "#E63946"
+
+
       },
       fontFamily: {
         "work-sans": ["var(--font-work-sans)"],

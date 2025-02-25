@@ -62,7 +62,7 @@ const AssetEntryByNumber = ({ assetMutation, assetLocation, isOpenModal, setIsOp
                         {/* head */}
                         <thead>
                             <tr>
-                                <th className='grid grid-cols-6 gap-2 bg-secondary'>
+                                <th className='grid grid-cols-6 gap-2 bg-base-300'>
                                     <div className="label-text">Asset Numbar</div>
                                     <div className="label-text">Asset Class</div>
                                     <div className="label-text">Asset Type</div>
@@ -82,7 +82,7 @@ const AssetEntryByNumber = ({ assetMutation, assetLocation, isOpenModal, setIsOp
                                         <output name='assetDescription' className="input bg-inherit input-sm  " >{assetInfo?.assetDescription}</output>
                                         <input type="text" name='assetUser' placeholder="Asset user name or section" className="input input-bordered bg-inherit  input-sm " required />
 
-                                        <button className='btn btn-success btn-sm text-white'>Add</button>
+                                        <button className='btn btn-success text-white btn-sm text-white hover:text-white'>Add</button>
 
                                         {
 

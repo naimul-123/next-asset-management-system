@@ -59,8 +59,8 @@ const SectionAsset = () => {
       <div className=' grow mx-auto flex flex-col px-4'>
         {deptInfo[location] &&
           <div className='flex justify-between px-4 py-2 items-center'>
-            <h2 className='text-center grow font-bold text-xl'> Asset list of {`${deptInfo[location]} ${location} of ${deptInfo.department} department.`} </h2>
-            <button className='btn btn-warning' onClick={() => window.print()}><FaPrint /></button>
+            <h2 className='text-center grow font-bold text-xl capitalize print:text-black '> Asset list of {`${deptInfo[location]} ${location} of ${deptInfo.department} department.`} </h2>
+            <button className='btn  btn-square  print:hidden' onClick={() => window.print()}><FaPrint /></button>
           </div>}
         <DataTable tableData={deptAssets} />
       </div>

@@ -18,13 +18,6 @@ export async function GET(request) {
             return NextResponse.json({ error: "Missing department , location type or location." }, { status: 400 });
         }
 
-
-        const query = {
-            "assetLocation.department": department,
-            [`assetLocation.${loctype}`]: location
-        }
-
-        // const result = await assetInfoDb.find(query).toArray();
         const result = await assetInfoDb.aggregate([
             {
                 $match: {
@@ -60,11 +53,40 @@ export async function GET(request) {
             {
                 $sort: { assetType: 1 }
 
+            },
+            {
+                $facet: {
+                    assetDetails: [
+                        { $match: {} }
+                    ],
+                    assetSummary: [
+                        {
+                            $group: {
+                                _id: "$assetType",
+                                totalAssets: { $sum: 1 }
+                            },
+
+                        },
+                        {
+                            $addFields: {
+                                assetType: "$_id",
+                            },
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                            }
+                        },
+                        {
+                            $sort: { assetType: 1 }
+                        }
+                    ]
+                }
             }
         ]).toArray();
 
 
-        return NextResponse.json(result)
+        return NextResponse.json(result[0])
 
     } catch (error) {
         console.error('Error to get document:', error); // Log error

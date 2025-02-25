@@ -36,7 +36,7 @@ const ManageUser = () => {
         });
 
     }
-
+    console.log(usersData);
 
     if (isLoading) {
         return (
@@ -51,37 +51,56 @@ const ManageUser = () => {
     }
 
     return (
-        <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
-            <table className="table table-zebra table-sm table-pin-rows">
-                <thead className=''>
-                    <tr className='bg-[#d3efe1] text-[#007f40] shadow-md '>
+
+        <div className="overflow-x-auto">
+            <table className="table table-xs table-pin-rows">
+                <thead>
+                    <tr className='text-center'>
                         <th>SL</th>
-                        <th>User Name</th>
-                        <th>SAP ID</th>
-                        <th>Change Role</th>
-                        <th>Delete User</th>
+                        <td>Name</td>
+                        <td>SAP</td>
+                        <td>Department</td>
+                        <td>Location Type</td>
+                        <td>Location</td>
+                        <td>Status</td>
+                        <td>Role</td>
+                        <td colSpan={2} className='text-center'>Actions</td>
+
+
                     </tr>
                 </thead>
                 <tbody>
-                    {usersData?.map((data, idx) => <tr key={idx}>
-                        <th>{idx + 1}</th>
-                        <td>{data.name}</td>
-                        <td>{data.sap}</td>
-                        <td>
+                    {usersData?.map((user, idx) =>
+                        <tr key={user.sap}>
 
-                            <select name='role' onChange={(e) => handleRoleChange({ sap: data.sap, role: e.target.value })} className="select select-bordered select-xs" defaultValue={data.role} >
-                                <option value="admin">Admin</option>
-                                <option value="moderator">Moderator</option>
-                                <option value="visitor">Visitor</option>
-                            </select>
-                        </td>
-                        <td onClick={() => handleDelete(data.sap)} ><TiDelete className='text-3xl text-red-500' /></td>
+                            <th>{idx + 1}</th>
+                            <td>{user.name}</td>
+                            <td>{user.sap}</td>
+                            <td>{user.department}</td>
+                            <td>{user.loctype}</td>
+                            <td>{user.location}</td>
+                            <td> <button className={user?.status === "pending" ? "btn btn-xs btn-success" : "btn btn-warning text-white btn-xs"}>{user.status}</button></td>
+                            <td>
+                                <select defaultValue={user.role} className="select select-xs">
+                                    <option value="">---Select---</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="moderatror">Moderator</option>
+                                    <option value="visitor">Visitor</option>
+                                </select>
+                            </td>
+                            <td><button className='btn btn-xs btn-success'>Reset Password</button></td>
+                            <td><button className='btn btn-xs btn-success'>Remove</button></td>
 
-                    </tr>)}
+                        </tr>
+                    )}
+
 
                 </tbody>
+
             </table>
         </div>
+
+
     )
 
 }

@@ -99,79 +99,83 @@ const Register = () => {
 
 
 
+        <div className='flex flex-col items-center justify-center h-full'>
+            <div className=''>
+                <form className="px-8 py-4 flex flex-col  bg-base-300 w-full max-w-screen-sm mx-auto  rounded-xl" onSubmit={handleRegister}>
+                    {regError &&
+                        <div >
+                            <p className=" relative  text-sm font-bold text-red-500 "> {regError}<span className='loading loading-dots loading-sm absolute bottom-0' ></span></p>
 
-        <form className="bg-[#f7f7f7] px-8 w-full max-w-sm mx-auto  rounded-xl" onSubmit={handleRegister}>
-            {regError &&
-                <div >
-                    <p className=" relative  text-sm font-bold text-red-500 "> {regError}<span className='loading loading-dots loading-sm absolute bottom-0' ></span></p>
+                        </div>}
+                    {successMessage &&
+                        <div className="label max-w-xs ">
 
-                </div>}
-            {successMessage &&
-                <div className="label max-w-xs ">
+                            <span className='text-sm font-bold text-success' >{successMessage}</span>
 
-                    <span className='text-sm font-bold text-success' >{successMessage}</span>
-
-                </div>}
-            <div className="form-control">
-                <div className="label ">
-                    <span className="label-text">Department</span>
-                </div>
-                <select name='department' className="select select-sm" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
-                    <option value="" >---Select---</option>
-                    {departments && departments?.map((dept) => <option key={dept} className='capitalize' value={dept}>{dept.toUpperCase()}</option>)}
-                </select>
-            </div>
-
-
-            {/* Location Type Selection */}
-            <div className="form-control">
-                <div className="label">
-                    <span className="label-text">Location Type</span>
-                </div>
-                <select name='loctype' className="select select-sm" required onChange={(e) => setLoctype(e.target.value)} value={loctype}>
-                    <option value="" >---Select---</option>
-                    {loctypes && loctypes?.map((type) => <option key={type} className='capitalize' value={type}>{type.toUpperCase()}</option>)}
-                </select>
-
-            </div>
-            {/* Dynamic Select Based on loctype */}
-            {loctype && (
-                <label className="form-control">
-                    <div className="label">
-                        <span className="label-text">Select {loctype}</span>
+                        </div>}
+                    <div className="form-control">
+                        <div className="label ">
+                            <span className="label-text">Department</span>
+                        </div>
+                        <select name='department' className="select select-sm" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
+                            <option value="" >---Select---</option>
+                            {departments && departments?.map((dept) => <option key={dept} className='capitalize' value={dept}>{dept.toUpperCase()}</option>)}
+                        </select>
                     </div>
-                    <select
-                        name='location'  // Dynamic name to ensure correct field submission
-                        className="select select-bordered select-sm "
-                        required
-                    >
-                        <option value="">---Select---</option>
-                        {options.map((opt) => (
-                            <option key={opt} value={opt} className='capitalize'>{opt}</option>
-                        ))}
-                    </select>
-                </label>
-            )}
 
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">Name</span>
-                </label>
-                <input name='name' type="text" placeholder="User name" className="input input-bordered input-sm" required />
+
+                    {/* Location Type Selection */}
+                    <div className="form-control">
+                        <div className="label">
+                            <span className="label-text">Location Type</span>
+                        </div>
+                        <select name='loctype' className="select select-sm" required onChange={(e) => setLoctype(e.target.value)} value={loctype}>
+                            <option value="" >---Select---</option>
+                            {loctypes && loctypes?.map((type) => <option key={type} className='capitalize' value={type}>{type.toUpperCase()}</option>)}
+                        </select>
+
+                    </div>
+                    {/* Dynamic Select Based on loctype */}
+                    {loctype && (
+                        <label className="form-control">
+                            <div className="label">
+                                <span className="label-text">Select {loctype}</span>
+                            </div>
+                            <select
+                                name='location'  // Dynamic name to ensure correct field submission
+                                className="select select-bordered select-sm "
+                                required
+                            >
+                                <option value="">---Select---</option>
+                                {options.map((opt) => (
+                                    <option key={opt} value={opt} className='capitalize'>{opt}</option>
+                                ))}
+                            </select>
+                        </label>
+                    )}
+
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Name</span>
+                        </label>
+                        <input name='name' type="text" placeholder="User name" className="input input-bordered input-sm" required />
+                    </div>
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">SAP ID</span>
+                        </label>
+                        <input name='sap' type="text" placeholder="SAP ID" className="input input-bordered input-sm" required />
+                    </div>
+                    <div className="form-control mt-6">
+                        <button className='btn btn-sm btn-success text-white' type='submit'>Send Request to Add</button>
+                    </div>
+
+
+
+                </form>
             </div>
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">SAP ID</span>
-                </label>
-                <input name='sap' type="text" placeholder="SAP ID" className="input input-bordered input-sm" required />
-            </div>
-            <div className="form-control mt-6">
-                <button className='btn btn-sm btn-warning' type='submit'>Send Request to Add</button>
-            </div>
+        </div>
 
-
-
-        </form>
 
 
 

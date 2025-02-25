@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react'
-
 import Button from "../reusable/Button"
 import { useQuery } from '@tanstack/react-query'
 import { getData, postData } from '../../lib/api'
 import Swal from 'sweetalert2'
-const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
+const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
     const [options, setOptions] = useState([])
     const [loctype, setLoctype] = useState('');
     const [selectedDept, setSelecteddept] = useState('')
-
-
     const { data: departmentData = [], refetch: deptRefetch } = useQuery({
         queryKey: ['departments'],
         queryFn: () => getData('/api/getdeptdata')
@@ -108,7 +105,7 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
 
 
     return (
-        <div className='max-w-xs w-full  max-h-full overflow-auto px-4 border-l print:hidden'>
+        <div className='max-w-xs  w-full bg-lightGray grow min-h-full overflow-auto px-4 border-l print:hidden'>
             <form id='' onSubmit={handleSubmit} >
                 <label className="form-control ">
                     <div className="label ">
@@ -158,7 +155,7 @@ const DeptForm = ({ handleSubmit, btnText, isAssetEntry }) => {
                 </div>
             </form>
             {
-                isAssetEntry &&
+                isAdmin &&
                 <div className=''>
 
                     <div className="collapse static  collapse-plus">

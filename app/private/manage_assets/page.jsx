@@ -9,13 +9,12 @@ import { deleteData, getData, postData } from '../../../lib/api';
 import { FaPrint } from 'react-icons/fa';
 import AssetEntryByNumber from '../../../components/forms/AssetEntryByNumber';
 import PickAssetFromDatabase from '../../../components/forms/PickAssetFromDatabase';
-
-
+import { useAuth } from '../../../contexts/authContext';
 const ManageAssets = () => {
     const [isOpenModal, setIsOpenModal] = useState(null);
     const [assetLocation, setassetLocation] = useState(null)
     const queryClient = useQueryClient();
-
+    const { user } = useAuth();
 
     const handleDeptForm = async (e) => {
         setassetLocation(null)
@@ -131,6 +130,58 @@ const ManageAssets = () => {
         });
 
     }
+    const updateAssets = useMutation({
+        mutationFn: async (data) => postData('/api/updateAssets', data),
+        queryKey: ['updateAssets'],
+        onSuccess: async (result) => {
+            console.log(result);
+            if (result.data.success) {
+                queryClient.invalidateQueries(['selectedType', 'assetLocation',])
+                Swal.fire({
+                    position: "top-end",
+                    title: result.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+            else {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: result.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        }
+
+    })
+    const updateAssetsUser = useMutation({
+        mutationFn: async (data) => postData('/api/updateAssetsUser', data),
+        queryKey: ['updateAssetsUser'],
+        onSuccess: async (result) => {
+            console.log(result);
+            if (result.data.success) {
+                queryClient.invalidateQueries(['assets', 'selectedType', 'assetLocation',])
+                Swal.fire({
+                    position: "top-end",
+                    title: result.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+            else {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: result.data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        }
+
+    })
 
     return (
 
@@ -140,8 +191,8 @@ const ManageAssets = () => {
                 {assetLocation &&
                     <div className=' space-y-2 print:hidden'>
                         <div className='flex gap-2 items-center'>
-                            <button className='btn btn-sm btn-success text-white' onClick={() => setIsOpenModal(isOpenModal === "number" ? null : "number")}>Add asset by Number</button>
-                            <button className='btn btn-sm btn-success text-white' onClick={() => setIsOpenModal(isOpenModal === "database" ? null : "database")}>Pick Asset from Database</button>
+                            <button className='btn btn-sm btn-success text-white  hover:text-white' onClick={() => setIsOpenModal(isOpenModal === "number" ? null : "number")}>Add asset by Number</button>
+                            <button className='btn btn-sm btn-success text-white  hover:text-white' onClick={() => setIsOpenModal(isOpenModal === "database" ? null : "database")}>Pick Asset from Database</button>
                         </div>
                         <div>
                             <AssetEntryByNumber isOpenModal={isOpenModal === "number"} setIsOpenModal={setIsOpenModal} assetMutation={assetMutation} assetLocation={assetLocation} />
@@ -149,19 +200,16 @@ const ManageAssets = () => {
                         </div>
                     </div>}
                 {assets &&
-                    <div className='flex mb-2 border-b-2'>
-                        <div className='flex grow flex-col items-center print:text-black '>
-                            <h2 className='text-center font-bold text-xl '> Asset list of {`${assetLocation?.location
-                                } ${assetLocation?.loctype} of ${assetLocation?.department} department.`} </h2>
-                            <p className='text-lg font-bold'>Total assets: {assets.length}</p>
-                        </div>
-                        <button className='btn btn-warning z-10 print:hidden' onClick={handlePrint}><FaPrint /></button>
+                    <div className='flex items-start py-2 border-b-2'>
+                        <h2 className='text-center grow font-bold text-lg print:text-black capitalize '> Asset list of {`${assetLocation?.location
+                            } ${assetLocation?.loctype} of ${assetLocation?.department} department.`} </h2>
+                        <button className='btn  z-10 print:hidden' onClick={handlePrint}><FaPrint /></button>
                     </div>
                 }
-                <DataTable tableData={assets} assetLoading={assetLoading} handleRemoveAsset={handleRemoveAsset} />
+                <DataTable tableData={assets} isEdit={user?.role === "admin" || user?.role === "moderator"} assetLoading={assetLoading} updateAssets={updateAssets} handleRemoveAsset={handleRemoveAsset} updateAssetsUser={updateAssetsUser} />
 
             </div>
-            <DeptForm handleSubmit={handleDeptForm} btnText="Search" isAssetEntry />
+            <DeptForm handleSubmit={handleDeptForm} btnText="Search" isAdmin={user?.role === "admin"} isEditUser />
         </div>
 
 

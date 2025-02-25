@@ -134,14 +134,14 @@ const AssetEntryForm = ({ getFormData }) => {
                     <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
                         <table className="table static table-md ">
                             <thead className=' '>
-                                <tr className='text-primary bg-secondary sticky top-0  gird grid-cols-3 font-extrabold shadow-md '>
+                                <tr className='text-primary bg-lightGray sticky top-0  gird grid-cols-3 font-extrabold shadow-md '>
                                     <th>SL</th>
                                     <th className='text-center'>Asset info</th>
                                     <th className='flex justify-between max-w-xs'><span>Asset User</span> <span>Total Assets= {remainingAssets.length}</span>  </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {remainingAssets?.map((data, idx) => <tr key={idx} className={`even:bg-[#fdf7f4]  hover:bg-secondary`}>
+                                {remainingAssets?.map((data, idx) => <tr key={idx} className={`even:bg-[#fdf7f4]  hover:bg-lightGray`}>
                                     <th>{idx + 1}</th>
                                     <td >
                                         <div className="grid grid-cols-3  gap-3">
@@ -170,7 +170,7 @@ const AssetEntryForm = ({ getFormData }) => {
                                                 <input value={data.assetUser} type="text" name='assetUser' placeholder="Asset user name or section" className="input input-ghost  input-success" required />
 
                                             </div>
-                                            <button type='submit' className=' btn btn-circle btn-ghost hover:bg-secondary text-primary text-lg'><FaPlus /></button>
+                                            <button type='submit' className=' btn btn-circle btn-ghost hover:bg-lightGray text-primary text-lg'><FaPlus /></button>
 
                                         </form>
 

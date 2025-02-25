@@ -154,7 +154,7 @@ const AssetEntry = () => {
 
     return (
 
-        <div className='flex'>
+        <div className='flex min-h-full'>
             <div className='grow flex flex-col'>
                 <AssetEntryForm getFormData={getFormData} />
                 <DataTable isEditable={true} tableData={assetData} handleEditLocation={handleEditLocation} handleAction={handleRemove} />

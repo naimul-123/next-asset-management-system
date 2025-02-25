@@ -99,14 +99,14 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
 
                 <table className="table  table-xs table-pin-rows  ">
                     <thead className=' '>
-                        <tr className='text-primary bg-secondary gird grid-cols-3 font-extrabold shadow-md '>
+                        <tr className=' gird grid-cols-3 bg-lightGray font-extrabold text-deepBlue  '>
                             <th>SL</th>
-                            <th className='text-center'>Asset info</th>
-                            <th className='flex justify-between max-w-xs'><span>Asset User</span> <span>Total Assets= {remainingAssets.length}</span>  </th>
+                            <th className='text-center py-4'>Asset info</th>
+                            <th className='flex justify-between max-w-xs py-4'><span>Asset User</span> <span>Total Assets= {remainingAssets.length}</span>  </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {remainingAssets?.map((data, idx) => <tr key={idx} className={`even:bg-[#fdf7f4]  hover:bg-secondary`}>
+                        {remainingAssets?.map((data, idx) => <tr key={idx} className={`even:bg-lightGray  hover:bg-base-300 `}>
                             <th>{idx + 1}</th>
                             <td >
                                 <div className="grid grid-cols-3">
@@ -135,7 +135,7 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
                                         <input value={data.assetUser} type="text" name='assetUser' placeholder="Asset user name or section" className="input input-ghost  input-success input-sm" required />
 
                                     </div>
-                                    <button type='submit' className=' btn btn-sm btn-square btn-warning font-bold text-2xl'><MdOutlinePostAdd /></button>
+                                    <button type='submit' className=' btn btn-sm btn-square btn-warning text-white font-bold text-2xl'><MdOutlinePostAdd /></button>
                                 </form>
 
                             </td>

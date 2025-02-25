@@ -26,7 +26,7 @@ const AssetSummary = () => {
         <div className='overflow-auto h-full print:overflow-hidden'>
             <table className="table h-full   table-md table-pin-rows  ">
                 <thead className=' '>
-                    <tr className='text-primary bg-secondary font-extrabold shadow-md '>
+                    <tr className='text-primary bg-lightGray font-extrabold shadow-md '>
                         <th>
                             <div className='grid grid-cols-6'>
                                 <h2>SL</h2>
@@ -39,14 +39,14 @@ const AssetSummary = () => {
 
                     </tr>
                 </thead>
-                <tbody className='bg-secondary  '>
+                <tbody className='bg-lightGray  '>
 
                     {assetSummary?.map((data, idx) => {
                         return (
-                            <tr key={idx} className={`sticky bg-secondary border-none top-8  z-[${idx + 11}]`}>
-                                <th className='p-0 bg-secondary collapse border-b border-primary rounded-none   '>
+                            <tr key={idx} className={`sticky bg-lightGray border-none top-8  z-[${idx + 11}]`}>
+                                <th className='p-0 bg-lightGray collapse border-b border-primary rounded-none   '>
                                     <input type="checkbox" className='' />
-                                    <div className='grid grid-cols-6  px-4 bg-secondary shadow-xl  collapse-title'>
+                                    <div className='grid grid-cols-6  px-4 bg-lightGray shadow-xl  collapse-title'>
                                         <h2>{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}.</h2>
                                         <h2 className='col-span-2'>{data.assetClass}</h2>
                                         <h2 className='text-right'>{data.totalAssets.toLocaleString("en-IN")}</h2>

@@ -8,13 +8,13 @@ import { FaHome } from "react-icons/fa";
 const Navbar = () => {
 
     return (
-        <div className='flex flex-col justify-end items-end  bg-[#007F40] text-white  font-semibold text-lg'>
+        <div className='flex flex-col justify-end items-end  bg-[#007F40] text-white hover:text-white  font-semibold text-lg'>
             <div className='flex px-4 gap-2 '>
                 {
                     user && <>
 
                         <h3 className=''>Welcome {user.name}</h3>
-                        <button className='btn btn-square btn-warning  text-4xl' onClick={logout} ><IoLogOutSharp /></button>
+                        <button className='btn btn-square btn-warning text-white  text-4xl' onClick={logout} ><IoLogOutSharp /></button>
                     </>
 
 
@@ -22,7 +22,7 @@ const Navbar = () => {
                 }
 
                 {
-                    !user && <Link href='/login' className='btn btn-square btn-warning  text-4xl'><IoLogInSharp /></Link>
+                    !user && <Link href='/login' className='btn btn-square btn-warning text-white  text-4xl'><IoLogInSharp /></Link>
                 }
             </div>
             <div className='flex'>

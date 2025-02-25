@@ -9,8 +9,6 @@ const assetInfoDb = db.collection('assetLocationInfo');
 export async function POST(req) {
     try {
         const { assetNumber, assetUser, department, loctype, location } = await req.json();
-
-
         const locationWithTimestamp = {
             department,
             [loctype]: location,
@@ -18,30 +16,30 @@ export async function POST(req) {
             createdAt: new Date()
         }
         let result = null;
-        if (assetNumber && assetNumber.length === 12) {
-            const existingAsset = await assetInfoDb.findOne({ assetNumber })
 
-            if (existingAsset) {
-                result = await assetInfoDb.updateOne({ assetNumber },
-                    {
-                        $set: {
-                            assetLocation: locationWithTimestamp
-                        }
+        const existingAsset = await assetInfoDb.findOne({ assetNumber })
+
+        if (existingAsset) {
+            result = await assetInfoDb.updateOne({ assetNumber },
+                {
+                    $set: {
+                        assetLocation: locationWithTimestamp
                     }
-                )
+                }
+            )
 
 
-            }
-            else {
-                result = await assetInfoDb.insertOne({
-                    assetNumber,
-                    assetLocation: locationWithTimestamp
+        }
+        else {
+            result = await assetInfoDb.insertOne({
+                assetNumber,
+                assetLocation: locationWithTimestamp
 
-                });
-            }
+            });
+        }
 
 
-        };
+
 
 
         if (result?.acknowledged) {
