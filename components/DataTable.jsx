@@ -152,7 +152,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                 <>
                     <table className="table table-xs table-zebra">
                         <thead className="sticky print:static">
-                            <tr className="bg-lightGray text-primary shadow-xl print:text-black print:shadow-none print:bg-white sticky top-0 print:static">
+                            <tr className=" text-primary bg-gray-bright print:text-black print:bg-white sticky top-0 print:static">
                                 <th className="py-4">SL</th>
                                 <th className="py-4">Asset Number</th>
                                 <th className="py-4">Asset Class</th>
@@ -179,7 +179,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                                                 <div className="label">
                                                     <span className="label-text font-bold ">Select Action</span>
                                                 </div>
-                                                <select name="action" defaultValue={action} className="select select-primary select-xs" onChange={(e) => setAction(e.target.value)}>
+                                                <select name="action" defaultValue={action} className="select select-warning select-xs" onChange={(e) => setAction(e.target.value)}>
                                                     <option value="">---Select---</option>
                                                     <option value="changeLocation">Change Location</option>
                                                     <option value="changeUser">Change User</option>
@@ -192,7 +192,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                                                         <div className="label">
                                                             <span className="label-text font-bold ">Department</span>
                                                         </div>
-                                                        <select name="department" className="select select-xs" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
+                                                        <select name="department" className="select select-xs select-warning" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
                                                             <option value="">---Select---</option>
                                                             {departments?.map((dept) => (
                                                                 <option key={dept} className="capitalize" value={dept}>
@@ -205,7 +205,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                                                         <div className="label">
                                                             <span className="label-text font-bold ">Location Type</span>
                                                         </div>
-                                                        <select name="loctype" className="select select-bordered select-xs" required onChange={(e) => setLoctype(e.target.value)} value={loctype}>
+                                                        <select name="loctype" className="select select-warning select-bordered select-xs" required onChange={(e) => setLoctype(e.target.value)} value={loctype}>
                                                             <option value="">---Select---</option>
                                                             {loctypes?.map((type) => (
                                                                 <option key={type} value={type} className="capitalize">
@@ -219,7 +219,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                                                             <div className="label">
                                                                 <span className="label-text font-bold ">Select {loctype}</span>
                                                             </div>
-                                                            <select name='location' className="select select-bordered select-xs" required>
+                                                            <select name='location' className="select select-warning select-bordered select-xs" required>
                                                                 <option value="">---Select---</option>
                                                                 {options?.map((opt) => (
                                                                     <option key={opt} value={opt} className="capitalize">
@@ -237,7 +237,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                                                     <div className="label">
                                                         <span className="label-text font-bold ">Asset User Name</span>
                                                     </div>
-                                                    <input name="assetUser" type="text" className="input input-xs input-primary" />
+                                                    <input name="assetUser" type="text" className="input input-xs input-warning" />
                                                 </label>
                                             )}
 
@@ -278,7 +278,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                                         {isEdit &&
                                             <td className="print:hidden">
                                                 <button className="btn btn-ghost btn-square btn-xs" onClick={() => handleRemoveAsset(data)}>
-                                                    <MdDeleteForever className="text-red-500 text-xl" />
+                                                    <MdDeleteForever className="text-danger text-xl" />
                                                 </button>
                                             </td>
                                         }
@@ -302,7 +302,7 @@ const DataTable = ({ tableData, assetLoading, handleRemoveAsset, updateAssetsUse
                     <table className="table table-xs max-w-xs mx-auto print:break-before-page">
                         <thead>
                             <tr>
-                                <th colSpan={2} className="text-center font-bold text-xl text-deepBlue">
+                                <th colSpan={2} className="text-center font-bold text-xl text-black">
                                     Asset Summary
                                 </th>
                             </tr>

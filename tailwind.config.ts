@@ -16,15 +16,34 @@ const config: Config = {
         xs: "475px",
       },
       colors: {
-        primary: "#007f40",
-        gold: "#F4A825",
-        deepBlue: "#003F5C",
-        lightGray: "#F5F5F5",
-        white: "#FFFFFF",
-        darkGray: "#333333",
-        softGreen: "#A3D9A5",
-        warmRed: "#E63946"
 
+        blue: "#0d6efd",
+        indigo: "#6610f2",
+        purple: "#6f42c1",
+        pink: "#d63384",
+        red: "#dc3545",
+        orange: "#fd7e14",
+        yellow: "#ffc107",
+        green: "#198754",
+        teal: "#20c997",
+        cyan: "#0dcaf0",
+        white: "#fff",
+        gray: {
+          default: "#6c757d",
+          dark: "#343a40",
+          bright: "#E9F3EE"
+        },
+
+
+        primary: "#29AE61",
+        secondary: "#8c000d",
+        success: "#198754",
+        info: "#0dcaf0",
+        warning: "#dfa806",
+        danger: "#dc3545",
+        light: "#dddddd",
+        dark: "#212529",
+        ColumbiaBlue: "#c8ecda",
 
       },
       fontFamily: {

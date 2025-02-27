@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
       <body>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <main className=" flex flex-col h-screen max-w-screen-2xl mx-auto text-darkGray  print:h-fit">
+            <main className=" flex flex-col h-screen max-w-screen-2xl mx-auto text-dark  print:h-fit">
               <Header />
               <div className="grow mx-auto h-[calc(100vh-235px)] overflow-auto print:overflow-visible flex  print:h-fit">
                 {children}

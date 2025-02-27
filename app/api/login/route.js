@@ -33,17 +33,24 @@ export async function POST(req) {
         }
 
         // console.log(user);
-        const token = jwt.sign(payload, secretKey, { expiresIn: '30m' });
-
+        const token = jwt.sign(payload, secretKey, { expiresIn: '15m' });
+        const expiredTime = Date.now() + 15 * 60 * 1000;
         const response = NextResponse.json({ success: true, message: 'Login successcull' }, { status: 200 });
 
         response.cookies.set('token', token, {
             httpOnly: true,
-            maxAge: 30 * 60,
+            maxAge: 900,
             path: '/',
             secure: process.env.NODE_ENV === 'production',
 
         })
+        response.cookies.set("expiredTime", expiredTime.toString(), {
+            httpOnly: false, // Accessible from client-side
+            maxAge: 900, // 15 minutes
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+        });
+
         return response
 
     } catch (error) {

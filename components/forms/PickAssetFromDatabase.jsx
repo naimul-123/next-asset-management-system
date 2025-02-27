@@ -70,7 +70,7 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
 
     return (
         <div className={`${!isOpenModal ? "h-0 opacity-0" : "h-full  opacity-100"} transition-all duration-1000 ease-in-out  w-full rounded-lg  mx-auto relative`}>
-            <button className="btn absolute right-0 -top-10 z-20   btn-circle btn-ghost text-red-500  text-4xl " onClick={() => setIsOpenModal(null)}><IoCloseCircleSharp /></button>
+            <button className="btn absolute right-0 -top-10 z-20   btn-circle btn-ghost text-danger  text-4xl " onClick={() => setIsOpenModal(null)}><IoCloseCircleSharp /></button>
 
             <form className='grid grid-cols-2 gap-2 max-w-screen-lg'>
 
@@ -97,16 +97,16 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
             </form>
             <div className="overflow-auto w-full h-full max-h-40  border-2 grow rounded-b-lg">
 
-                <table className="table  table-xs table-pin-rows  ">
+                <table className="table  table-xs table-zebra table-pin-rows  ">
                     <thead className=' '>
-                        <tr className=' gird grid-cols-3 bg-lightGray font-extrabold text-deepBlue  '>
+                        <tr className=' gird grid-cols-3 bg-gray-bright font-extrabold text-primary  '>
                             <th>SL</th>
                             <th className='text-center py-4'>Asset info</th>
                             <th className='flex justify-between max-w-xs py-4'><span>Asset User</span> <span>Total Assets= {remainingAssets.length}</span>  </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {remainingAssets?.map((data, idx) => <tr key={idx} className={`even:bg-lightGray  hover:bg-base-300 `}>
+                        {remainingAssets?.map((data, idx) => <tr key={idx} >
                             <th>{idx + 1}</th>
                             <td >
                                 <div className="grid grid-cols-3">

@@ -105,13 +105,13 @@ const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
 
 
     return (
-        <div className='max-w-xs  w-full bg-lightGray grow min-h-full overflow-auto px-4 border-l print:hidden'>
+        <div className='max-w-xs  w-full  grow min-h-full overflow-auto p-4 border-l print:hidden'>
             <form id='' onSubmit={handleSubmit} >
-                <label className="form-control ">
-                    <div className="label ">
+                <label className="form-control gap-1 ">
+                    <div className="label">
                         <span className="label-text font-bold text-primary ">Department</span>
                     </div>
-                    <select name='department' className="select select-sm" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
+                    <select name='department' className="select select-sm  select-warning" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
                         <option value="" >---Select---</option>
                         {departments && departments?.map((dept) => <option key={dept} className='capitalize' value={dept}>{dept.toUpperCase()}</option>)}
                     </select>
@@ -122,7 +122,7 @@ const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
                     </div>
                     <select
                         name="loctype"  // Dynamic name to ensure correct field submission
-                        className="select select-bordered select-sm "
+                        className="select select-warning select-sm "
                         required
                         onChange={(e) => setLoctype(e.target.value)}
                         value={loctype}
@@ -140,7 +140,7 @@ const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
                         </div>
                         <select
                             name={loctype}  // Dynamic name to ensure correct field submission
-                            className="select select-bordered select-sm "
+                            className="select select-warning select-sm "
                             required
                         >
                             <option value="">---Select---</option>

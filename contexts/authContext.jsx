@@ -1,11 +1,11 @@
 "use client"
 
 
-import { postData } from '../lib/api';
-import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query';
-import axios, { AxiosResponse } from 'axios';
+
+import { useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import React, { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import Swal from 'sweetalert2';
 
 
@@ -15,7 +15,7 @@ const AuthContext = createContext(undefined);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [isOpenModal, setIsOpemModal] = useState(false)
+    const [remainingTime, setRemainingTime] = useState(null);
     const router = useRouter()
     const queryClient = useQueryClient();
 
@@ -24,10 +24,10 @@ export const AuthProvider = ({ children }) => {
         try {
             await axios.post('/api/logout');
             queryClient.clear();
+            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "expiredTime=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             router.push('/login');
-            setIsOpemModal(false)
             setUser(null)
-
         }
         catch (error) {
             console.error('Logout failed:', error)
@@ -45,7 +45,8 @@ export const AuthProvider = ({ children }) => {
                 setUser(data.payload)
             }
             else {
-                setUser(null)
+                setUser(null);
+                logout();
             }
         } catch (error) {
             console.error("Auth Error:", error)
@@ -56,40 +57,56 @@ export const AuthProvider = ({ children }) => {
 
     }
 
+    const checkSessionExpiry = () => {
+        const expiredTime = document.cookie.split("; ")
+            .find(row => row.startsWith('expiredTime='))
+            ?.split('=')[1];
+        if (!expiredTime) return;
+        const now = Date.now();
+        const reminigMs = Number(expiredTime) - now
+        if (reminigMs <= 0) {
+            console.log('Session expired! Logging Out');
+            logout();
+        }
+        else {
+            setRemainingTime(reminigMs)
+        }
+
+    }
+
+    const setupAxiosInterceptors = () => {
+        axios.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                if (error?.response?.status === 401) {
+                    console.log("Session expired, logging out...");
+                    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    await logout();
+                }
+                return Promise.reject(error)
+            }
+        )
+    }
+
     useEffect(() => {
         getUser();
+        setupAxiosInterceptors();
+        const interval = setInterval(checkSessionExpiry, 1000); // Check 
+
+        return () => clearInterval(interval);
+
     }, [])
 
 
+    const formatRemainingTime = () => {
+        if (remainingTime === null) return ""
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000)
+        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+    }
 
 
-    const profileMutation = useMutation({
-        mutationFn: async (data) => postData('/api/updateUser', data),
-        onSuccess: async (result) => {
-            if (result.data) {
-                getUser()
-                console.log(result.data);
-
-                Swal.fire({
-                    position: "top-end",
-                    icon: "success",
-                    title: "User info have been updated successfully.",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-        },
-        onError: (error) => {
-            Swal.fire({
-                position: "top-end",
-                icon: "error",
-                title: error.message,
-                showConfirmButton: false,
-                timer: 1500
-            });
-        }
-    });
-    const authInfo = { user, getUser, logout, loading }
+    const authInfo = { user, getUser, logout, loading, remainingTime: formatRemainingTime() }
 
 
     return (

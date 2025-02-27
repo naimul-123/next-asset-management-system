@@ -6,19 +6,19 @@ import Link from 'next/link'
 import { useAuth } from '../../contexts/authContext'
 import { usePathname } from 'next/navigation'
 import { IoLogOutSharp } from 'react-icons/io5'
-import { FaHome, FaSignInAlt, FaUser, FaUserPlus } from 'react-icons/fa'
+import { FaEye, FaHome, FaSignInAlt, FaUser, FaUserPlus } from 'react-icons/fa'
 
 const Header = () => {
-    const { user, logout } = useAuth()
+    const { user, logout, remainingTime } = useAuth()
     const pathname = usePathname();
     return (
-        <div className='flex justify-between items-center border-b-8 border-b-primary text-primary shadow-lg print:hidden'>
-            <Link href="/" className='min-w-96 block py-2 text-primary rounded-r-full border-r-[16px] border-r-primary  rounded-b-none bg-lightGray'>
+        <div className='flex justify-between items-center bg-warning    shadow-lg print:hidden'>
+            <Link href="/" className='min-w-96 block py-2 text-white rounded-r-full border-r-primary border-r-2 bg-primary '>
                 <div className='flex justify-center items-center  '>
-                    <Image src={logo} alt="alt" width={80} height={80} />
+                    <Image src={logo} alt="alt" width={80} height={80} className='bg-white rounded-full' />
                     <div className='font-bold'>
                         <h2 className='text-xl'>বাংলাদেশ ব্যাংক</h2>
-                        <hr className='border-[#007f40] border-t-2' />
+                        <hr className='border-white border-t-2' />
                         <h2 className='text-lg'>Asset Management System</h2>
                     </div>
                 </div>
@@ -28,6 +28,7 @@ const Header = () => {
                     {
                         user ?
                             <div className='flex items-center gap-2'>
+                                <p>Your session will be expired after {remainingTime}</p>
                                 <h3 className='flex item-center gap-1'><FaUser /> {user.name}</h3>
                                 <button className='flex item-center btn btn-xs btn-warning ' onClick={logout} ><IoLogOutSharp />Log Out</button>
                             </div>
@@ -38,14 +39,14 @@ const Header = () => {
                             </div>
                     }
                 </div>
-                <div className='flex min-w-full text-sm gap-2 text-primary'>
+                <div className='flex min-w-full text-sm gap-2 '>
                     <Link className={`flex items-center  hover:link ${pathname === "/" ? ' link ' : ''}  `} href="/"><FaHome className='' /></Link>
-                    <Link className={`hover:link ${pathname === '/view_asset' ? ' link' : ''}  `} href='/view_asset'>View Asset</Link>
+                    <Link className={`flex items-center hover:link ${pathname === '/view_asset' ? ' link' : ''}  `} href='/view_asset'>View Asset</Link>
 
 
                     {(user?.role === "admin" || user?.role === "moderator") &&
                         <>
-                            <Link className={`hover:link ${pathname === "/private/asset_entry" ? ' link ' : ''}  `} href="/private/asset_entry">Asset Entry</Link>
+
                             {
                                 user.isSuperAdmin && <>
                                     <Link className={`hover:link ${pathname === "/private/add_user" ? ' link ' : ''}  `} href="/private/add_user">Add User</Link>
