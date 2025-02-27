@@ -1,5 +1,5 @@
 "use client"
-import TypesRow from '../../../components/forms/TypesRow';
+
 import { getData } from '../../../lib/api';
 import { useQuery } from '@tanstack/react-query'
 import React, { useState } from 'react'
@@ -26,7 +26,7 @@ const AssetSummary = () => {
         <div className='overflow-auto h-full print:overflow-hidden'>
             <table className="table h-full   table-md table-pin-rows  ">
                 <thead className=' '>
-                    <tr className='text-primary bg-lightGray font-extrabold shadow-md '>
+                    <tr className='text-primary bg-gray-bright font-extrabold shadow-md '>
                         <th>
                             <div className='grid grid-cols-6'>
                                 <h2>SL</h2>
@@ -39,21 +39,21 @@ const AssetSummary = () => {
 
                     </tr>
                 </thead>
-                <tbody className='bg-lightGray  '>
+                <tbody className='bg-gray-bright  '>
 
                     {assetSummary?.map((data, idx) => {
                         return (
-                            <tr key={idx} className={`sticky bg-lightGray border-none top-8  z-[${idx + 11}]`}>
-                                <th className='p-0 bg-lightGray collapse border-b border-primary rounded-none   '>
+                            <tr key={idx} className={`sticky bg-gray-bright border-none top-8  z-[${idx + 11}]`}>
+                                <th className='p-0 bg-gray-bright print:visible collapse border-b border-primary rounded-none   '>
                                     <input type="checkbox" className='' />
-                                    <div className='grid grid-cols-6  px-4 bg-lightGray shadow-xl  collapse-title'>
+                                    <div className='grid grid-cols-6  px-4 bg-gray-bright shadow-xl  collapse-title'>
                                         <h2>{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}.</h2>
                                         <h2 className='col-span-2'>{data.assetClass}</h2>
                                         <h2 className='text-right'>{data.totalAssets.toLocaleString("en-IN")}</h2>
                                         <h2 className='text-right'>{data.totalAcquisVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                                         <h2 className='text-right'>{data.totalBookVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                                     </div>
-                                    <div className='collapse-content bg-white !min-h-0 print:min-h-fit max-h-96 overflow-auto'>
+                                    <div className='collapse-content print:visible bg-white !min-h-0 print:min-h-fit max-h-96 overflow-auto'>
                                         {
                                             data?.assetTypes.map((type, tdx) =>
                                                 <div key={tdx} className={`grid grid-cols-6 py-2 

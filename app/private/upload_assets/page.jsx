@@ -3,27 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { getData, postData } from "../../../lib/api";
 
-const assetClasses = [
-    "Security Equipment",
-    "Electrical Equipment- Office",
-    "Electrical Equipment- Residence",
-    "Fixture and Fittings- Office",
-    "Mechanical Equipment- Office",
-    "Motor Vehicles",
-    "Fixture and Fittings- Residence",
-    "Computer and Networking",
-    "Mechanical Equipment- Residence",
-    "Low value Asset",
-];
+
 
 const UploadAssets = () => {
     const [error, setError] = useState('')
 
     const [data, setData] = useState([]);
-    const headers = ["assetNumber", "assetClass", "assetType", "capDate", "assetDescription", "acquisVal", "bookVal"
+    const headers = ["assetNumber", "assetType", "assetDescription", "capDate", "acquisVal"
     ];
-
-
+    const { data: assetClasses = [] } = useQuery({
+        queryKey: ['assetClasses'],
+        queryFn: () => getData('/api/assetClass')
+    })
+    console.log(assetClasses);
     const handlePaste = (event) => {
         setData([]);
 
@@ -32,15 +24,31 @@ const UploadAssets = () => {
 
         const dataArray = rows.map((row) => {
             const values = row.split("\t");
+
             let rowObj = headers.reduce((obj, header, index) => {
                 obj[header] = values[index]?.trim() || "";
                 return obj;
             }, {});
+
+            // Extract assetCode from assetNumber
+            const assetNumber = rowObj.assetNumber;
+            if (assetNumber) {
+                const assetCode = parseInt(assetNumber.substring(0, 2)); // Adjust based on assetCode length
+
+                // Find matching assetClass
+                const assetClassObj = assetClasses.find(ac => ac.assetCode === assetCode);
+                if (assetClassObj) {
+                    rowObj.assetClass = assetClassObj.assetClass;
+                }
+            }
+
             return rowObj;
         }).filter(Boolean); // Remove invalid rows
 
         setData(dataArray);
     };
+
+
 
 
     console.log(data);
@@ -64,30 +72,42 @@ const UploadAssets = () => {
 
 
             <div className="overflow-auto h-fit">
-                <table className="table table-xs table-zebra table-pin-rows table-pin-cols">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            {headers.map((header, index) => (
-                                <th key={index} className="">{header}</th>
-                            ))}
+                {data.length > 0 ?
+                    <table className="table table-xs table-zebra table-pin-rows table-pin-cols">
+                        <thead>
+                            <tr className="bg-gray-200">
+                                {data.length > 0 &&
+                                    Object.keys(data[0]).map((header, index) => (
+                                        <th key={index} className="">{header}</th>
+                                    ))
+                                }
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.length > 0 ? data.map((rowData, rowIndex) => (
-                            <tr key={rowIndex} className="even:bg-gray-100">
-                                {headers.map((header, colIndex) => (
-                                    <td key={`${rowIndex}-${colIndex}`} className="">
-                                        {rowData[header]}
-                                    </td>
-                                ))}
                             </tr>
-                        )) : <tr>
+                        </thead>
+                        <tbody>
+                            {data.length > 0 && (
+                                data.map((rowData, rowIndex) => (
+                                    <tr key={rowIndex} className="even:bg-gray-100">
+                                        {Object.keys(rowData).map((key, colIndex) => (
+                                            <td key={`${rowIndex}-${colIndex}`} className="">{rowData[key]}</td>
+                                        ))}
+                                    </tr>
+                                ))
+                            )}
 
-                            <td colSpan={7}> <textarea className="textarea textarea-bordered w-full" placeholder="Paste Excel data Here..." onPaste={handlePaste}></textarea></td></tr>}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                    :
 
+                    <div className="form-control">
+
+                        <textarea
+                            className="textarea textarea-xs border-none focus:border-none focus:outline-none textarea-ghost"
+                            placeholder="Paste Excel data Here..."
+                            onPaste={handlePaste}
+                        ></textarea>
+
+                    </div>}
 
             </div>
             <div className="flex gap-3">

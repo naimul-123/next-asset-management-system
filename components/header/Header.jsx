@@ -13,7 +13,7 @@ const Header = () => {
     const pathname = usePathname();
     return (
         <div className='flex justify-between items-center bg-warning    shadow-lg print:hidden'>
-            <Link href="/" className='min-w-96 block py-2 text-white rounded-r-full border-r-primary border-r-2 bg-primary '>
+            <Link href="/" className='min-w-96 block py-2 text-white rounded-r-full border-r-gray-dark border-r-4  bg-primary '>
                 <div className='flex justify-center items-center  '>
                     <Image src={logo} alt="alt" width={80} height={80} className='bg-white rounded-full' />
                     <div className='font-bold'>
@@ -39,7 +39,7 @@ const Header = () => {
                             </div>
                     }
                 </div>
-                <div className='flex min-w-full text-sm gap-2 '>
+                <div className='flex text-sm gap-2 '>
                     <Link className={`flex items-center  hover:link ${pathname === "/" ? ' link ' : ''}  `} href="/"><FaHome className='' /></Link>
                     <Link className={`flex items-center hover:link ${pathname === '/view_asset' ? ' link' : ''}  `} href='/view_asset'>View Asset</Link>
 
