@@ -105,7 +105,7 @@ const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
 
 
     return (
-        <div className='max-w-xs  w-full  grow min-h-full overflow-auto p-4 border-l print:hidden'>
+        <div className=''>
             <form id='' onSubmit={handleSubmit} >
                 <label className="form-control gap-1 ">
                     <div className="label">

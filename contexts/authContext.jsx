@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
             (response) => response,
             async (error) => {
                 if (error?.response?.status === 401) {
-                    console.log("Session expired, logging out...");
+
                     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     await logout();
                 }
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         if (remainingTime === null) return ""
         const minutes = Math.floor(remainingTime / 60000);
         const seconds = Math.floor((remainingTime % 60000) / 1000)
-        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+        return `${minutes}: ${seconds < 10 ? "0" : ""}${seconds}`
     }
 
 

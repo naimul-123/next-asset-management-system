@@ -70,7 +70,7 @@ const Login = () => {
                 </div>
                 {loginerror &&
                     <div className="label flex-col max-w-xs ">
-                        <span className='text-xs text-red-500' >{loginerror}</span>
+                        <span className='text-xs text-danger' >{loginerror}</span>
                     </div>}
 
             </form>
