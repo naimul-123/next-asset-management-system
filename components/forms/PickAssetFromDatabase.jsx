@@ -9,30 +9,24 @@ import { IoCloseCircleSharp } from 'react-icons/io5';
 
 const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setIsOpenModal }) => {
 
-    // const [remainingAssets, setRemainingAssets] = useState([])
+   
     const [types, setTypes] = useState([]);
     const [selectedType, setSelectedType] = useState(null)
     const [assetError, setAssetError] = useState('');
-
-    // useEffect(() => {
-    //     setRemainingAssets([])
-    // }, [assetType])
-
     const { data: assetClasses = [] } = useQuery({
         queryKey: ['assetClasses'],
         queryFn: () => getData('/api/assetClass')
     })
-
     const Class = assetClasses?.map((g) => g.assetClass).sort((a, b) => a.localeCompare(b))
-
-
     const handleClassChange = async (assetClass) => {
         setTypes([])
         setSelectedType(null)
         const assetTypeData = await getData(`/api/getAssetType?assetClass=${assetClass}`)
         setTypes(assetTypeData)
     }
-
+    const handleAssetTypeChange = async (assetType) => {
+      setSelectedType(assetType);
+    };
 
     function handleSubmitForm(e) {
         e.preventDefault();
@@ -56,9 +50,7 @@ const PickAssetFromDatabase = ({ assetMutation, assetLocation, isOpenModal, setI
         form.reset()
     }
 
-    const handleAssetTypeChange = async (assetType) => {
-        setSelectedType(assetType)
-    }
+
 
     const { data: remainingAssets = [], refetch: remainingRefetch } = useQuery({
         queryKey: [selectedType],

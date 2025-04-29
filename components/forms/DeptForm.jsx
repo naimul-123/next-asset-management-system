@@ -1,160 +1,172 @@
-import React, { useEffect, useState } from 'react'
-import Button from "../reusable/Button"
-import { useQuery } from '@tanstack/react-query'
-import { getData, postData } from '../../lib/api'
-import Swal from 'sweetalert2'
+import React, { useEffect, useState } from "react";
+import Button from "../reusable/Button";
+import { useQuery } from "@tanstack/react-query";
+import { getData, postData } from "../../lib/api";
+import Swal from "sweetalert2";
 const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
-    const [options, setOptions] = useState([])
-    const [loctype, setLoctype] = useState('');
-    const [selectedDept, setSelecteddept] = useState('')
-    const { data: departmentData = [], refetch: deptRefetch } = useQuery({
-        queryKey: ['departments'],
-        queryFn: () => getData('/api/getdeptdata')
+  const [options, setOptions] = useState([]);
+  const [locationType, setlocationType] = useState("");
+  const [selectedDept, setSelecteddept] = useState("");
+  const { data: departmentData = [], refetch: deptRefetch } = useQuery({
+    queryKey: ["departments"],
+    queryFn: () => getData("/api/getdeptdata"),
+  });
+  const { data: locationTypes = [], refetch: locationTypeRefetch } = useQuery({
+    queryKey: ["locationTypes"],
+    queryFn: () => getData("/api/locationType"),
+  });
 
-    })
-    const { data: loctypes = [], refetch: loctypeRefetch } = useQuery({
-        queryKey: ['loctypes'],
-        queryFn: () => getData('/api/loctype')
+  const departments = departmentData?.map((dept) => dept.name);
 
-    })
-
-    const departments = departmentData?.map(dept => dept.name)
-
-
-    const handleDeptChange = (value) => {
-        setSelecteddept(value);
-        setLoctype('')
-        setOptions([])
+  const handleDeptChange = (value) => {
+    setSelecteddept(value);
+    setlocationType("");
+    setOptions([]);
+  };
+  useEffect(() => {
+    if (!selectedDept || !locationType) {
+      setOptions([]);
+      return;
     }
-    useEffect(() => {
-        if (!selectedDept || !loctype) {
-            setOptions([]);
-            return
-        }
-        const options = selectedDept && loctype && departmentData?.find(d => d.name === selectedDept)[loctype]?.sort((a, b) => a.localeCompare(b)) || [];
-        setOptions(options)
+    const options =
+      (selectedDept &&
+        locationType &&
+        departmentData
+          ?.find((d) => d.name === selectedDept)
+          [locationType]?.sort((a, b) => a.localeCompare(b))) ||
+      [];
+    setOptions(options);
+  }, [selectedDept, locationType]);
 
-    }, [selectedDept, loctype])
-
-
-    const handleAddNewLocationType = async (e) => {
-        e.preventDefault();
-        const locType = e.target.loctype.value.toLowerCase();
-        if (!locType) {
-            alert('Input a location type');
-            return
-        }
-        const res = await postData('/api/loctype', { locType })
-        if (res.data.error) {
-            Swal.fire({
-
-                text: res.data.error,
-                icon: "error"
-            })
-        }
-        if (res.data.message) {
-            Swal.fire({
-
-                text: res.data.message,
-                icon: "success"
-            })
-            loctypeRefetch();
-            setLoctype('')
-            setOptions([])
-            // here I want to run useEffect. how to possible?
-        }
-
-        e.target.reset()
-
-
+  const handleAddNewLocationType = async (e) => {
+    e.preventDefault();
+    const locationType = e.target.locationType.value.toLowerCase();
+    if (!locationType) {
+      alert("Input a location type");
+      return;
     }
-    const handleAddNewLocation = async (e) => {
-        e.preventDefault();
-        const locName = e.target.locname.value;
-        if (!selectedDept || !loctype) {
-            alert("select a department and location type first");
-            return
-        }
-        const data = {
-            deptName: selectedDept,
-            locType: loctype,
-            locName
-        }
-        const res = await postData('/api/addLocation', data)
-        if (res.data.error) {
-            Swal.fire({
-
-                text: res.data.error,
-                icon: "error"
-            })
-        }
-        if (res.data.message) {
-            Swal.fire({
-
-                text: res.data.message,
-                icon: "success"
-            })
-            deptRefetch();
-            setLoctype('')
-            setOptions([])
-            // here I want to run useEffect. how to possible?
-        }
-
-        e.target.reset()
+    const res = await postData("/api/locationType", { locationType });
+    if (res.data.error) {
+      Swal.fire({
+        text: res.data.error,
+        icon: "error",
+      });
+    }
+    if (res.data.message) {
+      Swal.fire({
+        text: res.data.message,
+        icon: "success",
+      });
+      locationTypeRefetch();
+      setlocationType("");
+      setOptions([]);
+      // here I want to run useEffect. how to possible?
     }
 
+    e.target.reset();
+  };
+  const handleAddNewLocation = async (e) => {
+    e.preventDefault();
+    const locName = e.target.locname.value;
+    if (!selectedDept || !locationType) {
+      alert("select a department and location type first");
+      return;
+    }
+    const data = {
+      deptName: selectedDept,
+      locationType: locationType,
+      locName,
+    };
+    const res = await postData("/api/addLocation", data);
+    if (res.data.error) {
+      Swal.fire({
+        text: res.data.error,
+        icon: "error",
+      });
+    }
+    if (res.data.message) {
+      Swal.fire({
+        text: res.data.message,
+        icon: "success",
+      });
+      deptRefetch();
+      setlocationType("");
+      setOptions([]);
+      // here I want to run useEffect. how to possible?
+    }
 
-    return (
-        <div className=''>
-            <form id='' onSubmit={handleSubmit} >
-                <label className="form-control gap-1 ">
-                    <div className="label">
-                        <span className="label-text font-bold text-primary ">Department</span>
-                    </div>
-                    <select name='department' className="select select-sm  select-warning" required onChange={(e) => handleDeptChange(e.target.value)} value={selectedDept}>
-                        <option value="" >---Select---</option>
-                        {departments && departments?.map((dept) => <option key={dept} className='capitalize' value={dept}>{dept.toUpperCase()}</option>)}
-                    </select>
-                </label>
-                <label className="form-control">
-                    <div className="label">
-                        <span className="label-text font-bold text-primary">Location Type</span>
-                    </div>
-                    <select
-                        name="loctype"  // Dynamic name to ensure correct field submission
-                        className="select select-warning select-sm "
-                        required
-                        onChange={(e) => setLoctype(e.target.value)}
-                        value={loctype}
-                    >
-                        <option value="">---Select---</option>
-                        {loctypes?.map((type) => (
-                            <option key={type} value={type} className='capitalize'>{type}</option>
-                        ))}
-                    </select>
-                </label>
-                {loctype && (
-                    <label className="form-control">
-                        <div className="label">
-                            <span className="label-text font-bold text-primary">Select {loctype}</span>
-                        </div>
-                        <select
-                            name={loctype}  // Dynamic name to ensure correct field submission
-                            className="select select-warning select-sm "
-                            required
-                        >
-                            <option value="">---Select---</option>
-                            {options.map((opt) => (
-                                <option key={opt} value={opt} className='capitalize'>{opt}</option>
-                            ))}
-                        </select>
-                    </label>
-                )}
-                <div className='flex justify-end text-center'>
-                    <Button btnText={btnText} />
-                </div>
-            </form>
-            {
+    e.target.reset();
+  };
+
+  return (
+    <form id="" onSubmit={handleSubmit} className="flex items-end gap-2">
+      <label className="form-control gap-1 ">
+        <div className="label">
+          <span className="label-text font-bold text-primary ">Department</span>
+        </div>
+        <select
+          name="department"
+          className="select select-sm  select-warning"
+          required
+          onChange={(e) => handleDeptChange(e.target.value)}
+          value={selectedDept}
+        >
+          <option value="">---Select---</option>
+          {departments &&
+            departments?.map((dept) => (
+              <option key={dept} className="capitalize" value={dept}>
+                {dept.toUpperCase()}
+              </option>
+            ))}
+        </select>
+      </label>
+      <label className="form-control">
+        <div className="label">
+          <span className="label-text font-bold text-primary">
+            Location Type
+          </span>
+        </div>
+        <select
+          name="locationType" // Dynamic name to ensure correct field submission
+          className="select select-warning select-sm "
+          required
+          onChange={(e) => setlocationType(e.target.value)}
+          value={locationType}
+        >
+          <option value="">---Select---</option>
+          {locationTypes?.map((type) => (
+            <option key={type} value={type} className="capitalize">
+              {type}
+            </option>
+          ))}
+        </select>
+      </label>
+      {locationType && (
+        <label className="form-control">
+          <div className="label">
+            <span className="label-text font-bold text-primary">
+              Select {locationType}
+            </span>
+          </div>
+          <select
+            name={locationType} // Dynamic name to ensure correct field submission
+            className="select select-warning select-sm "
+            required
+          >
+            <option value="">---Select---</option>
+            {options.map((opt) => (
+              <option key={opt} value={opt} className="capitalize">
+                {opt}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      <div className="flex justify-end text-center">
+        <Button btnText={btnText} />
+      </div>
+    </form>
+    /* {
                 isAdmin &&
                 <div className=''>
 
@@ -164,7 +176,7 @@ const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
                         <div className='collapse-content my-0'>
                             <form onSubmit={handleAddNewLocationType} className=''>
                                 <div className='form-control'>
-                                    <input name='loctype' type="text" placeholder="Location Type" className="input  input-sm" required />
+                                    <input name='locationType' type="text" placeholder="Location Type" className="input  input-sm" required />
                                     <Button btnText="Add" />
                                 </div>
                             </form>
@@ -182,9 +194,8 @@ const DeptForm = ({ handleSubmit, btnText, isAdmin, isChangeLocation }) => {
                         </form>
                     </div>
                 </div>
-            }
-        </div>
-    )
-}
+            } */
+  );
+};
 
-export default DeptForm
+export default DeptForm;

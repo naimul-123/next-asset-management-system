@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdDeleteForever } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
 
-const DataTable = ({
+const AssetTable = ({
   tableData,
   assetLoading,
   handleRemoveAsset,
@@ -112,7 +112,7 @@ const DataTable = ({
   return (
     <div className="print:h-fit w-full   overflow-auto print:overflow-visible print:text-black">
       {tableData?.assetDetails?.length > 0 ? (
-        <>  
+        <>
           <table className="table table-xs table-zebra">
             <thead className="sticky print:static">
               <tr className=" text-primary bg-gray-bright print:text-black print:bg-white sticky top-0 print:static">
@@ -373,4 +373,4 @@ const DataTable = ({
   );
 };
 
-export default DataTable;
+export default AssetTable;
