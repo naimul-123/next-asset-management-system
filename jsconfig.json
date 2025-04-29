@@ -4,7 +4,8 @@
     "paths": {
       "@/*": [
         "./*"
-      ] // Alias all directories
+      ]
+      // Alias all directories
     }
   }
 }

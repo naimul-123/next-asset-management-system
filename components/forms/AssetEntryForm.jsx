@@ -35,7 +35,7 @@ const AssetEntryForm = ({ getFormData }) => {
         queryKey: ['assetClasses'],
         queryFn: () => getData('/api/assetClass')
     })
-
+  
 
     const Class = assetClasses?.map((g) => g.assetClass).sort((a, b) => a.localeCompare(b))
 

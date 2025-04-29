@@ -38,5 +38,13 @@
     "lib": "lib"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naimul-123/next-asset-management-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/naimul-123/next-asset-management-system/issues"
+  },
+  "homepage": "https://github.com/naimul-123/next-asset-management-system#readme"
 }

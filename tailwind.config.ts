@@ -34,7 +34,6 @@ const config: Config = {
           bright: "#E9F3EE"
         },
 
-
         primary: "#29AE61",
         secondary: "#8c000d",
         success: "#198754",
