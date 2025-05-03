@@ -23,14 +23,15 @@ const Layout = ({ children }) => {
           Add New User
         </Link>
         <Link
-          className={`flex items-center hover:link ${pathname === "/private/manage_user/manage_role" ? " link" : ""
+          className={`flex items-center hover:link ${pathname === "/private/manage_user/user_access_area" ? " link" : ""
             }  `}
-          href="/private/manage_user/manage_role"
+          href="/private/manage_user/user_access_area"
         >
-          Manage Role
+          User Access Area
         </Link>
       </div>
       <div className="grow w-full">{children}</div>
+
     </div>
   );
 };
