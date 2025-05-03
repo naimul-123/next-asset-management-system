@@ -6,8 +6,9 @@ import React from "react";
 const Layout = ({ children }) => {
   const pathname = usePathname();
   return (
-    <div className="flex h-svh gap-4 justify-between min-w- w-screen mx-auto border items-start">
-      <div className=" h-screen min-w-fit w-72 max-w-sm border-r border-r-gray-500 bg-gray-300 px-4 py-3 flex flex-col gap-4 text-2xl">
+    <div className="flex gap-4 justify-between  mx-auto items-start">
+      <div className="flex flex-col text-2xl h-full">
+
         <Link
           className={`flex items-center hover:link ${pathname === "/private/manage_user" ? " link" : ""
             }  `}
@@ -30,7 +31,7 @@ const Layout = ({ children }) => {
           User Access Area
         </Link>
       </div>
-      <div className="grow w-full">{children}</div>
+      {children}
 
     </div>
   );

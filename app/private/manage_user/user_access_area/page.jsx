@@ -10,7 +10,7 @@ const ManageRole = () => {
 
   const [rolename, setRoleName] = useState("");
   const [permissions, setPermissions] = useState([]);
-
+  const [editId, setEditId] = useState(null); // NEW: store editing ID
   const { data: classes } = useQuery({
     queryKey: ['classes'],
     queryFn: () => getData('/api/assetClass')
@@ -19,7 +19,8 @@ const ManageRole = () => {
   const controlMutation = useMutation({
     mutationFn: async (data) => postData('/api/addcontrol', data),
     onSuccess: async (result) => {
-      if (result.data.success) {
+      console.log(result);
+      if (result.status === 200) {
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -43,6 +44,31 @@ const ManageRole = () => {
     }
   })
 
+  const updateMutation = useMutation({
+    mutationFn: (updatedData) => postData('/api/updatecontrol', updatedData),
+    onSuccess: (result) => {
+      console.log(result);
+      if (result.status === 200) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Role has been updated.",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        setRoleName("");
+        setPermissions([]);
+        setEditId(null);
+        controlRefetch();
+      }
+    },
+    onError: (error) => {
+      Swal.fire({
+        icon: "error",
+        title: error.message,
+      });
+    }
+  });
 
 
 
@@ -56,10 +82,19 @@ const ManageRole = () => {
 
   const handleAddControl = () => {
     if (!rolename || !permissions.length) return;
-    const newControl = { rolename, permissions };
-    controlMutation.mutate(newControl)
+    const controlData = { rolename, permissions };
 
+    if (editId) {
+      updateMutation.mutate({ ...controlData, _id: editId });
+    } else {
+      controlMutation.mutate(controlData);
+    }
+  };
 
+  const handleEdit = (control) => {
+    setEditId(control._id);
+    setRoleName(control.rolename);
+    setPermissions(control.permissions);
   };
 
   const handlePermissionToggle = (perm) => {
@@ -70,22 +105,37 @@ const ManageRole = () => {
     );
   };
 
+  const deleteMutation = useMutation({
+    mutationFn: (id) => postData('/api/deletecontrol', { id }),
+    onSuccess: (result) => {
+      console.log(result);
+      Swal.fire({
+        icon: "success",
+        title: "Deleted successfully",
+        timer: 1500,
+        showConfirmButton: false
+      });
+      controlRefetch();
+    }
+  });
+
   const handleDelete = (id) => {
-    setControls((prev) => prev.filter((ctrl) => ctrl.id !== id));
+    deleteMutation.mutate(id);
   };
+
   return (
 
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">User Access Control</h1>
+    <div className="w-full max-w-screen-lg  p-4 rounded-xl space-y-6 ">
+      <h1 className="text-3xl font-bold">User Access Control</h1>
 
       {/* Add New Control */}
-      <div className="bg-white p-4 rounded-xl shadow space-y-4">
-        <h2 className="text-lg font-semibold">Create New Control</h2>
+      <div className="space-y-2 shadow p-4">
+        <h2 className="text-lg font-semibold"> {editId ? "Edit control" : "Create New Control"}</h2>
         <input
 
           type="text"
           placeholder="Role Name"
-          className="w-full border px-3 py-2 rounded"
+          className="border px-3 py-2 rounded"
           value={rolename}
           onChange={(e) => setRoleName(e.target.value)}
         />
@@ -93,13 +143,11 @@ const ManageRole = () => {
           <span>Select controls</span>
         </label>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap  gap-3">
 
-          {classes?.map((cls) => (
+          {classes?.sort((a, b) => a.assetClass.localeCompare(b.assetClass)).map((cls) => (
             <label key={cls.assetClass} className="flex items-center gap-2">
-
               <input
-
                 type="checkbox"
                 checked={permissions.includes(cls.assetClass)}
                 onChange={() => handlePermissionToggle(cls.assetClass)}
@@ -108,38 +156,64 @@ const ManageRole = () => {
             </label>
           ))}
         </div>
-        <button
-          onClick={handleAddControl}
-          className="bg-blue text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Create
-        </button>
+        <div className="flex flex-wrap gap-3 text-white">
+          <button
+            onClick={handleAddControl}
+            className={`text-white btn btn-sm ${editId ? 'btn-success' : 'btn-info'
+              }`}
+          >
+            {editId ? "Update" : "Create"}
+          </button>
+
+
+          {editId && (
+            <button
+              onClick={() => {
+                setEditId(null);
+                setRoleName("");
+                setPermissions([]);
+              }}
+              className="btn btn-sm text-white btn-error"
+            >
+              Cancel
+            </button>
+
+          )}
+        </div>
       </div>
 
       {/* Manage Controls */}
-      <div className="overflow-auto">
-        <table className="w-full text-sm border-collapse">
+      <div className="overflow-x-auto max-w-fit mx-auto px-4">
+        <table className="table table-sm table-zebra">
           <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2 border">Role</th>
-              <th className="p-2 border">Permissions</th>
-              <th className="p-2 border">Actions</th>
+            <tr className="">
+              <th className="">Role Name</th>
+              <th className="">Permissions</th>
+              <th className="">Actions</th>
             </tr>
           </thead>
           <tbody>
             {controls?.map((ctrl) => (
-              <tr key={ctrl.id} className="border-t">
-                <td className="p-2 border">{ctrl.rolename}</td>
-                <td className="p-2 border">
+              <tr key={ctrl._id
+              } className="">
+                <td className="">{ctrl.rolename}</td>
+                <td className="">
                   {ctrl?.permissions?.join(", ")}
                 </td>
-                <td className="p-2 border">
+                <td className="flex gap-3">
                   <button
-                    onClick={() => handleDelete(ctrl.id)}
-                    className="text-red-600 hover:underline"
+                    onClick={() => handleDelete(ctrl._id)}
+                    className=" btn text-white  btn-xs btn-error"
                   >
                     Delete
                   </button>
+                  <button
+                    onClick={() => handleEdit(ctrl)}
+                    className="btn btn-xs btn-info text-white"
+                  >
+                    Edit
+                  </button>
+
                 </td>
               </tr>
             ))}
