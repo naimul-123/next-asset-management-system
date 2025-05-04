@@ -14,6 +14,10 @@ const ManageUser = () => {
     queryKey: ["userinfo"],
     queryFn: () => getData("/api/getUserData"),
   });
+  const { data: roles = [] } = useQuery({
+    queryKey: ["roles"],
+    queryFn: () => getData("/api/getroles"),
+  });
   const handleDelete = (sap) => {
     Swal.fire({
       title: "Are you sure?",
@@ -37,7 +41,7 @@ const ManageUser = () => {
       }
     });
   };
-  console.log(usersData);
+  console.log(roles);
 
   if (isLoading) {
     return (
@@ -48,31 +52,53 @@ const ManageUser = () => {
   }
 
   const handleRoleChange = (data) => {
-    console.log(data);
+    Swal.fire({
+      title: "Do you want to change role?",
+      showDenyButton: true,
+      confirmButtonText: "Change",
+      denyButtonText: `Don't change`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        console.log(data);
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  };
+  const handleDeletUser = (sap) => {
+    Swal.fire({
+      title: "Do you want to delete this user?",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Don't delete`,
+    }).then(async (result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        const res = await deleteData(`/api/deleteUser?sap=${sap}`);
+        if (res?.message) {
+          userRefetch();
+          Swal.fire({
+            title: "Deleted!",
+            text: res.message,
+            icon: "success",
+          });
+        }
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
   };
 
   return (
     <div className="">
-      <form className="">
-        <div className="flex items-center max-w-sm gap-2">
-          <input type="search" className="grow input" placeholder="SAP ID" />
-          <button type="submit" className="btn  btn-outline">
-            <CiSearch />
-          </button>
-        </div>
-      </form>
-
-      <table className="table table-xs table-pin-rows">
+      <table className="table table-md table-zebra ">
         <thead>
           <tr className="text-center">
             <th>SL</th>
             <td>Name</td>
             <td>SAP</td>
-            <td>Department</td>
-            <td>Location Type</td>
-            <td>Location</td>
-            <td>Status</td>
-            <td>Role</td>
+            <td>Change Access Area</td>
             <td colSpan={2} className="text-center">
               Actions
             </td>
@@ -84,36 +110,42 @@ const ManageUser = () => {
               <th>{idx + 1}</th>
               <td>{user.name}</td>
               <td>{user.sap}</td>
-              <td>{user.department}</td>
-              <td>{user.loctype}</td>
-              <td>{user.location}</td>
               <td>
-                {" "}
-                <button
-                  className={
-                    user?.status === "pending"
-                      ? "btn btn-xs btn-success"
-                      : "btn btn-warning text-white btn-xs"
-                  }
+                <select
+                  defaultValue={user.role}
+                  className="select select-xs uppercase"
+                  onChange={(e) => {
+                    const role = e.target.value;
+                    const sap = user.sap;
+                    const data = { role, sap };
+                    return handleRoleChange(data);
+                  }}
                 >
-                  {user.status}
-                </button>
-              </td>
-              <td>
-                <select defaultValue={user.role} className="select select-xs">
-                  <option value="">---Select---</option>
-                  <option value="admin">Admin</option>
-                  <option value="moderatror">Moderator</option>
-                  <option value="visitor">Visitor</option>
+                  <option key="" value="" className="uppercase">
+                    ---Select---
+                  </option>
+                  <option key="admin" value="admin" className="uppercase">
+                    Admin
+                  </option>
+                  {roles?.map((ctrl, index) => (
+                    <option key={ctrl} value={ctrl} className="uppercase">
+                      {ctrl}
+                    </option>
+                  ))}
                 </select>
               </td>
               <td>
-                <button className="btn btn-xs btn-success">
-                  Reset Password
-                </button>
-              </td>
-              <td>
-                <button className="btn btn-xs btn-success">Remove</button>
+                <div className="flex flex-wrap gap-3">
+                  <button className="btn btn-xs btn-warning ">
+                    Reset Password
+                  </button>
+                  <button
+                    onClick={() => handleDeletUser(user.sap)}
+                    className="btn btn-xs btn-error text-white"
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

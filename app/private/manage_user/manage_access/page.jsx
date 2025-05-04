@@ -1,23 +1,21 @@
-'use client'
-import { getData, postData } from "@/lib/api";
+"use client";
+import { deleteData, getData, postData, updateData } from "@/lib/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
-
 const ManageRole = () => {
-  // const [controls, setControls] = useState([]);
-
+ 
   const [rolename, setRoleName] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [editId, setEditId] = useState(null); // NEW: store editing ID
   const { data: classes } = useQuery({
-    queryKey: ['classes'],
-    queryFn: () => getData('/api/assetClass')
-  })
+    queryKey: ["classes"],
+    queryFn: () => getData("/api/assetClass"),
+  });
 
   const controlMutation = useMutation({
-    mutationFn: async (data) => postData('/api/addcontrol', data),
+    mutationFn: async (data) => postData("/api/addcontrol", data),
     onSuccess: async (result) => {
       console.log(result);
       if (result.status === 200) {
@@ -26,10 +24,10 @@ const ManageRole = () => {
           icon: "success",
           title: "Role has been saved successfully.",
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
         setPermissions([]);
-        setRoleName('')
+        setRoleName("");
         controlRefetch();
       }
     },
@@ -39,22 +37,22 @@ const ManageRole = () => {
         icon: "error",
         title: error.message,
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
-    }
-  })
+    },
+  });
 
   const updateMutation = useMutation({
-    mutationFn: (updatedData) => postData('/api/updatecontrol', updatedData),
+    mutationFn: (updatedData) => updateData("/api/updatecontrol", updatedData),
     onSuccess: (result) => {
       console.log(result);
-      if (result.status === 200) {
+      if (result.success) {
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: "Role has been updated.",
+          title: result.message,
           showConfirmButton: false,
-          timer: 1500
+          timer: 1500,
         });
         setRoleName("");
         setPermissions([]);
@@ -67,18 +65,13 @@ const ManageRole = () => {
         icon: "error",
         title: error.message,
       });
-    }
+    },
   });
 
-
-
   const { data: controls = [], refetch: controlRefetch } = useQuery({
-    queryKey: ['controls'],
-    queryFn: () => getData('/api/getcontrols'),
-
-  })
-
-
+    queryKey: ["controls"],
+    queryFn: () => getData("/api/getcontrols"),
+  });
 
   const handleAddControl = () => {
     if (!rolename || !permissions.length) return;
@@ -99,40 +92,50 @@ const ManageRole = () => {
 
   const handlePermissionToggle = (perm) => {
     setPermissions((prev) =>
-      prev.includes(perm)
-        ? prev.filter((p) => p !== perm)
-        : [...prev, perm]
+      prev.includes(perm) ? prev.filter((p) => p !== perm) : [...prev, perm]
     );
   };
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => postData('/api/deletecontrol', { id }),
+    mutationFn: (id) => deleteData("/api/deletecontrol", { id }),
     onSuccess: (result) => {
-      console.log(result);
-      Swal.fire({
-        icon: "success",
-        title: "Deleted successfully",
-        timer: 1500,
-        showConfirmButton: false
-      });
-      controlRefetch();
-    }
+      if (result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Deleted successfully",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        controlRefetch();
+      }
+    },
   });
 
   const handleDelete = (id) => {
-    deleteMutation.mutate(id);
+    Swal.fire({
+      title: "Do you want to delete the control?",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Don't delete`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        deleteMutation.mutate(id);
+      }
+    });
   };
 
   return (
-
-    <div className="w-full max-w-screen-lg  p-4 rounded-xl space-y-6 ">
+    <div className="w-full space-y-6 ">
       <h1 className="text-3xl font-bold">User Access Control</h1>
 
       {/* Add New Control */}
       <div className="space-y-2 shadow p-4">
-        <h2 className="text-lg font-semibold"> {editId ? "Edit control" : "Create New Control"}</h2>
+        <h2 className="text-lg font-semibold">
+          {" "}
+          {editId ? "Edit control" : "Create New Control"}
+        </h2>
         <input
-
           type="text"
           placeholder="Role Name"
           className="border px-3 py-2 rounded"
@@ -144,27 +147,28 @@ const ManageRole = () => {
         </label>
 
         <div className="flex flex-wrap  gap-3">
-
-          {classes?.sort((a, b) => a.assetClass.localeCompare(b.assetClass)).map((cls) => (
-            <label key={cls.assetClass} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={permissions.includes(cls.assetClass)}
-                onChange={() => handlePermissionToggle(cls.assetClass)}
-              />
-              {cls.assetClass}
-            </label>
-          ))}
+          {classes
+            ?.sort((a, b) => a.assetClass.localeCompare(b.assetClass))
+            .map((cls) => (
+              <label key={cls.assetClass} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={permissions.includes(cls.assetClass)}
+                  onChange={() => handlePermissionToggle(cls.assetClass)}
+                />
+                {cls.assetClass}
+              </label>
+            ))}
         </div>
         <div className="flex flex-wrap gap-3 text-white">
           <button
             onClick={handleAddControl}
-            className={`text-white btn btn-sm ${editId ? 'btn-success' : 'btn-info'
-              }`}
+            className={`text-white btn btn-sm ${
+              editId ? "btn-success" : "btn-info"
+            }`}
           >
             {editId ? "Update" : "Create"}
           </button>
-
 
           {editId && (
             <button
@@ -177,14 +181,13 @@ const ManageRole = () => {
             >
               Cancel
             </button>
-
           )}
         </div>
       </div>
 
       {/* Manage Controls */}
-      <div className="overflow-x-auto max-w-fit mx-auto px-4">
-        <table className="table table-sm table-zebra">
+      <div className="max-h-96 overflow-auto">
+        <table className="table table-lg table-md table-zebra">
           <thead>
             <tr className="">
               <th className="">Role Name</th>
@@ -194,12 +197,9 @@ const ManageRole = () => {
           </thead>
           <tbody>
             {controls?.map((ctrl) => (
-              <tr key={ctrl._id
-              } className="">
+              <tr key={ctrl._id} className="">
                 <td className="">{ctrl.rolename}</td>
-                <td className="">
-                  {ctrl?.permissions?.join(", ")}
-                </td>
+                <td className="">{ctrl?.permissions?.join(", ")}</td>
                 <td className="flex gap-3">
                   <button
                     onClick={() => handleDelete(ctrl._id)}
@@ -213,7 +213,6 @@ const ManageRole = () => {
                   >
                     Edit
                   </button>
-
                 </td>
               </tr>
             ))}
@@ -228,7 +227,6 @@ const ManageRole = () => {
         </table>
       </div>
     </div>
-
   );
 };
 

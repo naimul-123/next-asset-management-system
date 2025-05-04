@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
 import Header from "../components/header/Header";
@@ -11,17 +11,20 @@ export default function RootLayout({ children }) {
       <body>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <main className=" flex flex-col h-screen max-w-screen-2xl mx-auto text-dark  print:h-fit">
+            <div className="flex flex-col min-h-screen  max-w-screen-2xl mx-auto text-dark  print:h-fit">
               <Header />
-              <div className="grow mx-auto h-[calc(100vh-235px)] overflow-auto print:overflow-visible flex  print:h-fit">
+              <main className="flex flex-1 print:h-fit h-[calc(100vh-140px)]">
                 {children}
-              </div>
+              </main>
               <footer className="footer print:hidden footer-center bg-base-300 text-deepBlue font-bold p-4">
                 <aside>
-                  <p>Copyright © {new Date().getFullYear()} - All right reserved by Dead Stock Section, Bangladesh Bank, Barishal.</p>
+                  <p>
+                    Copyright © {new Date().getFullYear()} - All right reserved
+                    by Dead Stock Section, Bangladesh Bank, Barishal.
+                  </p>
                 </aside>
               </footer>
-            </main>
+            </div>
           </AuthProvider>
         </QueryClientProvider>
       </body>

@@ -1,8 +1,9 @@
 "use client";
 
-import { postData } from "../../../../lib/api";
+import { getData, postData } from "../../../../lib/api";
 import Button from "../../../../components/reusable/Button";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const AddUser = () => {
   const [userMessage, setuserMessage] = useState("");
@@ -30,8 +31,12 @@ const AddUser = () => {
       }
     }
   };
+  const { data: controls = [] } = useQuery({
+    queryKey: ["controls"],
+    queryFn: () => getData("/api/getroles"),
+  });
   return (
-    <div className="flex flex-col max-w-screen-lg mx-auto  min-h-full justify-center">
+    <div className="flex flex-col  mx-auto justify-center min-w-full items-center">
       <form className="bg-[#f7f7f7] p-8 rounded-xl" onSubmit={handleAddUser}>
         {userMessage && (
           <p className="font-bold text-primary text-xs">{userMessage}</p>
@@ -69,13 +74,20 @@ const AddUser = () => {
           </div>
           <select
             name="role"
-            className="select select-bordered select-sm rounded-full"
+            className="select select-bordered select-sm rounded-full uppercase"
             required
           >
-            <option value="">---Select---</option>
-            <option value="admin">Admin</option>
-            <option value="moderator">Moderator</option>
-            <option value="visitor">Visitor</option>
+            <option value="" className="uppercase">
+              ---Select---
+            </option>
+            <option value="admin" className="uppercase">
+              Admin
+            </option>
+            {controls?.map((ctrl) => (
+              <option key={ctrl} value={ctrl} className="uppercase">
+                {ctrl}
+              </option>
+            ))} 
           </select>
         </div>
         <div className="form-control">
