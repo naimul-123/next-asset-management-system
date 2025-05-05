@@ -83,18 +83,10 @@ const Header = () => {
             View Asset
           </Link>
 
-          {(user?.role === "admin" || user?.role === "moderator") && (
+          {user?.role && (
             <>
               {user.isSuperAdmin && (
                 <>
-                  <Link
-                    className={`hover:link ${
-                      pathname === "/private/add_user" ? " link " : ""
-                    }  `}
-                    href="/private/add_user"
-                  >
-                    Add User
-                  </Link>
                   <Link
                     className={`hover:link ${
                       pathname === "/private/manage_user" ? " link " : ""

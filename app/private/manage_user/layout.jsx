@@ -9,14 +9,6 @@ const Layout = ({ children }) => {
     <div className="flex justify-between min-w-full h-[calc(100vh-148px)]">
       <nav className="w-60  p-4 min-h-full bg-slate-100 text-2xl space-y-2 ">
         <Link
-          className={`flex items-center hover:link ${
-            pathname === "/private/manage_user/add_user" ? " link" : ""
-          }  `}
-          href="/private/manage_user/add_user"
-        >
-          Add New User
-        </Link>
-        <Link
           className={`flex items-center  hover:link ${
             pathname === "/private/manage_user" ? " link" : ""
           }  `}
