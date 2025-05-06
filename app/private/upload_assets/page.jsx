@@ -2,8 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { getData, postData } from "../../../lib/api";
-
-
+import * as XLSX from 'xlsx';
 
 const UploadAssets = () => {
     const [error, setError] = useState('')
@@ -15,43 +14,6 @@ const UploadAssets = () => {
         queryKey: ['assetClasses'],
         queryFn: () => getData('/api/assetClass')
     })
-    console.log(assetClasses);
-    const handlePaste = (event) => {
-        setData([]);
-
-        const pastedText = event.clipboardData.getData("text").replace(/\r/g, "");
-        const rows = pastedText.trim().split("\n");
-
-        const dataArray = rows.map((row) => {
-            const values = row.split("\t");
-
-            let rowObj = headers.reduce((obj, header, index) => {
-                obj[header] = values[index]?.trim() || "";
-                return obj;
-            }, {});
-
-            // Extract assetCode from assetNumber
-            const assetNumber = rowObj.assetNumber;
-            if (assetNumber) {
-                const assetCode = parseInt(assetNumber.substring(0, 2)); // Adjust based on assetCode length
-
-                // Find matching assetClass
-                const assetClassObj = assetClasses.find(ac => ac.assetCode === assetCode);
-                if (assetClassObj) {
-                    rowObj.assetClass = assetClassObj.assetClass;
-                }
-            }
-
-            return rowObj;
-        }).filter(Boolean); // Remove invalid rows
-
-        setData(dataArray);
-    };
-
-
-
-
-    console.log(data);
 
     const handleSave = async () => {
 
@@ -65,55 +27,71 @@ const UploadAssets = () => {
         }
     };
 
+    // const [data, setData] = useState([]);
 
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (evt) => {
+            const bstr = evt.target.result;
+            const wb = XLSX.read(bstr, { type: 'binary' });
+
+            // Get the first sheet
+            const wsname = wb.SheetNames[0];
+            const ws = wb.Sheets[wsname];
+
+            // Convert to JSON
+            const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }); // `header: 1` gives array of arrays
+            setData(jsonData);
+        };
+
+        reader.readAsBinaryString(file);
+    };
 
     return (
-        <div className="max-w-screen-xl w-full bg-lightGray">
+        <div className="mx-auto w-full flex flex-col  h-full  space-y-1">
 
+            <div className="flex-1 ">
+                <div className="overflow-auto h-fit max-h-[calc(100vh-250px)]">
+                    {data.length > 0 ?
+                        <table className="table table-xs table-zebra">
+                            <thead>
+                                <tr className="bg-gray-200">
+                                    {data.length > 0 &&
+                                        Object.keys(data[0]).map((header, index) => (
+                                            <th key={index} className="">{header}</th>
+                                        ))
+                                    }
 
-            <div className="overflow-auto h-fit">
-                {data.length > 0 ?
-                    <table className="table table-xs table-zebra table-pin-rows table-pin-cols">
-                        <thead>
-                            <tr className="bg-gray-200">
-                                {data.length > 0 &&
-                                    Object.keys(data[0]).map((header, index) => (
-                                        <th key={index} className="">{header}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.length > 0 && (
+                                    data.map((rowData, rowIndex) => (
+                                        <tr key={rowIndex} className="even:bg-gray-100">
+                                            {Object.keys(rowData).map((key, colIndex) => (
+                                                <td key={`${rowIndex}-${colIndex}`} className="">{rowData[key]}</td>
+                                            ))}
+                                        </tr>
                                     ))
-                                }
+                                )}
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.length > 0 && (
-                                data.map((rowData, rowIndex) => (
-                                    <tr key={rowIndex} className="even:bg-gray-100">
-                                        {Object.keys(rowData).map((key, colIndex) => (
-                                            <td key={`${rowIndex}-${colIndex}`} className="">{rowData[key]}</td>
-                                        ))}
-                                    </tr>
-                                ))
-                            )}
+                            </tbody>
+                        </table>
+                        :
 
-                        </tbody>
-                    </table>
-                    :
+                        <div className="form-control">
 
-                    <div className="form-control">
+                            <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
 
-                        <textarea
-                            className="textarea textarea-xs border-none focus:border-none focus:outline-none textarea-ghost"
-                            placeholder="Paste Excel data Here..."
-                            onPaste={handlePaste}
-                        ></textarea>
+                        </div>}
 
-                    </div>}
-
-            </div>
-            <div className="flex gap-3">
-                <button onClick={() => setData([])} className="btn btn-success mt-2">Clear</button>
-                <button onClick={handleSave} className="btn btn-success mt-2">Save</button>
-
+                </div>
+                <div className="flex gap-3">
+                    <button onClick={() => setData([])} className="btn btn-success mt-2">Clear</button>
+                    <button onClick={handleSave} className="btn btn-success mt-2">Save</button>
+                </div>
             </div>
 
         </div>

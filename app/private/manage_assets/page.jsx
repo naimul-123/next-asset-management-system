@@ -47,7 +47,7 @@ const ManageAssets = () => {
         locationType &&
         departmentData
           ?.find((d) => d.name === selectedDept)
-          [locationType]?.sort((a, b) => a.localeCompare(b))) ||
+        [locationType]?.sort((a, b) => a.localeCompare(b))) ||
       [];
     setOptions(options);
   }, [selectedDept, locationType]);
@@ -250,13 +250,13 @@ const ManageAssets = () => {
   };
 
   return (
-    <div className="mx-auto w-full flex flex-col  h-full px-4 py-2 space-y-2 ">
-      <form className="flex flex-wrap gap-3" onSubmit={handleSearchForm}>
+    <div className="mx-auto w-full flex flex-col  h-full  space-y-1 ">
+      <form className="flex flex-wrap gap-3 bg-gray-bright py-3 px-2" onSubmit={handleSearchForm}>
         <div className="flex gap-2 items-center">
           <span className="fieldset-legend">Search Assets By</span>
           <select
             defaultValue=""
-            className="select select-sm select-warning"
+            className="select select-xs select-warning"
             onChange={(e) => setSearchType(e.target.value)}
           >
             <option value="">---Select---</option>
@@ -272,7 +272,7 @@ const ManageAssets = () => {
               type="text"
               name="assetNumber"
               placeholder="Asset Number"
-              className="input input-warning input-sm"
+              className="input input-warning input-xs"
             />
           </div>
         )}
@@ -283,7 +283,7 @@ const ManageAssets = () => {
             </div>
             <select
               name="department"
-              className="select select-sm  select-warning"
+              className="select select-xs  select-warning"
               required
               onChange={(e) => handleDeptChange(e.target.value)}
               value={selectedDept}
@@ -300,7 +300,7 @@ const ManageAssets = () => {
               <span className=" text-primary">Location Type</span>
               <select
                 name="locationType" // Dynamic name to ensure correct field submission
-                className="select select-warning select-sm"
+                className="select select-warning select-xs"
                 onChange={(e) => setlocationType(e.target.value)}
                 value={locationType}
               >
@@ -319,7 +319,7 @@ const ManageAssets = () => {
                 </span>
                 <select
                   name={locationType} // Dynamic name to ensure correct field submission
-                  className="select select-warning select-sm"
+                  className="select select-warning select-xs"
                 >
                   <option value="">---Select---</option>
                   {options.map((opt) => (
@@ -342,7 +342,7 @@ const ManageAssets = () => {
                 name="assetClass"
                 defaultValue=""
                 onChange={(e) => handleClassChange(e.target.value)}
-                className="select select-sm select-warning"
+                className="select select-xs select-warning"
                 required
               >
                 <option value="">---Select---</option>
@@ -359,7 +359,7 @@ const ManageAssets = () => {
               <select
                 name="assetType"
                 defaultValue=""
-                className="select select-sm select-warning"
+                className="select select-xs select-warning"
               >
                 <option value="">---Select---</option>
                 {types.map((t) => (
@@ -378,7 +378,7 @@ const ManageAssets = () => {
               <input
                 name="isBookVal1"
                 type="checkbox"
-                className="checkbox checkbox-warning checkbox-sm"
+                className="checkbox checkbox-warning checkbox-xs"
               />
               Book Value 1 only
             </label>
@@ -388,7 +388,7 @@ const ManageAssets = () => {
               <select
                 name="sortBy"
                 defaultValue="assetNumber"
-                className="select select-sm select-warning"
+                className="select select-xs select-warning"
               >
                 <option value="assetNumber">Asset Number(Default)</option>
                 <option value="assetClass">Asset Class</option>
@@ -405,22 +405,174 @@ const ManageAssets = () => {
           </>
         )}
         <div className="flex gap-2 items-center">
-          <button type="submit" className="btn btn-sm">
+          <button type="submit" className="btn btn-xs">
             Search
           </button>
         </div>
       </form>
 
-      <div className="print:h-fit w-full flex-1  overflow-auto">
-        {assetLoading ? (
-          <div className="flex flex-col h-full justify-center items-center">
-            <div className="loading loading-dots  loading-xl grow text-warning "></div>
-          </div>
-        ) : (
-          assets?.length > 0 && (
+
+      {assetLoading ? (
+        <div className="flex flex-col h-full justify-center items-center">
+          <div className="loading loading-dots  loading-xl grow text-warning "></div>
+        </div>
+      ) : (
+        assets?.length > 0 && (
+          <div className="overflow-auto">
             <table className="table table-xs table-zebra">
               <thead className="sticky top-0 ">
-                <tr className=" text-primary bg-gray-bright border-b-0 ">
+                <tr className="bg-stone-100 border-b-0">
+                  <th colSpan={12}>
+                    <div className="flex items-start w-full ">
+                      <form
+                        className="flex flex-1 gap-2 flex-wrap "
+                        onSubmit={handleAction}
+                      >
+                        <div className="flex items-center gap-2 ">
+                          <input
+                            type="checkbox"
+                            className="checkbox checkbox-warning"
+                            onClick={(e) => handleSelectAll(e.target.checked)}
+                          />
+                          <span className="label-text font-bold ">
+                            Select All ({selectedItems.length})
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+
+                          <span className="label-text font-bold ">
+                            Select Action
+                          </span>
+
+                          <select
+                            name="action"
+                            defaultValue={action}
+                            className="select select-warning select-xs"
+                            onChange={(e) => setAction(e.target.value)}
+                          >
+                            <option value="">---Select---</option>
+                            <option value="changeLocation">
+                              Change Location
+                            </option>
+                            <option value="changeUser">Change User</option>
+                          </select>
+                        </div>
+
+                        {action === "changeLocation" && (
+                          <>
+                            <div className="flex items-center gap-2">
+
+                              <span className="label-text font-bold ">
+                                Department
+                              </span>
+
+                              <select
+                                name="department"
+                                className="select select-xs select-warning"
+                                required
+                                onChange={(e) => handleDeptChange(e.target.value)}
+                                value={selectedDept}
+                              >
+                                <option value="">---Select---</option>
+                                {departments?.map((dept) => (
+                                  <option
+                                    key={dept}
+                                    className="capitalize"
+                                    value={dept}
+                                  >
+                                    {dept.toUpperCase()}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="flex items-center gap-2 ">
+
+                              <span className="label-text font-bold ">
+                                Location Type
+                              </span>
+
+                              <select
+                                name="locationType"
+                                className="select select-warning select-bordered select-xs"
+                                required
+                                onChange={(e) => setlocationType(e.target.value)}
+                                value={locationType}
+                              >
+                                <option value="">---Select---</option>
+                                {locationTypes?.map((type) => (
+                                  <option
+                                    key={type}
+                                    value={type}
+                                    className="capitalize"
+                                  >
+                                    {type}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            {locationType && (
+                              <div className="flex items-center gap-2">
+
+                                <span className="label-text font-bold ">
+                                  Select {locationType}
+                                </span>
+
+                                <select
+                                  name="location"
+                                  className="select select-warning select-bordered select-xs"
+                                  required
+                                >
+                                  <option value="">---Select---</option>
+                                  {options?.map((opt) => (
+                                    <option
+                                      key={opt}
+                                      value={opt}
+                                      className="capitalize"
+                                    >
+                                      {opt}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        {["changeUser", "changeLocation"].includes(action) && (
+                          <div className="flex items-center gap-2">
+
+                            <span className="label-text font-bold ">
+                              Asset User Name
+                            </span>
+
+                            <input
+                              name="assetUser"
+                              type="text"
+                              className="input input-xs input-warning"
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          <button type="submit" className="btn btn-xs w-full btn-success text-white">
+                            Submit
+                          </button>
+                        </div>
+
+                      </form>
+
+                      <button
+                        onClick={() => handleDownloadAssets(assets)}
+                        className="btn w-full max-w-fit  btn-xs btn-warning hover:link "
+                      >
+                        <span>Download Excel</span>
+                        <FaDownload />
+                      </button>
+                    </div>
+                  </th>
+                </tr>
+                <tr className=" text-primary bg-gray-bright  ">
                   <th className="py-4">SL</th>
                   <th className="py-4">Asset Number</th>
                   <th className="py-4">Asset Class</th>
@@ -433,158 +585,6 @@ const ManageAssets = () => {
                   <th className="py-4">Location Type</th>
                   <th className="py-4">Location</th>
                   <th className="py-4">Asset User</th>
-                </tr>
-                <tr className="bg-stone-50">
-                  <th colSpan={6} className="py-4">
-                    <form
-                      className="grid grid-cols-7 text-deepBlue gap-1 items-end"
-                      onSubmit={handleAction}
-                    >
-                      <label className="form-control">
-                        <div className="label">
-                          <span className="label-text font-bold ">
-                            Select All ({selectedItems.length})
-                          </span>
-                        </div>
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-warning"
-                          onClick={(e) => handleSelectAll(e.target.checked)}
-                        />
-                      </label>
-
-                      <label className="form-control">
-                        <div className="label">
-                          <span className="label-text font-bold ">
-                            Select Action
-                          </span>
-                        </div>
-                        <select
-                          name="action"
-                          defaultValue={action}
-                          className="select select-warning select-xs"
-                          onChange={(e) => setAction(e.target.value)}
-                        >
-                          <option value="">---Select---</option>
-                          <option value="changeLocation">
-                            Change Location
-                          </option>
-                          <option value="changeUser">Change User</option>
-                        </select>
-                      </label>
-
-                      {action === "changeLocation" && (
-                        <>
-                          <label className="form-control">
-                            <div className="label">
-                              <span className="label-text font-bold ">
-                                Department
-                              </span>
-                            </div>
-                            <select
-                              name="department"
-                              className="select select-xs select-warning"
-                              required
-                              onChange={(e) => handleDeptChange(e.target.value)}
-                              value={selectedDept}
-                            >
-                              <option value="">---Select---</option>
-                              {departments?.map((dept) => (
-                                <option
-                                  key={dept}
-                                  className="capitalize"
-                                  value={dept}
-                                >
-                                  {dept.toUpperCase()}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label className="form-control">
-                            <div className="label">
-                              <span className="label-text font-bold ">
-                                Location Type
-                              </span>
-                            </div>
-                            <select
-                              name="locationType"
-                              className="select select-warning select-bordered select-xs"
-                              required
-                              onChange={(e) => setlocationType(e.target.value)}
-                              value={locationType}
-                            >
-                              <option value="">---Select---</option>
-                              {locationTypes?.map((type) => (
-                                <option
-                                  key={type}
-                                  value={type}
-                                  className="capitalize"
-                                >
-                                  {type}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          {locationType && (
-                            <label className="form-control">
-                              <div className="label">
-                                <span className="label-text font-bold ">
-                                  Select {locationType}
-                                </span>
-                              </div>
-                              <select
-                                name="location"
-                                className="select select-warning select-bordered select-xs"
-                                required
-                              >
-                                <option value="">---Select---</option>
-                                {options?.map((opt) => (
-                                  <option
-                                    key={opt}
-                                    value={opt}
-                                    className="capitalize"
-                                  >
-                                    {opt}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                          )}
-                        </>
-                      )}
-
-                      {["changeUser", "changeLocation"].includes(action) && (
-                        <label className="form-control">
-                          <div className="label">
-                            <span className="label-text font-bold ">
-                              Asset User Name
-                            </span>
-                          </div>
-                          <input
-                            name="assetUser"
-                            type="text"
-                            className="input input-xs input-warning"
-                          />
-                        </label>
-                      )}
-
-                      <label className="flex items-center gap-2">
-                        <button className="btn btn-xs btn-success text-white">
-                          Submit
-                        </button>
-                      </label>
-                    </form>
-                  </th>
-                  <th colSpan={3}></th>
-                  <th colSpan={3} className="">
-                    <button
-                      onClick={() => handleDownloadAssets(assets)}
-                      className="btn btn-sm w-full link  btn-warning flex items-center"
-                    >
-                      <FaDownload />
-                      Download Excel
-                    </button>
-                  </th>
                 </tr>
               </thead>
 
@@ -624,19 +624,11 @@ const ManageAssets = () => {
                     </tr>
                   ))}
               </tbody>
-
-              <tfoot>
-                <tr className="hidden print:table-row relative bottom-0">
-                  <th colSpan={7} className="text-center py-2">
-                    Copyright © {new Date().getFullYear()} - All rights reserved
-                    by <br /> Dead Stock Section, Bangladesh Bank, Barishal.
-                  </th>
-                </tr>
-              </tfoot>
             </table>
-          )
-        )}
-      </div>
+          </div>
+        )
+      )}
+
     </div>
   );
 };

@@ -203,31 +203,56 @@ export async function GET(request) {
       // Sorting logic
       ...(sortBy === "acquisationVal"
         ? [
-            {
-              $addFields: {
-                sortKey: {
-                  $toDouble: {
-                    $replaceAll: {
-                      input: "$acquisationVal",
-                      find: ",",
-                      replacement: "",
-                    },
+          {
+            $addFields: {
+              sortKey: {
+                $toDouble: {
+                  $replaceAll: {
+                    input: "$acquisationVal",
+                    find: ",",
+                    replacement: "",
                   },
                 },
               },
             },
-          ]
+          },
+        ]
         : sortBy === "capDate"
-        ? [{ $addFields: { sortKey: "$parsedCapDate" } }]
-        : sortBy
-        ? [
-            {
-              $addFields: {
-                sortKey: { $toLower: `$${sortBy}` },
+          ? [{ $addFields: { sortKey: "$parsedCapDate" } }]
+          : sortBy
+            ? [
+              {
+                $addFields: {
+                  sortKey: {
+                    $toLower: {
+                      $switch: {
+                        branches: [
+                          {
+                            case: { $eq: [sortBy, "department"] },
+                            then: "$assetInfo.assetLocation.department",
+                          },
+                          {
+                            case: { $eq: [sortBy, "locationType"] },
+                            then: "$assetInfo.assetLocation.locationType",
+                          },
+                          {
+                            case: { $eq: [sortBy, "location"] },
+                            then: "$assetInfo.assetLocation.location",
+                          },
+                          {
+                            case: { $eq: [sortBy, "assetUser"] },
+                            then: "$assetInfo.assetLocation.assetUser",
+                          },
+                        ],
+                        default: `$${sortBy}`,
+                      },
+                    },
+                  }
+
+                },
               },
-            },
-          ]
-        : []),
+            ]
+            : []),
 
       ...(sortBy ? [{ $sort: { sortKey: 1 } }] : []),
 

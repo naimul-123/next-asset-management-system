@@ -84,7 +84,7 @@ const AssetsByDepartment = () => {
         locationType &&
         departmentData
           ?.find((d) => d.name === selectedDept)
-          [locationType]?.sort((a, b) => a.localeCompare(b))) ||
+        [locationType]?.sort((a, b) => a.localeCompare(b))) ||
       [];
     setOptions(options);
   }, [selectedDept, locationType]);
@@ -177,7 +177,7 @@ const AssetsByDepartment = () => {
       </form>
       <div className="mx-auto flex  w-full flex-1 overflow-auto">
         {assetLoading ? (
-          <div className="flex flex-col h-full justify-center items-center">
+          <div className="flex flex-col h-full justify-center flex-1 items-center">
             <div className="loading loading-dots text-warning loading-xl grow"></div>
           </div>
         ) : assets ? (
