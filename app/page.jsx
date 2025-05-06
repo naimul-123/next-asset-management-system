@@ -15,7 +15,7 @@ const Home = () => {
   }, [router]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] border mx-auto w-full  items-center justify-center">
+    <div className="flex flex-col h-[calc(100vh-150px)] overflow-auto border mx-auto w-full  items-center justify-center">
       <div className="text-center flex-1 font-bold  space-y-2">
         <h1 className="text-3xl capitalize text-primary">
           Welcome to dead stock asset management system.

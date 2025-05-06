@@ -90,7 +90,7 @@ const AssetsByDepartment = () => {
   }, [selectedDept, locationType]);
 
   return (
-    <div className="w-fit min-w-full">
+    <div className="mx-auto w-full flex flex-col  h-full px-4 py-2 space-y-2 bg-white">
       <form
         id=""
         onSubmit={handleDeptForm}
@@ -175,13 +175,13 @@ const AssetsByDepartment = () => {
           </button>
         </div>
       </form>
-      <div className=" grow mx-auto flex flex-col px-4 ">
+      <div className="mx-auto flex  w-full flex-1 overflow-auto">
         {assetLoading ? (
           <div className="flex flex-col h-full justify-center items-center">
-            <div className="loading loading-dots  loading-xl grow"></div>
+            <div className="loading loading-dots text-warning loading-xl grow"></div>
           </div>
         ) : assets ? (
-          <div className="print:h-fit w-full   overflow-auto print:overflow-visible print:text-black">
+          <div className="print:h-fit w-full  overflow-auto  flex-1 print:text-black">
             <div className="flex justify-between px-4 py-2 items-center">
               <h2 className="text-center grow font-bold text-xl capitalize text-black">
                 {`Asset list of ${assetInfo.location} ${location} of ${assetInfo.department} department.`}
@@ -271,7 +271,7 @@ const AssetsByDepartment = () => {
             </table>
           </div>
         ) : (
-          <div className="print:h-fit w-full   overflow-auto print:overflow-visible print:text-black">
+          <div className="">
             <h2 className="text-2xl font-bold text-red-500 p-4  text-center">
               Select department, location type, location, and click on the
               search button to view assets.

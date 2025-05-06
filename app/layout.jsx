@@ -11,9 +11,9 @@ export default function RootLayout({ children }) {
       <body>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <div className="flex flex-col min-h-screen  max-w-screen-2xl mx-auto text-dark  print:h-fit">
+            <div className="flex flex-col h-screen  max-w-screen-2xl mx-auto text-dark  print:h-fit">
               <Header />
-              <main className="flex flex-1 print:h-fit h-[calc(100vh-140px)]">
+              <main className="flex flex-1 print:h-fit h-[calc(100vh-150px)] border print:border-none">
                 {children}
               </main>
               <footer className="footer print:hidden footer-center bg-base-300 text-deepBlue font-bold p-4">

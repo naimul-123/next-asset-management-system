@@ -1,22 +1,37 @@
-
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 const client = await clientPromise;
-const db = client.db('deadstock');
-const assetClassCollection = db.collection('assetClass')
+const db = client.db("deadstock");
+const assetClassdb = db.collection("assetClass");
+const controlsdb = db.collection("controls");
 export async function GET(req) {
-    try {
-        const assetClasses = await assetClassCollection.find({}, { projection: { _id: 0, assetClass: 1, assetCode: 1 } }).toArray();
-        const response = NextResponse.json(assetClasses);
-        return response
+  try {
+    const { searchParams } = new URL(req.url);
 
-    } catch (error) {
-        return NextResponse.json(
-            { error: 'Failed to get asset class', error },
-            { status: 500 }
-        );
+    const role = searchParams.get("role");
+    let assetClasses;
+    if (!role) {
+      return NextResponse.json(
+        { error: "User role is not defiend!", error },
+        { status: 409 }
+      );
+    }
+    if (role === "admin") {
+      assetClasses = await assetClassdb.distinct("assetClass");
+    } else {
+      const result = await controlsdb.findOne(
+        { rolename: role },
+        { projection: { permissions: 1, _id: 0 } }
+      );
+      assetClasses = result?.permissions || [];
     }
 
+    const response = NextResponse.json(assetClasses.sort());
+    return response;
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to get asset class", error },
+      { status: 500 }
+    );
+  }
 }
-
-

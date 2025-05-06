@@ -1,17 +1,18 @@
 "use client";
+import { useAuth } from "@/contexts/authContext";
 import { deleteData, getData, postData, updateData } from "@/lib/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 const ManageRole = () => {
- 
+  const { user } = useAuth();
   const [rolename, setRoleName] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [editId, setEditId] = useState(null); // NEW: store editing ID
   const { data: classes } = useQuery({
     queryKey: ["classes"],
-    queryFn: () => getData("/api/assetClass"),
+    queryFn: () => getData(`/api/assetClass?role=${user.role}`),
   });
 
   const controlMutation = useMutation({
@@ -147,18 +148,16 @@ const ManageRole = () => {
         </label>
 
         <div className="flex flex-wrap  gap-3">
-          {classes
-            ?.sort((a, b) => a.assetClass.localeCompare(b.assetClass))
-            .map((cls) => (
-              <label key={cls.assetClass} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={permissions.includes(cls.assetClass)}
-                  onChange={() => handlePermissionToggle(cls.assetClass)}
-                />
-                {cls.assetClass}
-              </label>
-            ))}
+          {classes?.map((cls) => (
+            <label key={cls} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={permissions.includes(cls)}
+                onChange={() => handlePermissionToggle(cls)}
+              />
+              {cls}
+            </label>
+          ))}
         </div>
         <div className="flex flex-wrap gap-3 text-white">
           <button

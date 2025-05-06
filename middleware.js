@@ -20,7 +20,7 @@ export async function middleware(request) {
     /^\/private\/asset_entry.*/,
     /^\/private\/asset_summary.*/,
     /^\/private\/upload_assets.*/,
-    /^\/private\/manage_assets.*/,
+    /^\/private\/manage_assets.*/, 
   ];
 
   // SuperAdmin additional access

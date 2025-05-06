@@ -2,10 +2,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { getData, postData } from "../../../lib/api";
-import { MdDeleteForever } from "react-icons/md";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa";
+import { useAuth } from "@/contexts/authContext";
 const ManageAssets = () => {
   const [searchType, setSearchType] = useState("");
   const [options, setOptions] = useState([]);
@@ -16,10 +16,9 @@ const ManageAssets = () => {
   const [selectedItems, setSelectedItmes] = useState([]);
   const queryClient = useQueryClient();
   const [types, setTypes] = useState([]);
-  const [selectedType, setSelectedType] = useState(null);
-  const [assetError, setAssetError] = useState("");
   const [assetInfo, setAssetInfo] = useState({});
-
+  const { user } = useAuth();
+  // console.log(user);
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData("/api/getdeptdata"),
@@ -57,27 +56,16 @@ const ManageAssets = () => {
 
   const { data: assetClasses = [] } = useQuery({
     queryKey: ["assetClasses"],
-    queryFn: () => getData("/api/assetClass"),
+    queryFn: () => getData(`/api/assetClass?role=${user.role}`),
     enabled: !!(searchType === "assetClass"),
   });
-  const Class = assetClasses
-    ?.map((g) => g.assetClass)
-    .sort((a, b) => a.localeCompare(b));
+
   const handleClassChange = async (assetClass) => {
     setTypes([]);
-    setSelectedType(null);
     const assetTypeData = await getData(
       `/api/getAssetType?assetClass=${assetClass}`
     );
     setTypes(assetTypeData);
-  };
-  const handleAssetTypeChange = async (assetType) => {
-    setSelectedType(assetType);
-  };
-
-  const handleSerchTypeChange = (e) => {
-    setSearchType(e.target.value);
-    setSelecteddept("");
   };
 
   const handleSearchForm = (e) => {
@@ -86,13 +74,13 @@ const ManageAssets = () => {
     const form = e.target;
     if (searchType === "assetNumber") {
       const assetNumber = form.assetNumber.value;
-      setAssetInfo({ searchType, assetNumber });
+      setAssetInfo({ searchType, assetNumber, role: user?.role });
     } else if (searchType === "assetLocation") {
       const isBookVal1 = form.isBookVal1.checked;
       const sortBy = form.sortBy.value;
       const department = form.department.value;
-      const locationType = form.locationType.value;
-      const location = form[locationType].value;
+      const locationType = form.locationType.value || "";
+      const location = form[locationType].value || "";
       setAssetInfo({
         searchType,
         department,
@@ -100,14 +88,22 @@ const ManageAssets = () => {
         location,
         isBookVal1,
         sortBy,
+        role: user?.role,
       });
     } else if (searchType === "assetClass") {
       const isBookVal1 = form.isBookVal1.checked;
       const sortBy = form.sortBy.value;
       const assetClass = form.assetClass.value;
-      const assetType = form.assetType.value;
+      const assetType = form.assetType.value || "";
 
-      setAssetInfo({ searchType, assetClass, assetType, isBookVal1, sortBy });
+      setAssetInfo({
+        searchType,
+        assetClass,
+        assetType,
+        isBookVal1,
+        sortBy,
+        role: user?.role,
+      });
     }
   };
 
@@ -254,182 +250,177 @@ const ManageAssets = () => {
   };
 
   return (
-    <div className="min-w-full mx-auto w-screen-2xl">
-      <div>
-        <form
-          className="flex gap-2 items-center w-full grow mx-auto"
-          onSubmit={handleSearchForm}
-        >
+    <div className="mx-auto w-full flex flex-col  h-full px-4 py-2 space-y-2 ">
+      <form className="flex flex-wrap gap-3" onSubmit={handleSearchForm}>
+        <div className="flex gap-2 items-center">
+          <span className="fieldset-legend">Search Assets By</span>
+          <select
+            defaultValue=""
+            className="select select-sm select-warning"
+            onChange={(e) => setSearchType(e.target.value)}
+          >
+            <option value="">---Select---</option>
+            <option value="assetNumber">Asset Number</option>
+            <option value="assetLocation">Asset Location</option>
+            <option value="assetClass">Asset Class</option>
+          </select>
+        </div>
+        {searchType === "assetNumber" && (
           <div className="flex gap-2 items-center">
-            <span className="fieldset-legend">Search Assets By</span>
+            <span className="fieldset-legend">Asset Number</span>
+            <input
+              type="text"
+              name="assetNumber"
+              placeholder="Asset Number"
+              className="input input-warning input-sm"
+            />
+          </div>
+        )}
+        {searchType === "assetLocation" && (
+          <>
+            <div className="flex gap-2 items-center">
+              <span className=" text-primary ">Department</span>
+            </div>
             <select
-              defaultValue=""
-              className="select select-sm select-warning"
-              onChange={(e) => setSearchType(e.target.value)}
+              name="department"
+              className="select select-sm  select-warning"
+              required
+              onChange={(e) => handleDeptChange(e.target.value)}
+              value={selectedDept}
             >
               <option value="">---Select---</option>
-              <option value="assetNumber">Asset Number</option>
-              <option value="assetLocation">Asset Location</option>
-              <option value="assetClass">Asset Class</option>
+              {departments &&
+                departments?.map((dept) => (
+                  <option key={dept} className="capitalize" value={dept}>
+                    {dept.toUpperCase()}
+                  </option>
+                ))}
             </select>
-          </div>
-          {searchType === "assetNumber" && (
             <div className="flex gap-2 items-center">
-              <span className="fieldset-legend">Asset Number</span>
-              <input
-                type="text"
-                name="assetNumber"
-                placeholder="Asset Number"
-                className="input input-warning input-sm"
-              />
-            </div>
-          )}
-          {searchType === "assetLocation" && (
-            <>
-              <div className="flex gap-2 items-center">
-                <span className=" text-primary ">Department</span>
-              </div>
+              <span className=" text-primary">Location Type</span>
               <select
-                name="department"
-                className="select select-sm  select-warning"
-                required
-                onChange={(e) => handleDeptChange(e.target.value)}
-                value={selectedDept}
+                name="locationType" // Dynamic name to ensure correct field submission
+                className="select select-warning select-sm"
+                onChange={(e) => setlocationType(e.target.value)}
+                value={locationType}
               >
                 <option value="">---Select---</option>
-                {departments &&
-                  departments?.map((dept) => (
-                    <option key={dept} className="capitalize" value={dept}>
-                      {dept.toUpperCase()}
-                    </option>
-                  ))}
+                {locationTypes?.map((type) => (
+                  <option key={type} value={type} className="capitalize">
+                    {type}
+                  </option>
+                ))}
               </select>
+            </div>
+            {locationType && (
               <div className="flex gap-2 items-center">
-                <span className=" text-primary">Location Type</span>
+                <span className="label-text font-bold text-primary">
+                  Select {locationType}
+                </span>
                 <select
-                  name="locationType" // Dynamic name to ensure correct field submission
+                  name={locationType} // Dynamic name to ensure correct field submission
                   className="select select-warning select-sm"
-                  onChange={(e) => setlocationType(e.target.value)}
-                  value={locationType}
                 >
                   <option value="">---Select---</option>
-                  {locationTypes?.map((type) => (
-                    <option key={type} value={type} className="capitalize">
-                      {type}
+                  {options.map((opt) => (
+                    <option key={opt} value={opt} className="capitalize">
+                      {opt}
                     </option>
                   ))}
                 </select>
               </div>
-              {locationType && (
-                <div className="flex gap-2 items-center">
-                  <span className="label-text font-bold text-primary">
-                    Select {locationType}
-                  </span>
-                  <select
-                    name={locationType} // Dynamic name to ensure correct field submission
-                    className="select select-warning select-sm"
-                  >
-                    <option value="">---Select---</option>
-                    {options.map((opt) => (
-                      <option key={opt} value={opt} className="capitalize">
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </>
-          )}
+            )}
+          </>
+        )}
 
-          {searchType === "assetClass" && (
-            <>
-              <div className="flex items-center gap-2">
-                <span className="text-primary">Asset Class </span>
+        {searchType === "assetClass" && (
+          <>
+            <div className="flex items-center gap-2">
+              <span className="text-primary">Asset Class </span>
 
-                <select
-                  name="assetClass"
-                  defaultValue=""
-                  onChange={(e) => handleClassChange(e.target.value)}
-                  className="select select-sm select-warning"
-                  required
-                >
-                  <option value="">---Select---</option>
-                  {Class?.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <select
+                name="assetClass"
+                defaultValue=""
+                onChange={(e) => handleClassChange(e.target.value)}
+                className="select select-sm select-warning"
+                required
+              >
+                <option value="">---Select---</option>
+                {assetClasses?.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-primary">Asset Type </span>
-                <select
-                  name="assetType"
-                  defaultValue=""
-                  className="select select-sm select-warning"
-                  onChange={(e) => handleAssetTypeChange(e.target.value)}
-                >
-                  <option value="">---Select---</option>
-                  {types.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </>
-          )}
+            <div className="flex items-center gap-2">
+              <span className="text-primary">Asset Type </span>
+              <select
+                name="assetType"
+                defaultValue=""
+                className="select select-sm select-warning"
+              >
+                <option value="">---Select---</option>
+                {types.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
 
-          {(searchType === "assetLocation" || searchType === "assetClass") && (
-            <>
-              <label className="flex items-center gap-2">
-                <input
-                  name="isBookVal1"
-                  type="checkbox"
-                  className="checkbox checkbox-warning checkbox-sm"
-                />
-                Book Value 1 only
-              </label>
-              <div className="flex items-center gap-2">
-                <span className="text-primary">Sort By</span>
+        {(searchType === "assetLocation" || searchType === "assetClass") && (
+          <>
+            <label className="flex items-center gap-2">
+              <input
+                name="isBookVal1"
+                type="checkbox"
+                className="checkbox checkbox-warning checkbox-sm"
+              />
+              Book Value 1 only
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-primary">Sort By</span>
 
-                <select
-                  name="sortBy"
-                  defaultValue="assetNumber"
-                  className="select select-sm select-warning"
-                >
-                  <option value="assetNumber">Asset Number(Default)</option>
-                  <option value="assetClass">Asset Class</option>
-                  <option value="assetType">Asset Type</option>
-                  <option value="assetDescription">Asset Description</option>
-                  <option value="capDate">Acquisition date</option>
-                  <option value="acquisationVal">Acquisition Value</option>
-                  <option value="department">Department</option>
-                  <option value="locationType">Location Type</option>
-                  <option value="location">Location</option>
-                  <option value="assetUser">Asset User</option>
-                </select>
-              </div>
-            </>
-          )}
-          <div className="flex gap-2 items-center">
-            <button type="submit" className="btn btn-sm">
-              Search
-            </button>
-          </div>
-        </form>
-      </div>
-      <div className="print:h-fit w-full   overflow-auto print:overflow-visible print:text-black">
+              <select
+                name="sortBy"
+                defaultValue="assetNumber"
+                className="select select-sm select-warning"
+              >
+                <option value="assetNumber">Asset Number(Default)</option>
+                <option value="assetClass">Asset Class</option>
+                <option value="assetType">Asset Type</option>
+                <option value="assetDescription">Asset Description</option>
+                <option value="capDate">Acquisition date</option>
+                <option value="acquisationVal">Acquisition Value</option>
+                <option value="department">Department</option>
+                <option value="locationType">Location Type</option>
+                <option value="location">Location</option>
+                <option value="assetUser">Asset User</option>
+              </select>
+            </div>
+          </>
+        )}
+        <div className="flex gap-2 items-center">
+          <button type="submit" className="btn btn-sm">
+            Search
+          </button>
+        </div>
+      </form>
+
+      <div className="print:h-fit w-full flex-1  overflow-auto">
         {assetLoading ? (
           <div className="flex flex-col h-full justify-center items-center">
-            <div className="loading loading-dots  loading-xl grow"></div>
+            <div className="loading loading-dots  loading-xl grow text-warning "></div>
           </div>
         ) : (
           assets?.length > 0 && (
             <table className="table table-xs table-zebra">
-              <thead className="sticky print:static">
-                <tr className=" text-primary bg-gray-bright print:text-black print:bg-white sticky top-0 print:static">
+              <thead className="sticky top-0 ">
+                <tr className=" text-primary bg-gray-bright border-b-0 ">
                   <th className="py-4">SL</th>
                   <th className="py-4">Asset Number</th>
                   <th className="py-4">Asset Class</th>
@@ -443,8 +434,7 @@ const ManageAssets = () => {
                   <th className="py-4">Location</th>
                   <th className="py-4">Asset User</th>
                 </tr>
-
-                <tr className="print:hidden text-deepBlue">
+                <tr className="bg-stone-50">
                   <th colSpan={6} className="py-4">
                     <form
                       className="grid grid-cols-7 text-deepBlue gap-1 items-end"

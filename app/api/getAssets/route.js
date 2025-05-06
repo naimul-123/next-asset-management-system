@@ -3,7 +3,8 @@ import clientPromise from "../../../lib/mongodb";
 
 const client = await clientPromise;
 const db = client.db("deadstock");
-const assetInfoDb = db.collection("assetLocationInfo");
+const assetClassdb = db.collection("assetClass");
+const controlsdb = db.collection("controls");
 const assetsCollection = db.collection("assets");
 
 export async function GET(request) {
@@ -19,11 +20,44 @@ export async function GET(request) {
     const searchType = searchParams.get("searchType");
     const isBookVal1 = searchParams.get("isBookVal1");
     const sortBy = searchParams.get("sortBy");
+    const role = searchParams.get("role");
+    let assetClasses;
+    if (!role) {
+      return NextResponse.json(
+        { error: "User role is not defiend!", error },
+        { status: 409 }
+      );
+    }
+    if (role === "admin") {
+      assetClasses = await assetClassdb.distinct("assetClass");
+    } else {
+      const result = await controlsdb.findOne(
+        { rolename: role },
+        { projection: { permissions: 1, _id: 0 } }
+      );
+      assetClasses = result?.permissions || [];
+    }
+
+    const assetTypeUsedInRoleClasses = await assetsCollection.distinct(
+      "assetType",
+      {
+        assetClass: { $in: assetClasses },
+      }
+    );
+
+    matchStage.$or = [
+      { assetClass: { $in: assetClasses } },
+      {
+        assetClass: "Low value Asset",
+        assetType: { $in: assetTypeUsedInRoleClasses },
+      },
+    ];
+    // here I also include "Low value Asset" assetClass assets these match with assetClasses assetType
 
     if (searchType === "assetNumber") {
-      matchStage = { assetNumber: assetNumber };
+      matchStage.assetNumber = assetNumber;
     } else if (searchType === "assetLocation") {
-      matchStage = { "assetInfo.assetLocation.department": department };
+      matchStage["assetInfo.assetLocation.department"] = department;
       if (locationType)
         matchStage["assetInfo.assetLocation.locationType"] = locationType;
       if (location) matchStage["assetInfo.assetLocation.location"] = location;
@@ -32,7 +66,7 @@ export async function GET(request) {
         "assetType",
         { assetClass: assetClass }
       );
-      matchStage = {
+      Object.assign(matchStage, {
         $or: [
           { assetClass: assetClass },
           {
@@ -41,7 +75,7 @@ export async function GET(request) {
           },
         ],
         ...(assetType && { assetType: assetType }),
-      };
+      });
     }
     if (isBookVal1 === "true") {
       matchStage.bookVal = "1";
