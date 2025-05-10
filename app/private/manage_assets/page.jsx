@@ -136,10 +136,13 @@ const ManageAssets = () => {
       setSelectedItmes(remaining);
     }
   };
-  const updateAssets = useMutation({
-    mutationFn: (data) => postData("/api/updateAssets", data),
-    queryKey: ["updateAssets"],
+  const updateAssetsLocation = useMutation({
+    mutationFn: (data) => postData("/api/updateAssetsLocation", data),
+    queryKey: ["updateAssetsLocation"],
   });
+
+
+
   const updateAssetsUser = useMutation({
     mutationFn: (data) => postData("/api/updateAssetsUser", data),
     queryKey: ["updateAssetsUser"],
@@ -189,7 +192,7 @@ const ManageAssets = () => {
         assetUser,
         assetNumbers: selectedItems,
       };
-      updateAssets.mutate(data, {
+      updateAssetsLocation.mutate(data, {
         onSuccess: (result) => {
           if (result.data.success) {
             queryClient.invalidateQueries(["assets"]);

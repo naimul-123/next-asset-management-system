@@ -1,49 +1,34 @@
-
+// /api/assets/route.js
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 
-
-
-
 const client = await clientPromise;
-const db = client.db('deadstock');
+const db = client.db("deadstock");
 
 export async function GET(req) {
     try {
-        const assetsCollection = db.collection('assets');
-        const { searchParams } = new URL(req.url)
-        const assetClass = searchParams.get("assetClass")
-        console.log(assetClass);
-        const result = await assetsCollection.aggregate([
-            {
-                $match: {
+        const assetsCollection = db.collection("assets");
+        const { searchParams } = new URL(req.url);
+        const assetNumber = searchParams.get("assetNumber");
+        const assetClass = searchParams.get("assetClass");
 
-                    assetClass: assetClass
-                }
-            },
-
-            {
-                $group: {
-                    _id: null,
-                    assetTypes: { $addToSet: "$assetType" }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    assetTypes: { $sortArray: { input: "$assetTypes", sortBy: 1 } }
-                }
+        if (assetNumber) {
+            const assetDoc = await assetsCollection.findOne({ assetNumber });
+            if (assetDoc) {
+                return NextResponse.json({ assetType: assetDoc.assetType, found: true });
+            } else {
+                return NextResponse.json({ assetType: null, found: false });
             }
+        }
 
-        ]
-        ).toArray();
+        if (assetClass) {
+            const assetTypes = await assetsCollection.distinct("assetType", { assetClass });
+            return NextResponse.json({ assetTypes, found: false });
+        }
 
-
-
-        return NextResponse.json(result.length > 0 ? result[0].assetTypes : [], { status: 200 })
-
+        return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     } catch (error) {
-        console.error('Error to get document:', error); // Log error
-        return NextResponse.json({ error: 'Failed to get document' }, { status: 500 });
+        console.error("Error fetching asset info:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
