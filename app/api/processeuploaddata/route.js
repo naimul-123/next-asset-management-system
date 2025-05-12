@@ -9,9 +9,6 @@ export async function POST(req) {
     try {
         const assetsCollection = db.collection("assets");
         const assetClassCollection = db.collection("assetClass");
-        const { searchParams } = new URL(req.url);
-
-
         // Step 1: Get asset class info
         const assetClassInfo = await assetClassCollection
             .find({}, { projection: { _id: 0, assetCode: 1, assetClass: 1 } })
@@ -38,9 +35,7 @@ export async function POST(req) {
                 updatedItem.assetType = foundAsset.assetType;
                 updatedItem.assetTypes = [];
             } else {
-                if (updatedItem.assetNumber === "100000000314") {
-                    console.log(updatedItem.assetClass);
-                }
+
                 const assetTypes = await assetsCollection.distinct("assetType", { assetClass: updatedItem.assetClass });
 
                 updatedItem.assetType = null;

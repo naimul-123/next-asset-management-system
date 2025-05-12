@@ -15,7 +15,7 @@ const ManageAssets = () => {
   const [action, setAction] = useState("");
   const [selectedItems, setSelectedItmes] = useState([]);
   const queryClient = useQueryClient();
-  const [types, setTypes] = useState([]);
+  const [assettypes, setTypes] = useState([]);
   const [assetInfo, setAssetInfo] = useState({});
   const { user } = useAuth();
   // console.log(user);
@@ -65,7 +65,7 @@ const ManageAssets = () => {
     const assetTypeData = await getData(
       `/api/getAssetType?assetClass=${assetClass}`
     );
-    setTypes(assetTypeData);
+    setTypes(assetTypeData.assetTypes);
   };
 
   const handleSearchForm = (e) => {
@@ -365,7 +365,7 @@ const ManageAssets = () => {
                 className="select select-xs select-warning"
               >
                 <option value="">---Select---</option>
-                {types.map((t) => (
+                {assettypes?.map((t) => (
                   <option key={t} value={t}>
                     {t}
                   </option>

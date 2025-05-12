@@ -56,28 +56,21 @@ const Header = () => {
               >
                 <FaSignInAlt /> Log In
               </Link>
-              <Link
-                href="/register"
-                className="flex item-center btn btn-xs btn-warning "
-              >
-                <FaUserPlus /> Register
-              </Link>
+
             </div>
           )}
         </div>
         <div className="flex text-sm gap-2 ">
           <Link
-            className={`flex items-center  hover:link ${
-              pathname === "/" ? " link " : ""
-            }  `}
+            className={`flex items-center  hover:link ${pathname === "/" ? " link " : ""
+              }  `}
             href="/"
           >
             <FaHome className="" />
           </Link>
           <Link
-            className={`flex items-center hover:link ${
-              pathname === "/view_asset" ? " link" : ""
-            }  `}
+            className={`flex items-center hover:link ${pathname === "/view_asset" ? " link" : ""
+              }  `}
             href="/view_asset"
           >
             View Asset
@@ -88,9 +81,8 @@ const Header = () => {
               {user.isSuperAdmin && (
                 <>
                   <Link
-                    className={`hover:link ${
-                      pathname === "/private/manage_user" ? " link " : ""
-                    }  `}
+                    className={`hover:link ${pathname === "/private/manage_user" ? " link " : ""
+                      }  `}
                     href="/private/manage_user"
                   >
                     Manage User
@@ -98,25 +90,22 @@ const Header = () => {
                 </>
               )}
               <Link
-                className={`hover:link ${
-                  pathname === "/private/asset_summary" ? " link " : ""
-                }  `}
+                className={`hover:link ${pathname === "/private/asset_summary" ? " link " : ""
+                  }  `}
                 href="/private/asset_summary"
               >
                 Asset Summary
               </Link>
               <Link
-                className={`hover:link ${
-                  pathname === "/private/manage_assets" ? " link " : ""
-                }  `}
+                className={`hover:link ${pathname === "/private/manage_assets" ? " link " : ""
+                  }  `}
                 href="/private/manage_assets"
               >
                 Manage Assets
               </Link>
               <Link
-                className={`hover:link ${
-                  pathname === "/private/upload_assets" ? " link " : ""
-                }  `}
+                className={`hover:link ${pathname === "/private/upload_assets" ? " link " : ""
+                  }  `}
                 href="/private/upload_assets"
               >
                 Upload Assets
