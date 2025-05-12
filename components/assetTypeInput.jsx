@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { FaCaretSquareDown, FaCaretSquareUp } from "react-icons/fa";
 
-const AssetTypeInput = ({ rowData, handleAssetTypeChange }) => {
+const AssetTypeInput = ({ isMissingType, rowData, assetTypes, handleAssetTypeChange }) => {
     const [showDropdown, setShowDropdown] = useState(false);
 
+    // const assetTypes = assetTypesInfo?.find(info => info?.assetClass === rowData.assetClass)?.assetTypes || []
+
     return (
-        <div className="relative z-10">
-            <input
+        <div className="relative">
+            <div><input
                 type="text"
                 value={rowData.assetType || ""}
                 onChange={(e) =>
@@ -16,21 +18,21 @@ const AssetTypeInput = ({ rowData, handleAssetTypeChange }) => {
                     })
                 }
                 placeholder="Enter asset type"
-                className="border px-2 py-1 rounded w-full"
+                className={`border  px-2 py-1 rounded w-full ${isMissingType ? 'border-red' : null}`}
             />
-            {Array.isArray(rowData.assetTypes) && rowData.assetTypes.length > 0 && (
-                <button
-                    type="button"
-                    className="absolute top-1/2 right-2 transform -translate-y-1/2 text-blue"
-                    onClick={() => setShowDropdown(!showDropdown)}
-                >
-                    {showDropdown ? <FaCaretSquareUp /> : <FaCaretSquareDown />}
-                </button>
-            )}
+                {Array.isArray(assetTypes) && assetTypes.length > 0 && (
+                    <button
+                        type="button"
+                        className="absolute top-1/2 right-2 transform -translate-y-1/2 text-blue"
+                        onClick={() => setShowDropdown(!showDropdown)}
+                    >
+                        {showDropdown ? <FaCaretSquareUp /> : <FaCaretSquareDown />}
+                    </button>
+                )}</div>
 
             {showDropdown && (
-                <ul className="absolute z-0 w-full bg-white border mt-1 rounded shadow h-96 overflow-auto">
-                    {rowData.assetTypes.map((type) => (
+                <ul className="absolute z-10 w-full bg-white border mt-1 rounded shadow h-96 overflow-auto">
+                    {Array.isArray(assetTypes) && assetTypes.length > 0 && assetTypes?.map((type) => (
                         <li
                             key={type}
                             onClick={() => {
@@ -40,7 +42,7 @@ const AssetTypeInput = ({ rowData, handleAssetTypeChange }) => {
                                 });
                                 setShowDropdown(false);
                             }}
-                            className="px-3 py-1 hover:bg-gray-100 cursor-pointer uppercase"
+                            className="px-3  py-1 hover:bg-gray-100 cursor-pointer uppercase"
                         >
                             {type}
                         </li>

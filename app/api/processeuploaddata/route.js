@@ -9,46 +9,67 @@ export async function POST(req) {
     try {
         const assetsCollection = db.collection("assets");
         const assetClassCollection = db.collection("assetClass");
-        // Step 1: Get asset class info
+
+        const { assetNumbers } = await req.json(); // Receive only assetNumbers array
+
+        // Step 1: Get asset class info (prefix -> class)
         const assetClassInfo = await assetClassCollection
             .find({}, { projection: { _id: 0, assetCode: 1, assetClass: 1 } })
             .toArray();
 
-        const rawData = await req.json();
+        const codeToClassMap = new Map(
+            assetClassInfo.map(({ assetCode, assetClass }) => [assetCode.toString(), assetClass])
+        );
 
-        // Loop through rawData and enhance each object
-        const enhancedData = await Promise.all(rawData.map(async (item) => {
-            const prefix = item.assetNumber?.slice(0, 2); // extract first two letters
-            const matchedClass = assetClassInfo.find(info => info.assetCode.toString() === prefix);
-            const updatedItem = {
-                ...item,
-                assetClass: matchedClass?.assetClass || null
-            };
-
-            // Find assetType based on assetNumber
-            const foundAsset = await assetsCollection.findOne(
-                { assetNumber: item.assetNumber },
-                { projection: { _id: 0, assetType: 1 } }
-            );
-
-            if (foundAsset.assetType) {
-                updatedItem.assetType = foundAsset.assetType;
-                updatedItem.assetTypes = [];
-            } else {
-
-                const assetTypes = await assetsCollection.distinct("assetType", { assetClass: updatedItem.assetClass });
-
-                updatedItem.assetType = null;
-                updatedItem.assetTypes = assetTypes;
+        // Step 2: Get assetType per assetClass (sorted)
+        const assetTypesInfo = await assetsCollection.aggregate([
+            {
+                $group: {
+                    _id: "$assetClass",
+                    assetTypes: { $addToSet: "$assetType" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    assetClass: "$_id",
+                    assetTypes: { $sortArray: { input: "$assetTypes", sortBy: 1 } }
+                }
             }
+        ]).toArray();
 
-            return updatedItem;
-        }));
 
-        return NextResponse.json(enhancedData, { status: 200 });
+
+
+        // Step 3: Get all assetType info in one query
+        const foundAssets = await assetsCollection.find(
+            { assetNumber: { $in: assetNumbers } },
+            { projection: { _id: 0, assetNumber: 1, assetType: 1 } }
+        ).toArray();
+
+        const assetTypeMap = new Map(
+            foundAssets.map(({ assetNumber, assetType }) => [assetNumber, assetType])
+        );
+
+        // Step 4: Reconstruct enhanced data
+        const enhancedData = assetNumbers.map(assetNumber => {
+            const prefix = assetNumber.slice(0, 2);
+            const assetClass = codeToClassMap.get(prefix) || null;
+            const assetType = assetTypeMap.get(assetNumber) || null;
+
+            return {
+                assetNumber,
+                assetClass,
+                assetType,
+                isTypeExist: Boolean(assetType),
+
+            };
+        });
+
+        return NextResponse.json({ enhancedData, assetTypesInfo }, { status: 200 });
+
     } catch (error) {
-        console.error("Error fetching processed data:", error);
+        console.error("Error processing asset data:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
-
