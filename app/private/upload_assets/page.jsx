@@ -83,7 +83,7 @@ const UploadAssets = () => {
         );
         if (missingtypesAssets.length > 0) {
             setMissingtypesAssets(missingtypesAssets)
-            setError(`Asset number(s)${missingtypesAssets.join(', ')} are missing assetType. Please select or input assetType of these number assets and try to upload again.`);
+            setError(`Asset number(s)${missingtypesAssets.join(', ')} are missing assetType.`);
         }
     }
 
