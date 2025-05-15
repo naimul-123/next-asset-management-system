@@ -1,8 +1,7 @@
 import { Config } from "tailwindcss";
-import daisyui from 'daisyui';
+import daisyui from "daisyui";
 
-
-const config: Config = {
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -16,7 +15,6 @@ const config: Config = {
         xs: "475px",
       },
       colors: {
-
         blue: "#0d6efd",
         indigo: "#6610f2",
         purple: "#6f42c1",
@@ -31,7 +29,7 @@ const config: Config = {
         gray: {
           default: "#6c757d",
           dark: "#343a40",
-          bright: "#E9F3EE"
+          bright: "#E9F3EE",
         },
 
         primary: "#29AE61",
@@ -43,7 +41,6 @@ const config: Config = {
         light: "#dddddd",
         dark: "#212529",
         ColumbiaBlue: "#c8ecda",
-
       },
       fontFamily: {
         "work-sans": ["var(--font-work-sans)"],
@@ -60,7 +57,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [daisyui,],
+  plugins: [daisyui],
 };
 
 export default config;
