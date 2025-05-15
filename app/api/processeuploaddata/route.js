@@ -66,7 +66,7 @@ export async function POST(req) {
             };
         });
 
-        return NextResponse.json({ enhancedData, assetTypesInfo }, { status: 200 });
+        return NextResponse.json({ enhancedData, assetTypesInfo, foundAssets }, { status: 200 });
 
     } catch (error) {
         console.error("Error processing asset data:", error);

@@ -19,14 +19,17 @@ export async function middleware(request) {
   const allowedRoutes = [
     /^\/private\/asset_entry.*/,
     /^\/private\/asset_summary.*/,
-    /^\/private\/upload_assets.*/,
-    /^\/private\/manage_assets.*/, 
+    /^\/private\/manage_assets.*/,
   ];
 
-  // SuperAdmin additional access
+  // admin additional access
   if (user.role === "admin" && user.isSuperAdmin) {
-    allowedRoutes.push(/^\/private\/manage_user.*/);
+    allowedRoutes.push(...[/^\/private\/manage_user.*/, /^\/private\/update_assets.*/]);
   }
+  else {
+    allowedRoutes.push(/^\/private\/upload_new_assets.*/);
+  }
+  // admin additional access
 
   const pathName = new URL(request.url).pathname;
 

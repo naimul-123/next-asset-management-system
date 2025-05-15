@@ -4,12 +4,12 @@ import { postData } from "../../../lib/api";
 import * as XLSX from "xlsx";
 import AssetTypeInput from "@/components/assetTypeInput";
 
-const UploadAssets = () => {
+const UploadNewAssets = () => {
     const [error, setError] = useState("");
     const [data, setData] = useState([]);
     const [assetTypesInfo, setAssetTypesInfo] = useState([])
     const [missingtypesAssets, setMissingtypesAssets] = useState([]);
-    const requiredFields = ["assetNumber", "assetDescription", "capDate", "acquisVal", "accumDep"];
+    const requiredFields = ["assetNumber", "assetDescription", "capDate", "acquisVal", "accumDep", "bookVal"];
 
     const assetTypesMap = useMemo(() => {
         const map = new Map();
@@ -20,7 +20,7 @@ const UploadAssets = () => {
         return map;
     }, [assetTypesInfo])
 
-    console.log(assetTypesMap.get('Low value Asset'));
+    // console.log(assetTypesMap.get('Low value Asset'));
     const handleFileUpload = async (e) => {
         setData([]);
         const file = e.target.files[0];
@@ -56,11 +56,21 @@ const UploadAssets = () => {
 
             if (res?.data.enhancedData) {
                 const enrichedData = res?.data.enhancedData
-                const enrichedMap = new Map(enrichedData.map(d => [d.assetNumber, d]));
-                const finalData = rawData.map(item => ({
-                    ...item,
-                    ...enrichedMap.get(item.assetNumber)
-                }));
+                const enrichedMap = new Map(enrichedData.map(d => [String(d.assetNumber), d]));
+                const finalData = rawData.map(item => {
+                    const enriched = enrichedMap.get(String(item.assetNumber)) || {
+                        assetClass: null,
+                        assetType: null,
+                        isTypeExist: false
+                    };
+                    return {
+                        ...item,
+                        ...enriched
+                    }
+
+
+                });
+
                 setData(finalData)
             }
 
@@ -74,7 +84,7 @@ const UploadAssets = () => {
         reader.readAsBinaryString(file);
     };
 
-
+    console.log(data);
     const handleAssetTypeMissing = (data) => {
         setMissingtypesAssets([])
         setError('')
@@ -96,7 +106,7 @@ const UploadAssets = () => {
             }
 
             // else {
-            //     await postData("/api/uploadassets", data);
+            //     await postData("/api/UploadNewAssets", data);
             //     alert("Data saved successfully!");
             //     setData([]);
             // }
@@ -191,4 +201,4 @@ const UploadAssets = () => {
     );
 };
 
-export default UploadAssets;
+export default UploadNewAssets;
