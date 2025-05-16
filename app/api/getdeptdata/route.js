@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 const client = await clientPromise;
 const db = client.db('deadstock');
-const deptcollection = db.collection('departments')
+const deptcollection = db.collection('locations')
 export async function GET(req) {
     try {
         const deptdata = await deptcollection.find({}, { projection: { _id: 0 } }).toArray();

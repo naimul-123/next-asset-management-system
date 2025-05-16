@@ -8,8 +8,9 @@ import { FaPrint } from "react-icons/fa";
 const AssetsByDepartment = () => {
   const [assetInfo, setAssetInfo] = useState({});
   const [location, setLocation] = useState("");
-  const [options, setOptions] = useState([]);
-  const [locationType, setlocationType] = useState("");
+  const [selectedType, setSelectedType] = useState('')
+  const [locationTypes, setlocationTypes] = useState([]);
+  const [locations, setLocations] = useState([])
   const [selectedDept, setSelecteddept] = useState("");
 
   const handleDeptForm = async (e) => {
@@ -62,32 +63,25 @@ const AssetsByDepartment = () => {
     queryKey: ["departments"],
     queryFn: () => getData("/api/getdeptdata"),
   });
-  const { data: locationTypes = [], refetch: locationTypeRefetch } = useQuery({
-    queryKey: ["locationTypes"],
-    queryFn: () => getData("/api/locationType"),
-  });
 
-  const departments = departmentData?.map((dept) => dept.name);
+  const departments = departmentData?.map((dept) => dept.department);
 
   const handleDeptChange = (value) => {
+    setLocations([])
+    setlocationTypes([])
+    setSelectedType('')
     setSelecteddept(value);
-    setlocationType("");
-    setOptions([]);
+    const locationTypes = departmentData.find(d => d.department === value).locations.map(loc => loc.locationType)
+    setlocationTypes(locationTypes)
   };
-  useEffect(() => {
-    if (!selectedDept || !locationType) {
-      setOptions([]);
-      return;
-    }
-    const options =
-      (selectedDept &&
-        locationType &&
-        departmentData
-          ?.find((d) => d.name === selectedDept)
-        [locationType]?.sort((a, b) => a.localeCompare(b))) ||
-      [];
-    setOptions(options);
-  }, [selectedDept, locationType]);
+
+  const handleLocTypeChange = (selectedType) => {
+    setSelectedType(selectedType);
+    const locations = departmentData.find(d => d.department === selectedDept).locations.find(loc => loc.locationType === selectedType).location
+    setLocations(locations);
+  }
+
+
 
   return (
     <div className="mx-auto w-full flex flex-col  h-full px-4 py-2 space-y-2 bg-white">
@@ -124,8 +118,8 @@ const AssetsByDepartment = () => {
             name="locationType" // Dynamic name to ensure correct field submission
             className="select select-warning select-sm "
             required
-            onChange={(e) => setlocationType(e.target.value)}
-            value={locationType}
+            onChange={(e) => handleLocTypeChange(e.target.value)}
+            value={selectedType}
           >
             <option value="">---Select---</option>
             {locationTypes?.map((type) => (
@@ -135,10 +129,10 @@ const AssetsByDepartment = () => {
             ))}
           </select>
         </div>
-        {locationType && (
+        {selectedType && (
           <div className="flex items-center gap-2">
             <span className="label-text font-bold text-primary">
-              Select {locationType}
+              Select {selectedType}
             </span>
 
             <select
@@ -147,9 +141,9 @@ const AssetsByDepartment = () => {
               required
             >
               <option value="">---Select---</option>
-              {options.map((opt) => (
-                <option key={opt} value={opt} className="capitalize">
-                  {opt}
+              {locations.map((location) => (
+                <option key={location} value={location} className="capitalize">
+                  {location}
                 </option>
               ))}
             </select>

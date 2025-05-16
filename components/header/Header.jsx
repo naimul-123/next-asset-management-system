@@ -105,13 +105,22 @@ const Header = () => {
               </Link>
               {user.role === 'admin' ? (
 
-                <Link
-                  className={`hover:link ${pathname === "/private/update_assets" ? " link " : ""
-                    }  `}
-                  href="/private/update_assets"
-                >
-                  Update All Assets
-                </Link>
+                <>
+                  <Link
+                    className={`hover:link ${pathname === "/private/manage_location" ? " link " : ""
+                      }  `}
+                    href="/private/manage_location"
+                  >
+                    Manage Location
+                  </Link>
+                  <Link
+                    className={`hover:link ${pathname === "/private/update_assets" ? " link " : ""
+                      }  `}
+                    href="/private/update_assets"
+                  >
+                    Update All Assets
+                  </Link>
+                </>
               ) : (<Link
                 className={`hover:link ${pathname === "/private/upload_new_assets" ? " link " : ""
                   }  `}

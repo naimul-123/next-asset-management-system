@@ -6,10 +6,13 @@ import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa";
 import { useAuth } from "@/contexts/authContext";
+import DeptChangeForm from "@/components/DeptChangeForm";
 const ManageAssets = () => {
   const [searchType, setSearchType] = useState("");
-  const [options, setOptions] = useState([]);
-  const [locationType, setlocationType] = useState("");
+  const [location, setLocation] = useState("");
+  const [selectedType, setSelectedType] = useState('')
+  const [locationTypes, setlocationTypes] = useState([]);
+  const [locations, setLocations] = useState([])
   const [selectedDept, setSelecteddept] = useState("");
   const [isEdit, setIsEdit] = useState(true);
   const [action, setAction] = useState("");
@@ -22,36 +25,24 @@ const ManageAssets = () => {
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData("/api/getdeptdata"),
-    enabled: !!(searchType === "assetLocation" || action === "changeLocation"),
   });
 
-  const { data: locationTypes = [], refetch: locationTypeRefetch } = useQuery({
-    queryKey: ["locationTypes"],
-    queryFn: () => getData("/api/locationType"),
-  });
-
-  const departments = departmentData?.map((dept) => dept.name);
+  const departments = departmentData?.map((dept) => dept.department);
 
   const handleDeptChange = (value) => {
+    setLocations([])
+    setlocationTypes([])
+    setSelectedType('')
     setSelecteddept(value);
-    setlocationType("");
-    setOptions([]);
+    const locationTypes = departmentData.find(d => d.department === value).locations.map(loc => loc.locationType)
+    setlocationTypes(locationTypes)
   };
-  useEffect(() => {
-    if (!selectedDept || !locationType) {
-      setOptions([]);
-      return;
-    }
-    const options =
-      (selectedDept &&
-        locationType &&
-        departmentData
-          ?.find((d) => d.name === selectedDept)
-        [locationType]?.sort((a, b) => a.localeCompare(b))) ||
-      [];
-    setOptions(options);
-  }, [selectedDept, locationType]);
 
+  const handleLocTypeChange = (selectedType) => {
+    setSelectedType(selectedType);
+    const locations = departmentData.find(d => d.department === selectedDept).locations.find(loc => loc.locationType === selectedType).location
+    setLocations(locations);
+  }
   // asset by class code
 
   const { data: assetClasses = [] } = useQuery({
@@ -214,7 +205,8 @@ const ManageAssets = () => {
           form.reset();
           setSelectedItmes([]);
           setSelecteddept("");
-          setlocationType("");
+          setSelectedType("");
+          setLocation('')
         },
       });
     }
@@ -260,7 +252,7 @@ const ManageAssets = () => {
           <select
             defaultValue=""
             className="select select-xs select-warning"
-            onChange={(e) => setSearchType(e.target.value)}
+            onChange={(e) => { setSearchType(e.target.value); setSelecteddept('') }}
           >
             <option value="">---Select---</option>
             <option value="assetNumber">Asset Number</option>
@@ -304,8 +296,9 @@ const ManageAssets = () => {
               <select
                 name="locationType" // Dynamic name to ensure correct field submission
                 className="select select-warning select-xs"
-                onChange={(e) => setlocationType(e.target.value)}
-                value={locationType}
+                onChange={(e) => handleLocTypeChange(e.target.value)}
+                value={selectedType}
+                required
               >
                 <option value="">---Select---</option>
                 {locationTypes?.map((type) => (
@@ -315,17 +308,17 @@ const ManageAssets = () => {
                 ))}
               </select>
             </div>
-            {locationType && (
+            {selectedType && (
               <div className="flex gap-2 items-center">
                 <span className="label-text font-bold text-primary">
-                  Select {locationType}
+                  Select {selectedType}
                 </span>
                 <select
-                  name={locationType} // Dynamic name to ensure correct field submission
+                  name={selectedType} // Dynamic name to ensure correct field submission
                   className="select select-warning select-xs"
                 >
                   <option value="">---Select---</option>
-                  {options.map((opt) => (
+                  {locations.map((opt) => (
                     <option key={opt} value={opt} className="capitalize">
                       {opt}
                     </option>
@@ -348,7 +341,7 @@ const ManageAssets = () => {
                 className="select select-xs select-warning"
                 required
               >
-                <option value="">---Select---</option>
+                <option value="all">---Select---</option>
                 {assetClasses?.map((g) => (
                   <option key={g} value={g}>
                     {g}
@@ -426,144 +419,9 @@ const ManageAssets = () => {
               <thead className="sticky top-0 ">
                 <tr className="bg-stone-100 border-b-0">
                   <th colSpan={12}>
+
                     <div className="flex items-start w-full ">
-                      <form
-                        className="flex flex-1 gap-2 flex-wrap "
-                        onSubmit={handleAction}
-                      >
-                        <div className="flex items-center gap-2 ">
-                          <input
-                            type="checkbox"
-                            className="checkbox checkbox-warning"
-                            onClick={(e) => handleSelectAll(e.target.checked)}
-                          />
-                          <span className="label-text font-bold ">
-                            Select All ({selectedItems.length})
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-
-                          <span className="label-text font-bold ">
-                            Select Action
-                          </span>
-
-                          <select
-                            name="action"
-                            defaultValue={action}
-                            className="select select-warning select-xs"
-                            onChange={(e) => setAction(e.target.value)}
-                          >
-                            <option value="">---Select---</option>
-                            <option value="changeLocation">
-                              Change Location
-                            </option>
-                            <option value="changeUser">Change User</option>
-                          </select>
-                        </div>
-
-                        {action === "changeLocation" && (
-                          <>
-                            <div className="flex items-center gap-2">
-
-                              <span className="label-text font-bold ">
-                                Department
-                              </span>
-
-                              <select
-                                name="department"
-                                className="select select-xs select-warning"
-                                required
-                                onChange={(e) => handleDeptChange(e.target.value)}
-                                value={selectedDept}
-                              >
-                                <option value="">---Select---</option>
-                                {departments?.map((dept) => (
-                                  <option
-                                    key={dept}
-                                    className="capitalize"
-                                    value={dept}
-                                  >
-                                    {dept.toUpperCase()}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            <div className="flex items-center gap-2 ">
-
-                              <span className="label-text font-bold ">
-                                Location Type
-                              </span>
-
-                              <select
-                                name="locationType"
-                                className="select select-warning select-bordered select-xs"
-                                required
-                                onChange={(e) => setlocationType(e.target.value)}
-                                value={locationType}
-                              >
-                                <option value="">---Select---</option>
-                                {locationTypes?.map((type) => (
-                                  <option
-                                    key={type}
-                                    value={type}
-                                    className="capitalize"
-                                  >
-                                    {type}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            {locationType && (
-                              <div className="flex items-center gap-2">
-
-                                <span className="label-text font-bold ">
-                                  Select {locationType}
-                                </span>
-
-                                <select
-                                  name="location"
-                                  className="select select-warning select-bordered select-xs"
-                                  required
-                                >
-                                  <option value="">---Select---</option>
-                                  {options?.map((opt) => (
-                                    <option
-                                      key={opt}
-                                      value={opt}
-                                      className="capitalize"
-                                    >
-                                      {opt}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                          </>
-                        )}
-
-                        {["changeUser", "changeLocation"].includes(action) && (
-                          <div className="flex items-center gap-2">
-
-                            <span className="label-text font-bold ">
-                              Asset User Name
-                            </span>
-
-                            <input
-                              name="assetUser"
-                              type="text"
-                              className="input input-xs input-warning"
-                            />
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-2">
-                          <button type="submit" className="btn btn-xs w-full btn-success text-white">
-                            Submit
-                          </button>
-                        </div>
-
-                      </form>
+                      <DeptChangeForm handleAction={handleAction} departmentData={departmentData} handleSelectAll={handleSelectAll} selectedItems={selectedItems} action={action} setAction={setAction} />
 
                       <button
                         onClick={() => handleDownloadAssets(assets)}

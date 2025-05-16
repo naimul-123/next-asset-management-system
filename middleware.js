@@ -24,7 +24,7 @@ export async function middleware(request) {
 
   // admin additional access
   if (user.role === "admin" && user.isSuperAdmin) {
-    allowedRoutes.push(...[/^\/private\/manage_user.*/, /^\/private\/update_assets.*/]);
+    allowedRoutes.push(...[/^\/private\/manage_user.*/, /^\/private\/update_assets.*/, /^\/private\/manage_location.*/]);
   }
   else {
     allowedRoutes.push(/^\/private\/upload_new_assets.*/);

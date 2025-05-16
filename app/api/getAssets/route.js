@@ -52,7 +52,7 @@ export async function GET(request) {
         assetType: { $in: assetTypeUsedInRoleClasses },
       },
     ];
-    // here I also include "Low value Asset" assetClass assets these match with assetClasses assetType
+
 
     if (searchType === "assetNumber") {
       matchStage.assetNumber = assetNumber;
@@ -62,21 +62,31 @@ export async function GET(request) {
         matchStage["assetInfo.assetLocation.locationType"] = locationType;
       if (location) matchStage["assetInfo.assetLocation.location"] = location;
     } else if (searchType === "assetClass") {
-      const assetTypeUsedInClass = await assetsCollection.distinct(
-        "assetType",
-        { assetClass: assetClass }
-      );
-      Object.assign(matchStage, {
-        $or: [
+      if (assetClass === "all") {
+        // Keep matchStage as-is, already initialized earlier with user's role assetClasses
+        if (assetType) {
+          matchStage.assetType = assetType;
+        }
+      } else {
+        const assetTypeUsedInClass = await assetsCollection.distinct(
+          "assetType",
+          { assetClass: assetClass }
+        );
+
+        matchStage.$or = [
           { assetClass: assetClass },
           {
             assetClass: "Low value Asset",
             assetType: { $in: assetTypeUsedInClass },
           },
-        ],
-        ...(assetType && { assetType: assetType }),
-      });
+        ];
+
+        if (assetType) {
+          matchStage.assetType = assetType;
+        }
+      }
     }
+
     if (isBookVal1 === "true") {
       matchStage.bookVal = "1";
     }
