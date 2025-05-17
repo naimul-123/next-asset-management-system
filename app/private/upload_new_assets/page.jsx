@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { postData } from "../../../lib/api";
 import * as XLSX from "xlsx";
 import AssetTypeInput from "@/components/assetTypeInput";
+import AssetLocationInput from "@/components/assetLocationInput";
 
 const UploadNewAssets = () => {
     const [error, setError] = useState("");
@@ -84,7 +85,7 @@ const UploadNewAssets = () => {
         reader.readAsBinaryString(file);
     };
 
-    console.log(data);
+
     const handleAssetTypeMissing = (data) => {
         setMissingtypesAssets([])
         setError('')
@@ -95,7 +96,7 @@ const UploadNewAssets = () => {
             setMissingtypesAssets(missingtypesAssets)
             setError(`Asset number(s)${missingtypesAssets.join(', ')} are missing assetType.`);
         }
-    }
+    } 
 
     const handleSavedata = async () => {
 
@@ -130,7 +131,28 @@ const UploadNewAssets = () => {
     useEffect(() => {
         handleAssetTypeMissing(data)
     }, [data])
-    // console.log(data);
+
+    const handleLocationInfo = (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const assetNumber = form.assetNumber.value;
+        const department = form.department.value;
+        const locationType = form.locationType.value;
+        const location = form.location.value;
+        const locationInfo = {
+            department,
+            locationType,
+            location
+        }
+
+        const updated = data.map((item) =>
+            item.assetNumber === assetNumber
+                ? { ...item, locationInfo }
+                : item
+        );
+        setData(updated);
+        console.log(assetNumber, locationInfo);
+    }
     return (
         <div className="mx-auto w-full flex flex-col h-full space-y-1 ">
 
@@ -150,8 +172,12 @@ const UploadNewAssets = () => {
                                     <th>Asset Description</th>
                                     <th>Acquis Date</th>
                                     <th>Acquis. Val</th>
-                                    <th>Accum. Dep</th>
-                                    <th>Book Val</th>
+                                    <th>Department</th>
+                                    <th>Location Type</th>
+                                    <th>Location</th>
+                                    <th>Asset User</th>
+                                    <th>Action</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -166,8 +192,8 @@ const UploadNewAssets = () => {
                                         <td>{rowData?.capDate}</td>
 
                                         <td>{rowData?.acquisVal}</td>
-                                        <td>{rowData?.accumDep}</td>
-                                        <td>{rowData?.bookVal}</td>
+                                        <td colSpan={5} className="w-full"> <AssetLocationInput rowData={rowData} handleLocationInfo={handleLocationInfo} /></td>
+
                                     </tr>
                                 ))}
                             </tbody>
