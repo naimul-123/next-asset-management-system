@@ -322,7 +322,7 @@ const UploadNewAssets = () => {
                                                 />
                                             )}
                                         </td>
-                                        <td className="tooltip">
+                                        <td className="tooltip tooltip-bottom">
                                             <p>{rowData?.assetDescription}</p>
                                             <div className="tooltip-content px-2 py-1">
                                                 <p>Cap.Date:{rowData?.capDate}</p>
