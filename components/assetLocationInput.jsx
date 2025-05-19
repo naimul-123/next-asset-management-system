@@ -1,9 +1,11 @@
 import { getData } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { FaCaretSquareDown, FaCaretSquareUp } from "react-icons/fa";
 
-const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo }) => {
+
+import { FaCaretSquareDown, FaCaretSquareUp } from "react-icons/fa";
+const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo, isMissingType, handleAssetTypeChange }) => {
+    const [isEdit, setIsEdit] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false);
     const [location, setLocation] = useState("");
     const [selectedType, setSelectedType] = useState('')
@@ -16,7 +18,7 @@ const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo }) => {
     });
 
     const departments = departmentData?.map((dept) => dept.department);
-    console.log(departments);
+
     const handleDeptChange = (value) => {
         setLocations([])
         setlocationTypes([])
@@ -32,17 +34,22 @@ const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo }) => {
         setLocations(locations);
     }
 
+    const handleAction = (e) => {
+        e.preventDefault();
+        handleLocationInfo(e);
+        setIsEdit(false)
+    }
+
     return (
         <div className="">
-
-
-            <form onSubmit={handleLocationInfo} className="flex justify-between gap-2 ">
-                <input type="hidden" name="assetNumber" value={rowData?.assetNumber} />
+            <form onSubmit={handleAction} className="grid grid-cols-5 justify-between gap-2 ">
+                <input type="hidden" disabled name="assetNumber" value={rowData?.assetNumber} />
 
                 <select
                     name="department"
-                    className={`select select-xs ${rowData?.locationInfo?.department ? 'select-success' : 'select-error'}  `}
+                    className={`select  select-xs ${rowData?.locationInfo?.department ? 'select-success' : 'select-ghost'}  `}
                     required
+                    disabled={!isEdit}
                     onChange={(e) => handleDeptChange(e.target.value)}
                     value={rowData?.locationInfo?.department || selectedDept}
                 >
@@ -57,10 +64,10 @@ const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo }) => {
 
                 <select
                     name="locationType" // Dynamic name to ensure correct field submission
-                    className={`select select-xs ${rowData?.locationInfo?.locationType ? 'select-success' : 'select-error'}  `}
+                    className={`select select-neutral select-xs ${rowData?.locationInfo?.locationType ? 'select-success' : 'select-ghost'}  `}
                     onChange={(e) => handleLocTypeChange(e.target.value)}
                     value={rowData?.locationInfo?.locationType || selectedType}
-                    required
+                    required disabled={!isEdit}
                 >
                     <option value="">---Select---</option>
                     {locationTypes?.map((type) => (
@@ -73,8 +80,8 @@ const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo }) => {
                 <select
                     name="location"
                     defaultValue={rowData?.locationInfo?.location || ''}// Dynamic name to ensure correct field submission
-                    className={`select select-xs ${rowData?.locationInfo?.department ? 'select-success' : 'select-error'}  `}
-                    required
+                    className={`select select-xs ${rowData?.locationInfo?.department ? 'select-success' : 'select-ghost'}  `}
+                    required disabled={!isEdit}
                 >
                     <option value="">---Select---</option>
                     {locations.map((opt) => (
@@ -85,15 +92,21 @@ const AssetLocationInput = ({ rowData, assetTypes, handleLocationInfo }) => {
 
                 </select>
 
-                <input name="assetUser" defaultValue={rowData?.locationInfo?.assetUser || ''} className={`input input-xs ${rowData?.locationInfo?.department ? 'input-success' : 'input-error'}  `} required />
-
-                <button
+                <input name="assetUser" defaultValue={rowData?.locationInfo?.assetUser || ''} className={`input input-xs ${rowData?.locationInfo?.department ? 'input-success' : 'input-ghost'}  `} required disabled={!isEdit} />
+                {isEdit ? <button
                     type="submit"
-                    className="btn btn-warning btn-xs"
+                    className="btn btn-success btn-xs btn-soft btn-outline"
 
                 >
                     Update
-                </button>
+                </button> : <span
+
+                    className="btn btn-warning btn-xs btn-soft btn-outline"
+                    onClick={() => setIsEdit(true)}
+                >
+                    Edit
+                </span>}
+
 
 
             </form>
