@@ -36,7 +36,7 @@ const UploadNewAssets = () => {
     });
     return map;
   }, [assetTypesInfo]);
-  console.log(error);
+  console.log(data);
   const handleFileUpload = async (e) => {
     setData([]);
     const file = e.target.files[0];
@@ -46,10 +46,8 @@ const UploadNewAssets = () => {
       const wb = XLSX.read(bstr, { type: "binary", cellDates: true });
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
-
       const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 });
       const headersRow = jsonData[0];
-
       const missingHeaders = requiredFields.filter(
         (field) =>
           !headersRow.some(
@@ -150,9 +148,32 @@ const UploadNewAssets = () => {
       }));
     }
   };
-  const handleSavedata = async () => {
+  const handleSavedata = () => {
     try {
       if (missingtypesAssets.length > 0 || missingLocations.length > 0) {
+        return;
+      } else {
+        const newAssets = data.map((d) => {
+          const newAsset = {
+            assetNumber: d.assetNumber,
+            assetType: d.assetType,
+            assetClass: d.assetNumber,
+            accumDep: d.accumDep,
+            acquisVal: d.acquisVal,
+            bookVal: d.bookVal,
+          };
+          return newAsset;
+        });
+
+        const newLocations = data.map((d) => {
+          const newLoc = {
+            assetNumber: d.assetNumber,
+            locationInfo: d.locationInfo,
+          };
+          return newLoc;
+        });
+        console.log(newLocations);
+        console.log(newAssets);
         return;
       }
 
@@ -321,9 +342,6 @@ const UploadNewAssets = () => {
             <table className="table table-xs">
               <thead>
                 <tr className="bg-gray-200 sticky top-0 z-20">
-                  {/* {Object.keys(data[0]).map((header, index) => (
-                                        <th key={index}>{header}</th>
-                                    ))} */}
                   <th>SL</th>
                   <th>Asset Number</th>
                   <th>Asset Type</th>
@@ -440,7 +458,7 @@ const UploadNewAssets = () => {
             )}
 
             <button
-              disabled={error}
+              disabled={missingLocations.length || missingtypesAssets.length}
               onClick={handleSavedata}
               className="btn btn-success btn-soft btn-sm"
             >

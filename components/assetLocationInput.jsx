@@ -8,18 +8,14 @@ const AssetLocationInput = ({
   departmentData,
   handleLocationInfo,
 }) => {
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const [location, setLocation] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [locationTypes, setlocationTypes] = useState([]);
   const [locations, setLocations] = useState([]);
   const [selectedDept, setSelecteddept] = useState("");
-  // const { data: departmentData = [], refetch: deptRefetch } = useQuery({
-  //     queryKey: ["departments"],
-  //     queryFn: () => getData("/api/getdeptdata"),
-  // });
-  console.log(departmentData);
+
   const departments = departmentData?.map((dept) => dept.department);
 
   const handleDeptChange = (value) => {
