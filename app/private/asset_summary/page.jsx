@@ -1,90 +1,123 @@
-"use client"
+"use client";
 
+import { useAuth } from '@/contexts/authContext';
 import { getData } from '../../../lib/api';
-import { useQuery } from '@tanstack/react-query'
-import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
 
 const AssetSummary = () => {
-
-    const [openIndex, setOpenIndex] = useState(null)
-    const { data: assetSummary = [], isLoading, refetch } = useQuery({
+    const [openIndex, setOpenIndex] = useState(null);
+    const [printMode, setPrintMode] = useState(false);
+    const { user } = useAuth();
+    const { data: assetSummary = [], isLoading } = useQuery({
         queryKey: ['assetsummary'],
-        queryFn: () => getData('/api/getSummary')
-    })
+        queryFn: () => getData(`/api/getSummary?role=${user?.role}`),
+    });
 
+    // Automatically expand all rows during print
+    useEffect(() => {
+        const beforePrint = () => {
+            setPrintMode(true);
+            setOpenIndex('all'); // Expand all
+        };
+        const afterPrint = () => {
+            setPrintMode(false);
+            setOpenIndex(null); // Reset after print
+        };
+
+        window.addEventListener('beforeprint', beforePrint);
+        window.addEventListener('afterprint', afterPrint);
+
+        return () => {
+            window.removeEventListener('beforeprint', beforePrint);
+            window.removeEventListener('afterprint', afterPrint);
+        };
+    }, []);
 
     const handleToggle = (idx) => {
-        setOpenIndex(openIndex === idx ? null : idx)
-    }
-    console.log(assetSummary);
-
+        if (printMode) return; // Disable toggle in print mode
+        setOpenIndex(openIndex === idx ? null : idx);
+    };
 
     return (
+        <div className={`overflow-auto h-full w-full mx-auto ${printMode ? 'print-mode' : ''}`}>
+            <table className="table table-xs table-pin-rows">
+                <thead>
+                    <tr className="text-primary font-extrabold shadow-md border-b-0">
 
-
-
-        <div className='overflow-auto h-full print:overflow-hidden'>
-            <table className="table h-full   table-md table-pin-rows  ">
-                <thead className=' '>
-                    <tr className='text-primary bg-gray-bright font-extrabold shadow-md '>
-                        <th>
-                            <div className='grid grid-cols-6'>
-                                <h2>SL</h2>
-                                <h2 className='col-span-2'>Asset Class</h2>
-                                <h2 className='text-right'>Total Assets</h2>
-                                <h2 className='text-right'>Acquisation Value</h2>
-                                <h2 className='text-right'>Book Value</h2>
-                            </div>
-                        </th>
+                        <th>SL</th>
+                        <th className="">Asset Class</th>
+                        <th className="text-right">Total Assets</th>
+                        <th className="text-right">Acquisation Value</th>
+                        <th className="text-right">Book Value</th>
 
                     </tr>
                 </thead>
-                <tbody className='bg-gray-bright  '>
+                <tbody>
+                    {assetSummary.map((data, idx) => (
+                        <React.Fragment key={idx}>
 
-                    {assetSummary?.map((data, idx) => {
-                        return (
-                            <tr key={idx} className={`sticky bg-gray-bright border-none top-8  z-[${idx + 11}]`}>
-                                <th className='p-0 bg-gray-bright print:visible collapse border-b border-primary rounded-none   '>
-                                    <input type="checkbox" className='' />
-                                    <div className='grid grid-cols-6  px-4 bg-gray-bright shadow-xl  collapse-title'>
-                                        <h2>{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}.</h2>
-                                        <h2 className='col-span-2'>{data.assetClass}</h2>
-                                        <h2 className='text-right'>{data.totalAssets.toLocaleString("en-IN")}</h2>
-                                        <h2 className='text-right'>{data.totalAcquisVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
-                                        <h2 className='text-right'>{data.totalBookVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
-                                    </div>
-                                    <div className='collapse-content print:visible bg-white !min-h-0 print:min-h-fit max-h-96 overflow-auto'>
-                                        {
-                                            data?.assetTypes.map((type, tdx) =>
-                                                <div key={tdx} className={`grid grid-cols-6 py-2 
-                                                
-                                                `}>
-                                                    <h3 className=''>{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}.{tdx + 1 < 10 ? `0${tdx + 1}` : tdx + 1}.</h3>
-                                                    <h3 className='col-span-2'>{type.assetType}</h3>
-                                                    <h3 className='text-right'>{type.totalAssets.toLocaleString("en-IN")}</h3>
-                                                    <h3 className='text-right'>{type.acquisVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
-                                                    <h3 className='text-right'>{type.bookVal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-
-                                </th>
-
+                            <tr onClick={() => handleToggle(idx)}
+                                className={`cursor-pointer bg-light font-work-sans font-bold ${!printMode ? `sticky top-7 z-[${idx + 11}]` : ''}`}>
+                                <td>{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}.</td>
+                                <td className="">{data.assetClass}</td>
+                                <td className="text-right">{data.totalAssets.toLocaleString('en-IN')}</td>
+                                <td className="text-right">
+                                    {data.totalAcquisVal.toLocaleString('en-IN', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    })}
+                                </td>
+                                <td className="text-right">
+                                    {data.totalBookVal.toLocaleString('en-IN', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    })}
+                                </td>
                             </tr>
 
 
-                        )
-                    }
-
-
-                    )}
-
+                            {(openIndex === idx || openIndex === 'all') && (
+                                // here  I want to break page after each tr in print mood
+                                <tr className={printMode ? 'print:break-after-page' : ''}>
+                                    <td colSpan={5} className="overflow-auto max-h-96">
+                                        <table className="table table-xs table-pin-rows table-zebra bg-white w-full -z-10">
+                                            <tbody>
+                                                {data?.assetTypes.map((type, tdx) => (
+                                                    <tr key={tdx} className="">
+                                                        <td>
+                                                            {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}.
+                                                            {tdx + 1 < 10 ? `0${tdx + 1}` : tdx + 1}.
+                                                        </td>
+                                                        <td className="">{type.assetType}</td>
+                                                        <td className="text-right">
+                                                            {type.totalAssets.toLocaleString('en-IN')}
+                                                        </td>
+                                                        <td className="text-right">
+                                                            {type.acquisVal.toLocaleString('en-IN', {
+                                                                minimumFractionDigits: 2,
+                                                                maximumFractionDigits: 2,
+                                                            })}
+                                                        </td>
+                                                        <td className="text-right">
+                                                            {type.bookVal.toLocaleString('en-IN', {
+                                                                minimumFractionDigits: 2,
+                                                                maximumFractionDigits: 2,
+                                                            })}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            )}
+                        </React.Fragment>
+                    ))}
                 </tbody>
             </table>
-        </div >
+        </div>
+    );
+};
 
-    )
-}
-
-export default AssetSummary
+export default AssetSummary;

@@ -60,6 +60,15 @@ const ManageRole = () => {
         setEditId(null);
         controlRefetch();
       }
+      else {
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: result.error,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     },
     onError: (error) => {
       Swal.fire({
@@ -127,12 +136,11 @@ const ManageRole = () => {
   };
 
   return (
-    <div className="w-full space-y-6 ">
-      <h1 className="text-3xl font-bold">User Access Control</h1>
+    <div className="space-y-6 min-w-full max-h-full">
 
       {/* Add New Control */}
-      <div className="space-y-2 shadow p-4">
-        <h2 className="text-lg font-semibold">
+      <div className="bg-[#f7f7f7] p-4 rounded-xl space-y-4">
+        <h2 className="text-3xl font-bold text-info">
           {" "}
           {editId ? "Edit control" : "Create New Control"}
         </h2>
@@ -143,28 +151,31 @@ const ManageRole = () => {
           value={rolename}
           onChange={(e) => setRoleName(e.target.value)}
         />
-        <label className="label">
-          <span>Select controls</span>
-        </label>
+        <div className="border shadow rounded-xl px-4 py-3 space-y-3">
+          <h2 className="font-bold font-work-sans text-2xl text-info">Select controls</h2>
+          <div className="flex flex-wrap  gap-3">
 
-        <div className="flex flex-wrap  gap-3">
-          {classes?.map((cls) => (
-            <label key={cls} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={permissions.includes(cls)}
-                onChange={() => handlePermissionToggle(cls)}
-              />
-              {cls}
-            </label>
-          ))}
+
+
+            {classes?.map((cls) => (
+              <label key={cls} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={permissions.includes(cls)}
+                  onChange={() => handlePermissionToggle(cls)}
+                />
+                {cls}
+              </label>
+            ))}
+          </div>
         </div>
+
+
         <div className="flex flex-wrap gap-3 text-white">
           <button
             onClick={handleAddControl}
-            className={`text-white btn btn-sm ${
-              editId ? "btn-success" : "btn-info"
-            }`}
+            className={` btn btn-soft btn-sm ${editId ? "btn-success" : "btn-info"
+              }`}
           >
             {editId ? "Update" : "Create"}
           </button>
@@ -176,7 +187,7 @@ const ManageRole = () => {
                 setRoleName("");
                 setPermissions([]);
               }}
-              className="btn btn-sm text-white btn-error"
+              className="btn btn-sm btn-soft btn-error"
             >
               Cancel
             </button>
@@ -185,10 +196,12 @@ const ManageRole = () => {
       </div>
 
       {/* Manage Controls */}
-      <div className="max-h-96 overflow-auto">
-        <table className="table table-lg table-md table-zebra">
+      <div className="bg-[#f7f7f7] p-4 rounded-xl space-y-4">
+        <h2 className="text-3xl font-bold text-info">Existing Controls</h2>
+
+        <table className="table table-sm table-pin-rows">
           <thead>
-            <tr className="">
+            <tr className="font-bold text-primary">
               <th className="">Role Name</th>
               <th className="">Permissions</th>
               <th className="">Actions</th>
@@ -199,16 +212,16 @@ const ManageRole = () => {
               <tr key={ctrl._id} className="">
                 <td className="">{ctrl.rolename}</td>
                 <td className="">{ctrl?.permissions?.join(", ")}</td>
-                <td className="flex gap-3">
+                <td className="flex gap-3 w-full">
                   <button
                     onClick={() => handleDelete(ctrl._id)}
-                    className=" btn text-white  btn-xs btn-error"
+                    className=" btn  btn-sm btn-soft  btn-error"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => handleEdit(ctrl)}
-                    className="btn btn-xs btn-info text-white"
+                    className="btn btn-sm  btn-info btn-soft"
                   >
                     Edit
                   </button>

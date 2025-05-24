@@ -6,8 +6,9 @@ import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa";
 import { useAuth } from "@/contexts/authContext";
-import DeptChangeForm from "@/components/DeptChangeForm";
+
 import AssetLocationInput from "@/components/assetLocationInput";
+import DeptChangeForm from "@/components/DeptChangeForm";
 
 const ManageAssets = () => {
   const [searchType, setSearchType] = useState("");

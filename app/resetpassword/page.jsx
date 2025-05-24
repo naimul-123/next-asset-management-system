@@ -1,9 +1,7 @@
 "use client";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../contexts/authContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Button from "../../components/reusable/Button";
 import { validatePassword } from "../../lib/passwordvalidation";
 import { updateData } from "../../lib/api";
 
@@ -102,7 +100,7 @@ const ResetPassword = () => {
               )}
             </div>
             <div className="form-control mt-2">
-              <Button btnText="Reset" isDisabled={error} />
+              <button className="btn btn-info btn-soft w-full" disabled={error}>Reset</button>
             </div>
           </form>
         </div>

@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { useAuth } from '../../contexts/authContext';
 import { postData } from '../../lib/api';
 import Swal from 'sweetalert2';
-import Button from '../../components/reusable/Button';
+
 
 const Login = () => {
     const router = useRouter();
@@ -65,8 +65,8 @@ const Login = () => {
                     <input name='password' type="password" placeholder="password" className="input input-bordered input-sm" required />
 
                 </div>
-                <div className="form-control mt-2">
-                    <Button btnText="Log In" />
+                <div className="form-control mt-2 justify-center">
+                    <button className='btn btn-info btn-soft w-full'>Login</button>
                 </div>
                 {loginerror &&
                     <div className="label flex-col max-w-xs ">

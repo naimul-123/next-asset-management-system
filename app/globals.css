@@ -12,14 +12,6 @@
     page-break-before: always;
     padding: 10mm 10mm 8mm 10mm !important;
     counter-increment: page;
-
-    @bottom-right {
-      content: "Page " counter(page) " of " counter(pages);
-      margin-top: -8mm;
-      margin-right: 10mm;
-    }
-
-    /* Standard margins for A4 */
   }
 
   table {
@@ -29,17 +21,6 @@
 
   thead {
     display: table-header-group !important;
-  }
-
-  .table-footer {
-    text-align: center;
-    position: fixed;
-    bottom: -8px;
-
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 6px;
-    font-weight: bold;
   }
 
   tbody {
@@ -52,6 +33,31 @@
 
   tfoot {
     display: table-footer-group;
+  }
+
+  .table-footer {
+    text-align: center;
+    position: fixed;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 6px;
+    font-weight: bold;
+  }
+
+  /* Optional: Hide interactivity */
+  .cursor-pointer {
+    cursor: default !important;
+  }
+
+  .sticky {
+    position: static !important;
+  }
+
+  .shadow,
+  .shadow-md,
+  .shadow-sm {
+    box-shadow: none !important;
   }
 }
 

@@ -1,10 +1,10 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { deleteData, getData, postData, updateData } from "../../../lib/api";
 import Swal from "sweetalert2";
-import { CiSearch } from "react-icons/ci";
-import Button from "@/components/reusable/Button";
+
+
 const ManageLocation = () => {
   const [selectedDept, setSelecteddept] = useState("");
   const [isLoading, setIsLoading] = useState(false)

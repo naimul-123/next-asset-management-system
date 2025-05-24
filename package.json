@@ -1,5 +1,5 @@
 {
-  "name": "next-asset-management-system",
+  "name": "y",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -49,5 +49,6 @@
   "bugs": {
     "url": "https://github.com/naimul-123/next-asset-management-system/issues"
   },
-  "homepage": "https://github.com/naimul-123/next-asset-management-system#readme"
+  "homepage": "https://github.com/naimul-123/next-asset-management-system#readme",
+  "keywords": []
 }

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { deleteData, getData, postData, updateData } from "../../../lib/api";
 import Swal from "sweetalert2";
 import { CiSearch } from "react-icons/ci";
-import Button from "@/components/reusable/Button";
+
 const ManageUser = () => {
   const [userMessage, setuserMessage] = useState("");
   const [userError, setUserError] = useState("");
@@ -122,13 +122,13 @@ const ManageUser = () => {
     );
   }
   return (
-    <div className="space-y-6 min-w-full">
+    <div className="space-y-6 min-w-full max-h-full">
       <form
         className="bg-[#f7f7f7] p-4 rounded-xl space-y-4"
         onSubmit={handleAddUser}
       >
         <div>
-          <h2 className="font-bold text-3xl">Add New User</h2>
+          <h2 className="font-bold text-3xl text-info">Add New User</h2>
           {userMessage && (
             <p className="font-bold text-primary text-xs">{userMessage}</p>
           )}
@@ -137,9 +137,9 @@ const ManageUser = () => {
           )}
         </div>
 
-        <div className="w-full flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="label-text">User Name</span>
+        <div className="w-full grid grid-cols-4 items-center gap-3">
+          <div className="flex flex-col gap-2">
+            <span className="label-text text-success font-bold">User Name</span>
             <input
               name="name"
               type="text"
@@ -148,8 +148,8 @@ const ManageUser = () => {
               required
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="label-text">SAP ID</span>
+          <div className="flex flex-col gap-2">
+            <span className="label-text text-success font-bold">SAP ID</span>
             <input
               name="sap"
               type="text"
@@ -158,8 +158,8 @@ const ManageUser = () => {
               required
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="label-text">Role</span>
+          <div className="flex flex-col gap-2">
+            <span className="label-text text-success font-bold">Role</span>
 
             <select
               name="role"
@@ -176,80 +176,84 @@ const ManageUser = () => {
               ))}
             </select>
           </div>
-          <div className="flex items-center gap-2">
-            <Button btnText="Add" />
+          <div className="flex flex-col gap-2">
+            <button className="btn btn-success mt-7 btn-sm w-full btn-soft">Add</button>
           </div>
         </div>
       </form>
-      <table className="table table-md table-zebra ">
-        <thead>
-          <tr className="text-center">
-            <th>SL</th>
-            <td>Name</td>
-            <td>SAP</td>
-            <td>Change Access Area</td>
-            <td colSpan={2} className="text-center">
-              Actions
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          {usersData ? (
-            usersData.map((user, idx) => (
-              <tr key={user.sap}>
-                <th>{idx + 1}</th>
-                <td>{user.name}</td>
-                <td>{user.sap}</td>
-                <td>
-                  <select
-                    value={user.role}
-                    className="select select-xs uppercase"
-                    onChange={(e) => {
-                      const role = e.target.value;
-                      const sap = user.sap;
-                      const data = { role, sap };
-                      return handleRoleChange(data);
-                    }}
-                  >
-                    <option key="" value="" className="uppercase">
-                      ---Select---
-                    </option>
-                    {roles?.map((ctrl) => (
-                      <option key={ctrl} value={ctrl} className="uppercase">
-                        {ctrl}
+      <div className="bg-[#f7f7f7] p-4 rounded-xl space-y-4">
+        <h2 className="font-bold text-3xl text-info">Existing User Info</h2>
+        <table className="table table-xs ">
+          <thead>
+            <tr className="text-center">
+              <th>SL</th>
+              <td>Name</td>
+              <td>SAP</td>
+              <td>Change Access Area</td>
+              <td colSpan={2} className="text-center">
+                Actions
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            {usersData ? (
+              usersData.map((user, idx) => (
+                <tr key={user.sap}>
+                  <th>{idx + 1}</th>
+                  <td>{user.name}</td>
+                  <td>{user.sap}</td>
+                  <td>
+                    <select
+                      value={user.role}
+                      className="select select-xs uppercase"
+                      onChange={(e) => {
+                        const role = e.target.value;
+                        const sap = user.sap;
+                        const data = { role, sap };
+                        return handleRoleChange(data);
+                      }}
+                    >
+                      <option key="" value="" className="uppercase">
+                        ---Select---
                       </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <div className="flex flex-wrap gap-3">
+                      {roles?.map((ctrl) => (
+                        <option key={ctrl} value={ctrl} className="uppercase">
+                          {ctrl}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="flex flex-wrap gap-3">
+
                     <button
-                      className="btn btn-xs btn-outline btn-secondary"
+                      className="btn btn-xs btn-soft btn-success"
                       onClick={() => handleResetPassword(user.sap)}
                     >
                       Reset Password
                     </button>
                     <button
                       onClick={() => handleDeletUser(user.sap)}
-                      className="btn btn-xs btn-error btn-outline text-white"
+                      className="btn btn-xs btn-error btn-soft"
                     >
                       Delete
                     </button>
+
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5">
+                  <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
+                    <span className="loading loading-spinner text-primary"></span>
                   </div>
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5">
-                <div className="overflow-auto min-w-full border-2 grow rounded-b-lg">
-                  <span className="loading loading-spinner text-primary"></span>
-                </div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
+
     </div>
   );
 };

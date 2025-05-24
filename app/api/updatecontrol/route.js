@@ -29,8 +29,8 @@ export async function PUT(req) {
       );
     } else {
       return NextResponse.json(
-        { error: "No changes made or role not found." },
-        { status: 404 }
+        { error: "No changes made or role not found.", success: false },
+
       );
     }
   } catch (error) {
