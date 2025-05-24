@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import logo from "../../public/bb_logo.png";
+import logo from "@/public/bb_logo.png";
 import Link from "next/link";
-import { useAuth } from "../../contexts/authContext";
+import { useAuth } from "../contexts/authContext";
 import { usePathname } from "next/navigation";
 import { IoLogOutSharp } from "react-icons/io5";
 import { FaEye, FaHome, FaSignInAlt, FaUser, FaUserPlus } from "react-icons/fa";
 
 const Header = () => {
-  const { user, logout, remainingTime } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   return (
     <div className=" h-fit text-black   flex justify-between items-center bg-warning    shadow-lg print:hidden">
@@ -36,12 +36,12 @@ const Header = () => {
         <div className="grow">
           {user ? (
             <div className="flex items-center gap-2">
-              <p>Your session will be expired after {remainingTime}</p>
               <h3 className="flex item-center gap-1">
-                <FaUser /> {user.name}
+                <FaUser />
+                Welcome {user.name}
               </h3>
               <button
-                className="flex item-center btn btn-xs btn-warning "
+                className="flex item-center btn btn-xs btn-warning text-black btn-outline "
                 onClick={logout}
               >
                 <IoLogOutSharp />
@@ -56,21 +56,22 @@ const Header = () => {
               >
                 <FaSignInAlt /> Log In
               </Link>
-
             </div>
           )}
         </div>
         <div className="flex text-sm gap-2 ">
           <Link
-            className={`flex items-center  hover:link ${pathname === "/" ? " link " : ""
-              }  `}
+            className={`flex items-center  hover:link ${
+              pathname === "/" ? " link " : ""
+            }  `}
             href="/"
           >
             <FaHome className="" />
           </Link>
           <Link
-            className={`flex items-center hover:link ${pathname === "/view_asset" ? " link" : ""
-              }  `}
+            className={`flex items-center hover:link ${
+              pathname === "/view_asset" ? " link" : ""
+            }  `}
             href="/view_asset"
           >
             View Asset
@@ -78,11 +79,12 @@ const Header = () => {
 
           {user?.role && (
             <>
-              {user.role === 'admin' && (
+              {user.role === "admin" && (
                 <>
                   <Link
-                    className={`hover:link ${pathname === "/private/manage_user" ? " link " : ""
-                      }  `}
+                    className={`hover:link ${
+                      pathname === "/private/manage_user" ? " link " : ""
+                    }  `}
                     href="/private/manage_user"
                   >
                     Manage User
@@ -90,48 +92,51 @@ const Header = () => {
                 </>
               )}
               <Link
-                className={`hover:link ${pathname === "/private/asset_summary" ? " link " : ""
-                  }  `}
+                className={`hover:link ${
+                  pathname === "/private/asset_summary" ? " link " : ""
+                }  `}
                 href="/private/asset_summary"
               >
                 Asset Summary
               </Link>
               <Link
-                className={`hover:link ${pathname === "/private/manage_assets" ? " link " : ""
-                  }  `}
+                className={`hover:link ${
+                  pathname === "/private/manage_assets" ? " link " : ""
+                }  `}
                 href="/private/manage_assets"
               >
                 Manage Assets
               </Link>
-              {user.role === 'admin' ? (
-
+              {user.role === "admin" ? (
                 <>
                   <Link
-                    className={`hover:link ${pathname === "/private/manage_location" ? " link " : ""
-                      }  `}
+                    className={`hover:link ${
+                      pathname === "/private/manage_location" ? " link " : ""
+                    }  `}
                     href="/private/manage_location"
                   >
                     Manage Location
                   </Link>
                   <Link
-                    className={`hover:link ${pathname === "/private/update_assets" ? " link " : ""
-                      }  `}
+                    className={`hover:link ${
+                      pathname === "/private/update_assets" ? " link " : ""
+                    }  `}
                     href="/private/update_assets"
                   >
                     Update All Assets
                   </Link>
                 </>
-              ) : (<Link
-                className={`hover:link ${pathname === "/private/upload_new_assets" ? " link " : ""
+              ) : (
+                <Link
+                  className={`hover:link ${
+                    pathname === "/private/upload_new_assets" ? " link " : ""
                   }  `}
-                href="/private/upload_new_assets"
-              >
-                Upload New Assets
-              </Link>
-
+                  href="/private/upload_new_assets"
+                >
+                  Upload New Assets
+                </Link>
               )}
             </>
-
           )}
         </div>
       </div>

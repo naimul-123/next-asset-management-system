@@ -9,16 +9,12 @@ import { useAuth } from "@/contexts/authContext";
 import DeptChangeForm from "@/components/DeptChangeForm";
 import AssetLocationInput from "@/components/assetLocationInput";
 
-import { FixedSizeList as List } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-
-
 const ManageAssets = () => {
   const [searchType, setSearchType] = useState("");
   const [location, setLocation] = useState("");
-  const [selectedType, setSelectedType] = useState('')
+  const [selectedType, setSelectedType] = useState("");
   const [locationTypes, setlocationTypes] = useState([]);
-  const [locations, setLocations] = useState([])
+  const [locations, setLocations] = useState([]);
   const [selectedDept, setSelecteddept] = useState("");
   const [isEdit, setIsEdit] = useState(true);
   const [action, setAction] = useState("");
@@ -27,53 +23,6 @@ const ManageAssets = () => {
   const [assettypes, setTypes] = useState([]);
   const [assetInfo, setAssetInfo] = useState({});
   const { user } = useAuth();
-
-  const Row = ({ index, style, data }) => {
-    const asset = data.assets[index];
-    return (
-
-      <tr style={style}>
-        <td>
-          <label className="flex items-center gap-2">
-            {data.isEdit && (
-              <input
-                type="checkbox"
-                checked={data.selectedItems.includes(asset.assetNumber)}
-                onChange={(e) =>
-                  data.handleSelectItem(e.target.checked, asset.assetNumber)
-                }
-                className="checkbox checkbox-warning print:hidden"
-              />
-            )}
-            <span>{index + 1}</span>
-          </label>
-        </td>
-        <td>{asset.assetNumber}</td>
-        <td>{asset.assetClass}</td>
-        <td>{asset.assetType}</td>
-        <td>
-          <div className="tooltip tooltip-bottom">
-            <p>{asset?.assetDescription}</p>
-            <div className="tooltip-content text-left">
-              <p>Cap.Date:{asset?.capDate}</p>
-              <p>Acquis.Val:{asset?.acquisationVal}</p>
-              <p>Book Val:{asset?.bookVal}</p>
-            </div>
-          </div>
-        </td>
-        <td colSpan={5}>
-          <AssetLocationInput
-            departmentData={data.departmentData}
-            rowData={asset}
-            handleLocationInfo={data.handleLocationInfo}
-          />
-        </td>
-      </tr>
-
-
-
-    );
-  };
 
   // console.log(user);
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
@@ -84,19 +33,23 @@ const ManageAssets = () => {
   const departments = departmentData?.map((dept) => dept.department);
 
   const handleDeptChange = (value) => {
-    setLocations([])
-    setlocationTypes([])
-    setSelectedType('')
+    setLocations([]);
+    setlocationTypes([]);
+    setSelectedType("");
     setSelecteddept(value);
-    const locationTypes = departmentData.find(d => d.department === value).locations.map(loc => loc.locationType)
-    setlocationTypes(locationTypes)
+    const locationTypes = departmentData
+      .find((d) => d.department === value)
+      .locations.map((loc) => loc.locationType);
+    setlocationTypes(locationTypes);
   };
 
   const handleLocTypeChange = (selectedType) => {
     setSelectedType(selectedType);
-    const locations = departmentData.find(d => d.department === selectedDept).locations.find(loc => loc.locationType === selectedType).location
+    const locations = departmentData
+      .find((d) => d.department === selectedDept)
+      .locations.find((loc) => loc.locationType === selectedType).location;
     setLocations(locations);
-  }
+  };
   // asset by class code
 
   const { data: assetClasses = [] } = useQuery({
@@ -186,8 +139,6 @@ const ManageAssets = () => {
     queryKey: ["updateAssetsLocation"],
   });
 
-
-
   const updateAssetsUser = useMutation({
     mutationFn: (data) => postData("/api/updateAssetsUser", data),
     queryKey: ["updateAssetsUser"],
@@ -260,24 +211,15 @@ const ManageAssets = () => {
           setSelectedItmes([]);
           setSelecteddept("");
           setSelectedType("");
-          setLocation('')
+          setLocation("");
         },
       });
     }
   };
-  const handleLocationInfo = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const assetNumber = form.assetNumber.value;
-    const department = form.department.value;
-    const locationType = form.locationType.value;
-    const location = form.location.value;
-    const assetUser = form.assetUser.value
+  const handleLocationInfo = (assetInfo) => {
+    const { assetNumber, assetLocation } = assetInfo;
     const data = {
-      department,
-      location,
-      locationType,
-      assetUser,
+      ...assetLocation,
       assetNumbers: [assetNumber],
     };
 
@@ -300,11 +242,9 @@ const ManageAssets = () => {
             timer: 1500,
           });
         }
-        form.reset();
-      }
-    })
-
-  }
+      },
+    });
+  };
   const handleDownloadAssets = (data) => {
     // 1) Convert your data to a worksheet
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -337,17 +277,21 @@ const ManageAssets = () => {
     URL.revokeObjectURL(url);
   };
 
-  console.log(assets);
-
   return (
     <div className="mx-auto w-full flex flex-col  h-full  space-y-1 ">
-      <form className="flex flex-wrap items-end gap-3 bg-gray-bright py-3 px-2" onSubmit={handleSearchForm}>
+      <form
+        className="flex flex-wrap items-end gap-3 bg-gray-bright py-3 px-2"
+        onSubmit={handleSearchForm}
+      >
         <label className="flex flex-col gap-2 items-center">
           <span className="font-bold text-primary">Search Assets By</span>
           <select
             defaultValue=""
             className="select select-xs select-warning"
-            onChange={(e) => { setSearchType(e.target.value); setSelecteddept('') }}
+            onChange={(e) => {
+              setSearchType(e.target.value);
+              setSelecteddept("");
+            }}
           >
             <option value="">---Select---</option>
             <option value="assetNumber">Asset Number</option>
@@ -466,15 +410,12 @@ const ManageAssets = () => {
         {(searchType === "assetLocation" || searchType === "assetClass") && (
           <>
             <label className="label items-end">
-
               <input
                 name="isBookVal1"
                 type="checkbox"
                 className="checkbox checkbox-warning checkbox-md"
               />
-              <span>
-                Book Value 1 only
-              </span>
+              <span>Book Value 1 only</span>
             </label>
             <label className="flex flex-col  gap-2">
               <span className="font-bold text-primary">Sort By</span>
@@ -505,7 +446,6 @@ const ManageAssets = () => {
         </div>
       </form>
 
-
       {assetLoading ? (
         <div className="flex flex-col h-full justify-center items-center ">
           <div className="loading loading-dots  loading-xl grow text-warning "></div>
@@ -517,9 +457,15 @@ const ManageAssets = () => {
               <thead className="">
                 <tr className="bg-stone-100 border-b-0">
                   <th colSpan={12}>
-
                     <div className="flex items-start w-full ">
-                      <DeptChangeForm handleAction={handleAction} departmentData={departmentData} handleSelectAll={handleSelectAll} selectedItems={selectedItems} action={action} setAction={setAction} />
+                      <DeptChangeForm
+                        handleAction={handleAction}
+                        departmentData={departmentData}
+                        handleSelectAll={handleSelectAll}
+                        selectedItems={selectedItems}
+                        action={action}
+                        setAction={setAction}
+                      />
 
                       <button
                         onClick={() => handleDownloadAssets(assets)}
@@ -547,37 +493,52 @@ const ManageAssets = () => {
               </thead>
 
               <tbody>
-                <tr>
-                  <td colSpan={10}>
-                    <AutoSizer disableHeight>
-                      {({ width }) => (
-                        <List
-                          height={850}
-                          width={width}
-                          itemCount={assets.length}
-                          itemSize={90}
-                          itemData={{
-                            assets,
-                            isEdit,
-                            selectedItems,
-                            handleSelectItem,
-                            departmentData,
-                            handleLocationInfo,
-                          }}
-                        >
-                          {Row}
-                        </List>
-                      )}
-                    </AutoSizer>
-                  </td>
-                </tr>
-              </tbody>
+                {assets?.map((data, index) => (
+                  <tr key={index}>
+                    <td>
+                      <label className="flex items-center gap-2">
+                        {isEdit && (
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.includes(data.assetNumber)}
+                            onChange={(e) =>
+                              handleSelectItem(
+                                e.target.checked,
+                                data.assetNumber
+                              )
+                            }
+                            className="checkbox checkbox-warning print:hidden"
+                          />
+                        )}
+                        <span>{index + 1}</span>
+                      </label>
+                    </td>
+                    <td>{data.assetNumber}</td>
+                    <td>{data.assetClass}</td>
+                    <td>{data.assetType}</td>
+                    <td>
+                      <div className="tooltip tooltip-bottom">
+                        <p>{data?.assetDescription}</p>
+                        <div className="tooltip-content text-left">
+                          <p>Cap.Date:{data?.capDate}</p>
+                          <p>Acquis.Val:{data?.acquisationVal}</p>
+                          <p>Book Val:{data?.bookVal}</p>
+                        </div>
+                      </div>
+                    </td>
 
+                    <AssetLocationInput
+                      departmentData={departmentData}
+                      rowData={data}
+                      handleLocationInfo={handleLocationInfo}
+                    />
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         )
       )}
-
     </div>
   );
 };

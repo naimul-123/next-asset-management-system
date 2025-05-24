@@ -1,24 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const AssetLocationInput = ({ rowData, departmentData, handleLocationInfo }) => {
-  const [isEdit, setIsEdit] = useState(true);
-  const [selectedDept, setSelectedDept] = useState(() => rowData?.assetLocation?.department || rowData?.department || "");
-  const [selectedType, setSelectedType] = useState(() => rowData?.assetLocation?.locationType || rowData?.locationType || "");
-  const [location, setLocation] = useState(() => rowData?.assetLocation?.location || rowData?.location || "");
-  const [assetUser, setAssetUser] = useState(() => rowData?.assetLocation?.assetUser || rowData?.assetUser || "");
+const AssetLocationInput = ({
+  rowData,
+  departmentData,
+  handleLocationInfo,
+}) => {
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedDept, setSelectedDept] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [location, setLocation] = useState("");
+  const [assetUser, setAssetUser] = useState("");
+  const [locationTypes, setLocationTypes] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const departments = departmentData.map((dept) => dept.department);
 
-  // Derived data
-  const departments = departmentData?.map((dept) => dept.department) || [];
+  // Update locationTypes when selectedDept changes
+  useEffect(() => {
+    if (selectedDept) {
+      const deptData = departmentData.find(
+        (dept) => dept.department === selectedDept
+      );
+      if (deptData) {
+        const types = deptData.locations.map((l) => l.locationType);
+        setLocationTypes(types);
 
-  const locationTypes = departmentData.find(d => d.department === selectedDept)?.locations.map(loc => loc.locationType) || [];
+        // Reset selectedType if it's not valid anymore
+        if (!types.includes(selectedType)) {
+          setSelectedType("");
+        }
+      } else {
+        setLocationTypes([]);
+        setSelectedType("");
+      }
+    } else {
+      setLocationTypes([]);
+      setSelectedType("");
+    }
+  }, [selectedDept]);
 
-  const locations = departmentData
-    .find(d => d.department === selectedDept)
-    ?.locations.find(loc => loc.locationType === selectedType)?.location || [];
+  // Update locations when selectedType or selectedDept changes
+  useEffect(() => {
+    if (selectedDept && selectedType) {
+      const deptData = departmentData.find(
+        (dept) => dept.department === selectedDept
+      );
+      if (deptData) {
+        const typeData = deptData.locations.find(
+          (l) => l.locationType === selectedType
+        );
+        if (typeData) {
+          setLocations(typeData.location);
+
+          // Reset location if it's not valid anymore
+          if (!typeData.location.includes(location)) {
+            setLocation("");
+          }
+        } else {
+          setLocations([]);
+          setLocation("");
+        }
+      }
+    } else {
+      setLocations([]);
+      setLocation("");
+    }
+  }, [selectedType, selectedDept]);
 
   const handleDeptChange = (value) => {
     setSelectedDept(value);
-    setSelectedType("");
     setLocation("");
   };
 
@@ -27,99 +76,149 @@ const AssetLocationInput = ({ rowData, departmentData, handleLocationInfo }) => 
     setLocation("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleLocationInfo(e);
+  const handleSubmit = () => {
+    const assetLocation = {
+      department: selectedDept,
+      locationType: selectedType,
+      location,
+      assetUser,
+    };
+    const data = {
+      assetNumber: rowData.assetNumber,
+      assetLocation,
+    };
+    handleLocationInfo(data);
     setIsEdit(false);
   };
 
+  const handleEdit = () => {
+    const dept =
+      rowData?.assetLocation?.department || rowData?.department || "";
+    const type =
+      rowData?.assetLocation?.locationType || rowData?.locationType || "";
+    const loc = rowData?.assetLocation?.location || rowData?.location || "";
+    const user = rowData?.assetLocation?.assetUser || rowData?.assetUser || "";
+
+    setSelectedDept(dept);
+    setSelectedType(type);
+    setLocation(loc);
+    setAssetUser(user);
+    setIsEdit(true);
+  };
+
   return (
-    <div>
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-5 justify-between gap-2"
-      >
-        <input type="hidden" name="assetNumber" value={rowData?.assetNumber} />
+    <>
+      <td>
+        {isEdit ? (
+          <select
+            name="department"
+            onChange={(e) => handleDeptChange(e.target.value)}
+            className={`select select-xs ${
+              selectedDept ? "select-success" : "select-ghost"
+            }`}
+            value={selectedDept}
+            required
+          >
+            <option value="">---Select---</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept.toUpperCase()}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span>
+            {rowData?.assetLocation?.department || rowData?.department}
+          </span>
+        )}
+      </td>
 
-        {/* Department */}
-        <select
-          name="department"
-          value={selectedDept}
-          onChange={(e) => handleDeptChange(e.target.value)}
-          disabled={!isEdit}
-          className={`select select-xs ${selectedDept ? "select-success" : "select-ghost"}`}
-          required
-        >
-          <option value="">---Select---</option>
-          {departments.map((dept) => (
-            <option key={dept} value={dept} className="capitalize">
-              {dept.toUpperCase()}
-            </option>
-          ))}
-        </select>
+      <td>
+        {isEdit ? (
+          <select
+            name="locationType"
+            onChange={(e) => handleLocTypeChange(e.target.value)}
+            className={`select select-xs ${
+              selectedType ? "select-success" : "select-ghost"
+            }`}
+            value={selectedType}
+            required
+          >
+            <option value="">---Select---</option>
+            {locationTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span>
+            {rowData?.assetLocation?.locationType || rowData?.locationType}
+          </span>
+        )}
+      </td>
 
-        {/* Location Type */}
-        <select
-          name="locationType"
-          value={selectedType}
-          onChange={(e) => handleLocTypeChange(e.target.value)}
-          disabled={!isEdit}
-          className={`select select-xs ${selectedType ? "select-success" : "select-ghost"}`}
-          required
-        >
-          <option value="">---Select---</option>
-          {locationTypes.map((type) => (
-            <option key={type} value={type} className="capitalize">
-              {type}
-            </option>
-          ))}
-        </select>
+      <td>
+        {isEdit ? (
+          <select
+            name="location"
+            onChange={(e) => setLocation(e.target.value)}
+            className={`select select-xs ${
+              location ? "select-success" : "select-ghost"
+            }`}
+            value={location}
+            required
+          >
+            <option value="">---Select---</option>
+            {locations.map((loc) => (
+              <option key={loc} value={loc}>
+                {loc}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span>{rowData?.assetLocation?.location || rowData?.location}</span>
+        )}
+      </td>
 
-        {/* Location */}
-        <select
-          name="location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          disabled={!isEdit}
-          className={`select select-xs ${location ? "select-success" : "select-ghost"}`}
-          required
-        >
-          <option value="">---Select---</option>
-          {locations.map((loc) => (
-            <option key={loc} value={loc} className="capitalize">
-              {loc}
-            </option>
-          ))}
-        </select>
+      <td>
+        {isEdit ? (
+          <input
+            name="assetUser"
+            onBlur={(e) => setAssetUser(e.target.value)}
+            className={`input input-xs ${
+              assetUser ? "input-success" : "input-ghost"
+            }`}
+            defaultValue={
+              rowData?.assetLocation?.assetUser || rowData?.assetUser
+            }
+            required
+          />
+        ) : (
+          <span>{rowData?.assetLocation?.assetUser || rowData?.assetUser}</span>
+        )}
+      </td>
 
-        {/* Asset User */}
-        <input
-          name="assetUser"
-          value={assetUser}
-          onBlur={(e) => setAssetUser(e.target.value)}
-          disabled={!isEdit}
-          required
-          className={`input input-xs ${assetUser ? "input-success" : "input-ghost"}`}
-        />
-
-        {/* Submit / Edit Button */}
+      <td>
         {isEdit ? (
           <button
-            type="submit"
-            className="btn btn-success btn-xs btn-soft btn-outline"
+            type="button"
+            onClick={handleSubmit}
+            className="btn btn-success btn-xs btn-outline w-full"
           >
             Update
           </button>
         ) : (
-          <span
-            className="btn btn-warning btn-xs btn-soft btn-outline"
-            onClick={() => setIsEdit(true)}
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="btn btn-warning btn-xs btn-outline text-xs w-full"
           >
             Edit
-          </span>
+          </button>
         )}
-      </form>
-    </div>
+      </td>
+    </>
   );
 };
 

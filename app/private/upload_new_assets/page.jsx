@@ -177,15 +177,13 @@ const UploadNewAssets = () => {
         //   console.log(newAssets);
         //   return;
         // }
-
       } else {
         const res = await postData("/api/uploadnewassets", data);
         console.log(res);
         if (res.data.message) {
-          Swal.fire(res.data.message)
+          Swal.fire(res.data.message);
           setData([]);
         }
-
       }
     } catch (err) {
       console.log(err);
@@ -207,20 +205,8 @@ const UploadNewAssets = () => {
     handleLocationMissing(data);
   }, [data]);
 
-  const handleLocationInfo = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const assetNumber = form.assetNumber.value;
-    const department = form.department.value;
-    const locationType = form.locationType.value;
-    const location = form.location.value;
-    const assetUser = form.assetUser.value;
-    const assetLocation = {
-      department,
-      locationType,
-      location,
-      assetUser
-    };
+  const handleLocationInfo = (assetInfo) => {
+    const { assetNumber, assetLocation } = assetInfo;
 
     const updated = data.map((item) =>
       item.assetNumber === assetNumber ? { ...item, assetLocation } : item
@@ -327,7 +313,6 @@ const UploadNewAssets = () => {
     <div className="mx-auto w-full flex flex-col h-full space-y-1 ">
       {data?.length > 0 ? (
         <>
-
           <div className="overflow-auto h-full max-h-[calc(100vh-250px)]">
             <table className="table table-xs">
               <thead>
@@ -373,7 +358,6 @@ const UploadNewAssets = () => {
                             <p>Acquis.Val:{rowData?.acquisVal}</p>
                           </div>
                         </div>
-
                       </td>
                       <td colSpan={5} className="w-full">
                         {" "}

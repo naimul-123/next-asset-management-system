@@ -1,7 +1,7 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
-import Header from "../components/header/Header";
+import Header from "../components/Header";
 import { useState } from "react";
 import { AuthProvider } from "../contexts/authContext";
 export default function RootLayout({ children }) {
