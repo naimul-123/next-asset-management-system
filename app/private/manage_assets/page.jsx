@@ -7,6 +7,12 @@ import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa";
 import { useAuth } from "@/contexts/authContext";
 import DeptChangeForm from "@/components/DeptChangeForm";
+import AssetLocationInput from "@/components/assetLocationInput";
+
+import { FixedSizeList as List } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+
+
 const ManageAssets = () => {
   const [searchType, setSearchType] = useState("");
   const [location, setLocation] = useState("");
@@ -21,6 +27,54 @@ const ManageAssets = () => {
   const [assettypes, setTypes] = useState([]);
   const [assetInfo, setAssetInfo] = useState({});
   const { user } = useAuth();
+
+  const Row = ({ index, style, data }) => {
+    const asset = data.assets[index];
+    return (
+
+      <tr style={style}>
+        <td>
+          <label className="flex items-center gap-2">
+            {data.isEdit && (
+              <input
+                type="checkbox"
+                checked={data.selectedItems.includes(asset.assetNumber)}
+                onChange={(e) =>
+                  data.handleSelectItem(e.target.checked, asset.assetNumber)
+                }
+                className="checkbox checkbox-warning print:hidden"
+              />
+            )}
+            <span>{index + 1}</span>
+          </label>
+        </td>
+        <td>{asset.assetNumber}</td>
+        <td>{asset.assetClass}</td>
+        <td>{asset.assetType}</td>
+        <td>
+          <div className="tooltip tooltip-bottom">
+            <p>{asset?.assetDescription}</p>
+            <div className="tooltip-content text-left">
+              <p>Cap.Date:{asset?.capDate}</p>
+              <p>Acquis.Val:{asset?.acquisationVal}</p>
+              <p>Book Val:{asset?.bookVal}</p>
+            </div>
+          </div>
+        </td>
+        <td colSpan={5}>
+          <AssetLocationInput
+            departmentData={data.departmentData}
+            rowData={asset}
+            handleLocationInfo={data.handleLocationInfo}
+          />
+        </td>
+      </tr>
+
+
+
+    );
+  };
+
   // console.log(user);
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],
@@ -211,7 +265,46 @@ const ManageAssets = () => {
       });
     }
   };
+  const handleLocationInfo = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const assetNumber = form.assetNumber.value;
+    const department = form.department.value;
+    const locationType = form.locationType.value;
+    const location = form.location.value;
+    const assetUser = form.assetUser.value
+    const data = {
+      department,
+      location,
+      locationType,
+      assetUser,
+      assetNumbers: [assetNumber],
+    };
 
+    updateAssetsLocation.mutate(data, {
+      onSuccess: (result) => {
+        if (result.data.success) {
+          queryClient.invalidateQueries(["assets"]);
+          Swal.fire({
+            position: "top-end",
+            title: result.data.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          Swal.fire({
+            position: "top-end",
+            icon: "error",
+            title: result.data.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+        form.reset();
+      }
+    })
+
+  }
   const handleDownloadAssets = (data) => {
     // 1) Convert your data to a worksheet
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -244,11 +337,13 @@ const ManageAssets = () => {
     URL.revokeObjectURL(url);
   };
 
+  console.log(assets);
+
   return (
     <div className="mx-auto w-full flex flex-col  h-full  space-y-1 ">
-      <form className="flex flex-wrap gap-3 bg-gray-bright py-3 px-2" onSubmit={handleSearchForm}>
-        <div className="flex gap-2 items-center">
-          <span className="fieldset-legend">Search Assets By</span>
+      <form className="flex flex-wrap items-end gap-3 bg-gray-bright py-3 px-2" onSubmit={handleSearchForm}>
+        <label className="flex flex-col gap-2 items-center">
+          <span className="font-bold text-primary">Search Assets By</span>
           <select
             defaultValue=""
             className="select select-xs select-warning"
@@ -259,40 +354,40 @@ const ManageAssets = () => {
             <option value="assetLocation">Asset Location</option>
             <option value="assetClass">Asset Class</option>
           </select>
-        </div>
+        </label>
         {searchType === "assetNumber" && (
-          <div className="flex gap-2 items-center">
-            <span className="fieldset-legend">Asset Number</span>
+          <label className="flex flex-col gap-2 ">
+            <span className="font-bold text-primary">Asset Number</span>
             <input
               type="text"
               name="assetNumber"
               placeholder="Asset Number"
               className="input input-warning input-xs"
             />
-          </div>
+          </label>
         )}
         {searchType === "assetLocation" && (
           <>
-            <div className="flex gap-2 items-center">
-              <span className=" text-primary ">Department</span>
-            </div>
-            <select
-              name="department"
-              className="select select-xs  select-warning"
-              required
-              onChange={(e) => handleDeptChange(e.target.value)}
-              value={selectedDept}
-            >
-              <option value="">---Select---</option>
-              {departments &&
-                departments?.map((dept) => (
-                  <option key={dept} className="capitalize" value={dept}>
-                    {dept.toUpperCase()}
-                  </option>
-                ))}
-            </select>
-            <div className="flex gap-2 items-center">
-              <span className=" text-primary">Location Type</span>
+            <label className="flex flex-col gap-2 ">
+              <span className=" font-bold text-primary ">Department</span>
+              <select
+                name="department"
+                className="select select-xs  select-warning"
+                required
+                onChange={(e) => handleDeptChange(e.target.value)}
+                value={selectedDept}
+              >
+                <option value="">---Select---</option>
+                {departments &&
+                  departments?.map((dept) => (
+                    <option key={dept} className="capitalize" value={dept}>
+                      {dept.toUpperCase()}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-2 ">
+              <span className=" font-bold text-primary">Location Type</span>
               <select
                 name="locationType" // Dynamic name to ensure correct field submission
                 className="select select-warning select-xs"
@@ -307,9 +402,9 @@ const ManageAssets = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
             {selectedType && (
-              <div className="flex gap-2 items-center">
+              <label className="flex gap-2 flex-col ">
                 <span className="label-text font-bold text-primary">
                   Select {selectedType}
                 </span>
@@ -324,15 +419,15 @@ const ManageAssets = () => {
                     </option>
                   ))}
                 </select>
-              </div>
+              </label>
             )}
           </>
         )}
 
         {searchType === "assetClass" && (
           <>
-            <div className="flex items-center gap-2">
-              <span className="text-primary">Asset Class </span>
+            <label className="flex flex-col  gap-2">
+              <span className="font-bold text-primary">Asset Class </span>
 
               <select
                 name="assetClass"
@@ -348,10 +443,10 @@ const ManageAssets = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
 
-            <div className="flex items-center gap-2">
-              <span className="text-primary">Asset Type </span>
+            <label className="flex flex-col  gap-2">
+              <span className="font-bold text-primary">Asset Type </span>
               <select
                 name="assetType"
                 defaultValue=""
@@ -364,22 +459,25 @@ const ManageAssets = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </label>
           </>
         )}
 
         {(searchType === "assetLocation" || searchType === "assetClass") && (
           <>
-            <label className="flex items-center gap-2">
+            <label className="label items-end">
+
               <input
                 name="isBookVal1"
                 type="checkbox"
-                className="checkbox checkbox-warning checkbox-xs"
+                className="checkbox checkbox-warning checkbox-md"
               />
-              Book Value 1 only
+              <span>
+                Book Value 1 only
+              </span>
             </label>
-            <div className="flex items-center gap-2">
-              <span className="text-primary">Sort By</span>
+            <label className="flex flex-col  gap-2">
+              <span className="font-bold text-primary">Sort By</span>
 
               <select
                 name="sortBy"
@@ -397,10 +495,10 @@ const ManageAssets = () => {
                 <option value="location">Location</option>
                 <option value="assetUser">Asset User</option>
               </select>
-            </div>
+            </label>
           </>
         )}
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 ">
           <button type="submit" className="btn btn-xs">
             Search
           </button>
@@ -409,14 +507,14 @@ const ManageAssets = () => {
 
 
       {assetLoading ? (
-        <div className="flex flex-col h-full justify-center items-center">
+        <div className="flex flex-col h-full justify-center items-center ">
           <div className="loading loading-dots  loading-xl grow text-warning "></div>
         </div>
       ) : (
         assets?.length > 0 && (
           <div className="overflow-auto">
-            <table className="table table-xs table-zebra">
-              <thead className="sticky top-0 ">
+            <table className="table table-xs table-zebra table-pin-rows">
+              <thead className="">
                 <tr className="bg-stone-100 border-b-0">
                   <th colSpan={12}>
 
@@ -433,58 +531,48 @@ const ManageAssets = () => {
                     </div>
                   </th>
                 </tr>
-                <tr className=" text-primary bg-gray-bright  ">
+                <tr className=" text-primary bg-gray-bright">
                   <th className="py-4">SL</th>
                   <th className="py-4">Asset Number</th>
                   <th className="py-4">Asset Class</th>
                   <th className="py-4">Asset Type</th>
                   <th className="py-4">Asset Description</th>
-                  <th className="py-4">Capitalized Date</th>
-                  <th className="py-4">Acquisition Value</th>
-                  <th className="py-4">Book Value</th>
+
                   <th className="py-4">Department</th>
                   <th className="py-4">Location Type</th>
                   <th className="py-4">Location</th>
                   <th className="py-4">Asset User</th>
+                  <th className="py-4">Action</th>
                 </tr>
               </thead>
 
               <tbody>
-                {assets?.length > 0 &&
-                  assets.map((data, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        <label className="flex items-center gap-2">
-                          {isEdit && (
-                            <input
-                              type="checkbox"
-                              checked={selectedItems.includes(data.assetNumber)}
-                              onChange={(e) =>
-                                handleSelectItem(
-                                  e.target.checked,
-                                  data?.assetNumber
-                                )
-                              }
-                              className="checkbox checkbox-warning print:hidden"
-                            />
-                          )}
-                          <span>{idx + 1}</span>
-                        </label>
-                      </td>
-                      <td>{data.assetNumber}</td>
-                      <td>{data.assetClass}</td>
-                      <td>{data.assetType}</td>
-                      <td>{data.assetDescription}</td>
-                      <td>{data.capDate}</td>
-                      <td>{data.acquisationVal}</td>
-                      <td>{data.bookVal}</td>
-                      <td>{data?.department}</td>
-                      <td>{data?.locationType}</td>
-                      <td>{data?.location}</td>
-                      <td>{data?.assetUser}</td>
-                    </tr>
-                  ))}
+                <tr>
+                  <td colSpan={10}>
+                    <AutoSizer disableHeight>
+                      {({ width }) => (
+                        <List
+                          height={850}
+                          width={width}
+                          itemCount={assets.length}
+                          itemSize={90}
+                          itemData={{
+                            assets,
+                            isEdit,
+                            selectedItems,
+                            handleSelectItem,
+                            departmentData,
+                            handleLocationInfo,
+                          }}
+                        >
+                          {Row}
+                        </List>
+                      )}
+                    </AutoSizer>
+                  </td>
+                </tr>
               </tbody>
+
             </table>
           </div>
         )

@@ -88,7 +88,7 @@ const AssetsByDepartment = () => {
       <form
         id=""
         onSubmit={handleDeptForm}
-        className="flex print:hidden items-end gap-2"
+        className="flex print:hidden items-center gap-2"
       >
         <div className="flex items-center gap-2">
           <span className="label-text font-bold text-primary ">Department</span>
@@ -164,7 +164,7 @@ const AssetsByDepartment = () => {
           </select>
         </div>
         <div className="flex justify-end text-center">
-          <button type="submit" className="btn btn-sm">
+          <button type="submit" className="btn btn-sm btn-soft btn-warning">
             Search
           </button>
         </div>
@@ -195,7 +195,6 @@ const AssetsByDepartment = () => {
                   <th className="py-4">Asset Class</th>
                   <th className="py-4">Asset Type</th>
                   <th className="py-4">Asset Description</th>
-
                   <th className="py-4">Asset User</th>
                 </tr>
               </thead>

@@ -1,130 +1,108 @@
-import { getData } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { FaCaretSquareDown, FaCaretSquareUp } from "react-icons/fa";
-const AssetLocationInput = ({
-  rowData,
-  departmentData,
-  handleLocationInfo,
-}) => {
+const AssetLocationInput = ({ rowData, departmentData, handleLocationInfo }) => {
   const [isEdit, setIsEdit] = useState(true);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [location, setLocation] = useState("");
-  const [selectedType, setSelectedType] = useState("");
-  const [locationTypes, setlocationTypes] = useState([]);
-  const [locations, setLocations] = useState([]);
-  const [selectedDept, setSelecteddept] = useState("");
+  const [selectedDept, setSelectedDept] = useState(() => rowData?.assetLocation?.department || rowData?.department || "");
+  const [selectedType, setSelectedType] = useState(() => rowData?.assetLocation?.locationType || rowData?.locationType || "");
+  const [location, setLocation] = useState(() => rowData?.assetLocation?.location || rowData?.location || "");
+  const [assetUser, setAssetUser] = useState(() => rowData?.assetLocation?.assetUser || rowData?.assetUser || "");
 
-  const departments = departmentData?.map((dept) => dept.department);
+  // Derived data
+  const departments = departmentData?.map((dept) => dept.department) || [];
+
+  const locationTypes = departmentData.find(d => d.department === selectedDept)?.locations.map(loc => loc.locationType) || [];
+
+  const locations = departmentData
+    .find(d => d.department === selectedDept)
+    ?.locations.find(loc => loc.locationType === selectedType)?.location || [];
 
   const handleDeptChange = (value) => {
-    setLocations([]);
-    setlocationTypes([]);
+    setSelectedDept(value);
     setSelectedType("");
-    setSelecteddept(value);
-    const locationTypes = departmentData
-      .find((d) => d.department === value)
-      .locations.map((loc) => loc.locationType);
-    setlocationTypes(locationTypes);
+    setLocation("");
   };
 
-  const handleLocTypeChange = (selectedType) => {
-    setSelectedType(selectedType);
-    const locations = departmentData
-      .find((d) => d.department === selectedDept)
-      .locations.find((loc) => loc.locationType === selectedType).location;
-    setLocations(locations);
+  const handleLocTypeChange = (value) => {
+    setSelectedType(value);
+    setLocation("");
   };
 
-  const handleAction = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     handleLocationInfo(e);
     setIsEdit(false);
   };
 
   return (
-    <div className="">
+    <div>
       <form
-        onSubmit={handleAction}
-        className="grid grid-cols-5 justify-between gap-2 "
+        onSubmit={handleSubmit}
+        className="grid grid-cols-5 justify-between gap-2"
       >
-        <input
-          type="hidden"
-          disabled
-          name="assetNumber"
-          value={rowData?.assetNumber}
-        />
+        <input type="hidden" name="assetNumber" value={rowData?.assetNumber} />
 
+        {/* Department */}
         <select
           name="department"
-          className={`select  select-xs ${
-            rowData?.locationInfo?.department
-              ? "select-success"
-              : "select-ghost"
-          }  `}
-          required
-          disabled={!isEdit}
+          value={selectedDept}
           onChange={(e) => handleDeptChange(e.target.value)}
-          value={rowData?.locationInfo?.department || selectedDept}
+          disabled={!isEdit}
+          className={`select select-xs ${selectedDept ? "select-success" : "select-ghost"}`}
+          required
         >
           <option value="">---Select---</option>
-          {departments &&
-            departments?.map((dept) => (
-              <option key={dept} className="capitalize" value={dept}>
-                {dept.toUpperCase()}
-              </option>
-            ))}
+          {departments.map((dept) => (
+            <option key={dept} value={dept} className="capitalize">
+              {dept.toUpperCase()}
+            </option>
+          ))}
         </select>
 
+        {/* Location Type */}
         <select
-          name="locationType" // Dynamic name to ensure correct field submission
-          className={`select select-neutral select-xs ${
-            rowData?.locationInfo?.locationType
-              ? "select-success"
-              : "select-ghost"
-          }  `}
+          name="locationType"
+          value={selectedType}
           onChange={(e) => handleLocTypeChange(e.target.value)}
-          value={rowData?.locationInfo?.locationType || selectedType}
-          required
           disabled={!isEdit}
+          className={`select select-xs ${selectedType ? "select-success" : "select-ghost"}`}
+          required
         >
           <option value="">---Select---</option>
-          {locationTypes?.map((type) => (
+          {locationTypes.map((type) => (
             <option key={type} value={type} className="capitalize">
               {type}
             </option>
           ))}
         </select>
 
+        {/* Location */}
         <select
           name="location"
-          defaultValue={rowData?.locationInfo?.location || ""} // Dynamic name to ensure correct field submission
-          className={`select select-xs ${
-            rowData?.locationInfo?.department
-              ? "select-success"
-              : "select-ghost"
-          }  `}
-          required
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
           disabled={!isEdit}
+          className={`select select-xs ${location ? "select-success" : "select-ghost"}`}
+          required
         >
           <option value="">---Select---</option>
-          {locations.map((opt) => (
-            <option key={opt} value={opt} className="capitalize">
-              {opt}
+          {locations.map((loc) => (
+            <option key={loc} value={loc} className="capitalize">
+              {loc}
             </option>
           ))}
         </select>
 
+        {/* Asset User */}
         <input
           name="assetUser"
-          defaultValue={rowData?.locationInfo?.assetUser || ""}
-          className={`input input-xs ${
-            rowData?.locationInfo?.department ? "input-success" : "input-ghost"
-          }  `}
-          required
+          value={assetUser}
+          onBlur={(e) => setAssetUser(e.target.value)}
           disabled={!isEdit}
+          required
+          className={`input input-xs ${assetUser ? "input-success" : "input-ghost"}`}
         />
+
+        {/* Submit / Edit Button */}
         {isEdit ? (
           <button
             type="submit"
@@ -144,4 +122,5 @@ const AssetLocationInput = ({
     </div>
   );
 };
+
 export default AssetLocationInput;

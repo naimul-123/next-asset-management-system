@@ -31,7 +31,7 @@ const AssetTypeInput = ({ isMissingType, rowData, assetTypes, handleAssetTypeCha
                 )}</div>
 
             {showDropdown && (
-                <ul className="absolute z-10 w-full bg-white border mt-1 rounded shadow h-96 overflow-auto">
+                <ul className="absolute min-w-fit z-10  bg-white border mt-1 rounded shadow max-h-48  overflow-auto">
                     {Array.isArray(assetTypes) && assetTypes.length > 0 && assetTypes?.map((type) => (
                         <li
                             key={type}

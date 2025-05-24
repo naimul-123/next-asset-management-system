@@ -15,7 +15,7 @@ export async function POST(req) {
       locationType,
       location,
       assetUser,
-      createdAt: new Date(),
+      
     };
 
     let result = null;

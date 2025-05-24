@@ -1,5 +1,6 @@
 "use client";
 
+import { getData } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -31,10 +32,10 @@ export const AuthProvider = ({ children }) => {
 
   const getUser = async () => {
     try {
-      const res = await fetch("/api/getUser");
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.payload);
+      const res = await getData("/api/getUser");
+      console.log(res);
+      if (res.payload) {
+        setUser(res.payload);
       } else {
         setUser(null);
         logout();
@@ -79,12 +80,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getUser();
+
     setupAxiosInterceptors();
     const interval = setInterval(checkSessionExpiry, 1000); // Check
 
     return () => clearInterval(interval);
-  }, []);
+  }, [remainingTime]);
 
   const formatRemainingTime = () => {
     if (remainingTime === null) return "";

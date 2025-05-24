@@ -78,7 +78,7 @@ const ResetPassword = () => {
               </label>
               {error && (
                 <div className="label flex-col max-w-48 ">
-                  <span className="text-xs max-w-xs text-red-500">{error}</span>
+                  <span className="text-xs max-w-xs text-red">{error}</span>
                 </div>
               )}
             </div>
@@ -95,7 +95,7 @@ const ResetPassword = () => {
               </label>
               {retypeError && (
                 <div className="label flex-col max-w-48 ">
-                  <span className="text-xs max-w-xs text-red-500">
+                  <span className="text-xs max-w-xs text-red">
                     {retypeError}
                   </span>
                 </div>

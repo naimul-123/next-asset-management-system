@@ -7,6 +7,7 @@ import AssetLocationInput from "@/components/assetLocationInput";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import DeptChangeForm from "@/components/DeptChangeForm";
 import { FaDownload } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const UploadNewAssets = () => {
   const [error, setError] = useState({});
@@ -132,7 +133,7 @@ const UploadNewAssets = () => {
 
     const missingLocationAssets = data.reduce(
       (acc, item) =>
-        !item.locationInfo && item.assetNumber
+        !item.assetLocation && item.assetNumber
           ? [...acc, item.assetNumber]
           : acc,
       []
@@ -148,40 +149,44 @@ const UploadNewAssets = () => {
       }));
     }
   };
-  const handleSavedata = () => {
+  const handleSavedata = async () => {
     try {
       if (missingtypesAssets.length > 0 || missingLocations.length > 0) {
         return;
+        // } else {
+        //   const newAssets = data.map((d) => {
+        //     const newAsset = {
+        //       assetNumber: d.assetNumber,
+        //       assetType: d.assetType,
+        //       assetClass: d.assetNumber,
+        //       accumDep: d.accumDep,
+        //       acquisVal: d.acquisVal,
+        //       bookVal: d.bookVal,
+        //     };
+        //     return newAsset;
+        //   });
+
+        //   const newLocations = data.map((d) => {
+        //     const newLoc = {
+        //       assetNumber: d.assetNumber,
+        //       locationInfo: d.locationInfo,
+        //     };
+        //     return newLoc;
+        //   });
+        //   console.log(newLocations);
+        //   console.log(newAssets);
+        //   return;
+        // }
+
       } else {
-        const newAssets = data.map((d) => {
-          const newAsset = {
-            assetNumber: d.assetNumber,
-            assetType: d.assetType,
-            assetClass: d.assetNumber,
-            accumDep: d.accumDep,
-            acquisVal: d.acquisVal,
-            bookVal: d.bookVal,
-          };
-          return newAsset;
-        });
+        const res = await postData("/api/uploadnewassets", data);
+        console.log(res);
+        if (res.data.message) {
+          Swal.fire(res.data.message)
+          setData([]);
+        }
 
-        const newLocations = data.map((d) => {
-          const newLoc = {
-            assetNumber: d.assetNumber,
-            locationInfo: d.locationInfo,
-          };
-          return newLoc;
-        });
-        console.log(newLocations);
-        console.log(newAssets);
-        return;
       }
-
-      // else {
-      //     await postData("/api/UploadNewAssets", data);
-      //     alert("Data saved successfully!");
-      //     setData([]);
-      // }
     } catch (err) {
       console.log(err);
       setError("Failed to save data. Try again.");
@@ -209,14 +214,16 @@ const UploadNewAssets = () => {
     const department = form.department.value;
     const locationType = form.locationType.value;
     const location = form.location.value;
-    const locationInfo = {
+    const assetUser = form.assetUser.value;
+    const assetLocation = {
       department,
       locationType,
       location,
+      assetUser
     };
 
     const updated = data.map((item) =>
-      item.assetNumber === assetNumber ? { ...item, locationInfo } : item
+      item.assetNumber === assetNumber ? { ...item, assetLocation } : item
     );
     setData(updated);
   };
@@ -320,24 +327,7 @@ const UploadNewAssets = () => {
     <div className="mx-auto w-full flex flex-col h-full space-y-1 ">
       {data?.length > 0 ? (
         <>
-          <div className="flex items-start w-full ">
-            <DeptChangeForm
-              handleAction={handleAction}
-              departmentData={departmentData}
-              handleSelectAll={handleSelectAll}
-              selectedItems={selectedItems}
-              action={action}
-              setAction={setAction}
-            />
 
-            <button
-              onClick={() => handleDownloadAssets(assets)}
-              className="btn w-full max-w-fit  btn-xs btn-warning hover:link "
-            >
-              <span>Download Excel</span>
-              <FaDownload />
-            </button>
-          </div>
           <div className="overflow-auto h-full max-h-[calc(100vh-250px)]">
             <table className="table table-xs">
               <thead>
@@ -375,12 +365,15 @@ const UploadNewAssets = () => {
                           />
                         )}
                       </td>
-                      <td className="tooltip tooltip-bottom">
-                        <p>{rowData?.assetDescription}</p>
-                        <div className="tooltip-content px-2 py-1">
-                          <p>Cap.Date:{rowData?.capDate}</p>
-                          <p>Acquis.Val:{rowData?.acquisVal}</p>
+                      <td>
+                        <div className="tooltip tooltip-bottom">
+                          <p>{rowData?.assetDescription}</p>
+                          <div className="tooltip-content px-2 py-1">
+                            <p>Cap.Date:{rowData?.capDate}</p>
+                            <p>Acquis.Val:{rowData?.acquisVal}</p>
+                          </div>
                         </div>
+
                       </td>
                       <td colSpan={5} className="w-full">
                         {" "}
@@ -462,7 +455,7 @@ const UploadNewAssets = () => {
               onClick={handleSavedata}
               className="btn btn-success btn-soft btn-sm"
             >
-              Save
+              Upload
             </button>
           </div>
         </>
