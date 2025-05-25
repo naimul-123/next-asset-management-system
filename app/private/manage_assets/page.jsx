@@ -25,11 +25,18 @@ const ManageAssets = () => {
   const [assetInfo, setAssetInfo] = useState({});
   const { user } = useAuth();
 
-  // console.log(user);
+  console.log(user);
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData("/api/getdeptdata"),
   });
+
+  const { data: rejectedassets = [] } = useQuery({
+    queryKey: ["rejectedassets"],
+    queryFn: async () => await getData("/api/getrejectedassets"),
+  });
+
+  console.log(rejectedassets);
 
   const departments = departmentData?.map((dept) => dept.department);
 
@@ -280,172 +287,181 @@ const ManageAssets = () => {
 
   return (
     <div className="mx-auto w-full flex flex-col  h-full  space-y-1 ">
-      <form
-        className="flex flex-wrap items-end gap-3 bg-gray-bright py-3 px-2"
-        onSubmit={handleSearchForm}
-      >
-        <label className="flex flex-col gap-2 items-center">
-          <span className="font-bold text-primary">Search Assets By</span>
-          <select
-            defaultValue=""
-            className="select select-xs select-warning"
-            onChange={(e) => {
-              setSearchType(e.target.value);
-              setSelecteddept("");
-            }}
-          >
-            <option value="">---Select---</option>
-            <option value="assetNumber">Asset Number</option>
-            <option value="assetLocation">Asset Location</option>
-            <option value="assetClass">Asset Class</option>
-          </select>
-        </label>
-        {searchType === "assetNumber" && (
-          <label className="flex flex-col gap-2 ">
-            <span className="font-bold text-primary">Asset Number</span>
-            <input
-              type="text"
-              name="assetNumber"
-              placeholder="Asset Number"
-              className="input input-warning input-xs"
-            />
+      <div className="flex justify-between bg-gray-bright py-3 px-2">
+        <form
+          className="flex grow flex-wrap items-end gap-3 justify-start"
+          onSubmit={handleSearchForm}
+        >
+          <label className="flex flex-col gap-2 items-center">
+            <span className="font-bold text-primary">Search Assets By</span>
+            <select
+              defaultValue=""
+              className="select select-xs select-warning"
+              onChange={(e) => {
+                setSearchType(e.target.value);
+                setSelecteddept("");
+              }}
+            >
+              <option value="">---Select---</option>
+              <option value="assetNumber">Asset Number</option>
+              <option value="assetLocation">Asset Location</option>
+              <option value="assetClass">Asset Class</option>
+            </select>
           </label>
-        )}
-        {searchType === "assetLocation" && (
-          <>
+          {searchType === "assetNumber" && (
             <label className="flex flex-col gap-2 ">
-              <span className=" font-bold text-primary ">Department</span>
-              <select
-                name="department"
-                className="select select-xs  select-warning"
-                required
-                onChange={(e) => handleDeptChange(e.target.value)}
-                value={selectedDept}
-              >
-                <option value="">---Select---</option>
-                {departments &&
-                  departments?.map((dept) => (
-                    <option key={dept} className="capitalize" value={dept}>
-                      {dept.toUpperCase()}
-                    </option>
-                  ))}
-              </select>
+              <span className="font-bold text-primary">Asset Number</span>
+              <input
+                type="text"
+                name="assetNumber"
+                placeholder="Asset Number"
+                className="input input-warning input-xs"
+              />
             </label>
-            <label className="flex flex-col gap-2 ">
-              <span className=" font-bold text-primary">Location Type</span>
-              <select
-                name="locationType" // Dynamic name to ensure correct field submission
-                className="select select-warning select-xs"
-                onChange={(e) => handleLocTypeChange(e.target.value)}
-                value={selectedType}
-                required
-              >
-                <option value="">---Select---</option>
-                {locationTypes?.map((type) => (
-                  <option key={type} value={type} className="capitalize">
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {selectedType && (
-              <label className="flex gap-2 flex-col ">
-                <span className="label-text font-bold text-primary">
-                  Select {selectedType}
-                </span>
+          )}
+          {searchType === "assetLocation" && (
+            <>
+              <label className="flex flex-col gap-2 ">
+                <span className=" font-bold text-primary ">Department</span>
                 <select
-                  name={selectedType} // Dynamic name to ensure correct field submission
-                  className="select select-warning select-xs"
+                  name="department"
+                  className="select select-xs  select-warning"
+                  required
+                  onChange={(e) => handleDeptChange(e.target.value)}
+                  value={selectedDept}
                 >
                   <option value="">---Select---</option>
-                  {locations.map((opt) => (
-                    <option key={opt} value={opt} className="capitalize">
-                      {opt}
+                  {departments &&
+                    departments?.map((dept) => (
+                      <option key={dept} className="capitalize" value={dept}>
+                        {dept.toUpperCase()}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-2 ">
+                <span className=" font-bold text-primary">Location Type</span>
+                <select
+                  name="locationType" // Dynamic name to ensure correct field submission
+                  className="select select-warning select-xs"
+                  onChange={(e) => handleLocTypeChange(e.target.value)}
+                  value={selectedType}
+                  required
+                >
+                  <option value="">---Select---</option>
+                  {locationTypes?.map((type) => (
+                    <option key={type} value={type} className="capitalize">
+                      {type}
                     </option>
                   ))}
                 </select>
               </label>
-            )}
-          </>
+              {selectedType && (
+                <label className="flex gap-2 flex-col ">
+                  <span className="label-text font-bold text-primary">
+                    Select {selectedType}
+                  </span>
+                  <select
+                    name={selectedType} // Dynamic name to ensure correct field submission
+                    className="select select-warning select-xs"
+                  >
+                    <option value="">---Select---</option>
+                    {locations.map((opt) => (
+                      <option key={opt} value={opt} className="capitalize">
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </>
+          )}
+
+          {searchType === "assetClass" && (
+            <>
+              <label className="flex flex-col  gap-2">
+                <span className="font-bold text-primary">Asset Class </span>
+
+                <select
+                  name="assetClass"
+                  defaultValue=""
+                  onChange={(e) => handleClassChange(e.target.value)}
+                  className="select select-xs select-warning"
+                  required
+                >
+                  <option value="all">---Select---</option>
+                  {assetClasses?.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col  gap-2">
+                <span className="font-bold text-primary">Asset Type </span>
+                <select
+                  name="assetType"
+                  defaultValue=""
+                  className="select select-xs select-warning"
+                >
+                  <option value="">---Select---</option>
+                  {assettypes?.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
+
+          {(searchType === "assetLocation" || searchType === "assetClass") && (
+            <>
+              <label className="label items-end">
+                <input
+                  name="isBookVal1"
+                  type="checkbox"
+                  className="checkbox checkbox-warning checkbox-md"
+                />
+                <span>Book Value 1 only</span>
+              </label>
+              <label className="flex flex-col  gap-2">
+                <span className="font-bold text-primary">Sort By</span>
+
+                <select
+                  name="sortBy"
+                  defaultValue="assetNumber"
+                  className="select select-xs select-warning"
+                >
+                  <option value="assetNumber">Asset Number(Default)</option>
+                  <option value="assetClass">Asset Class</option>
+                  <option value="assetType">Asset Type</option>
+                  <option value="assetDescription">Asset Description</option>
+                  <option value="capDate">Acquisition date</option>
+                  <option value="acquisationVal">Acquisition Value</option>
+                  <option value="department">Department</option>
+                  <option value="locationType">Location Type</option>
+                  <option value="location">Location</option>
+                  <option value="assetUser">Asset User</option>
+                </select>
+              </label>
+            </>
+          )}
+          <div className="flex gap-2 ">
+            <button type="submit" className="btn btn-xs">
+              Search
+            </button>
+          </div>
+        </form>
+        {user.role === "admin" && rejectedassets?.length > 0 && (
+          <div>
+            <button className="btn btn-error btn-soft">
+              {rejectedassets?.length} rejected assets. click to remove this
+            </button>
+          </div>
         )}
-
-        {searchType === "assetClass" && (
-          <>
-            <label className="flex flex-col  gap-2">
-              <span className="font-bold text-primary">Asset Class </span>
-
-              <select
-                name="assetClass"
-                defaultValue=""
-                onChange={(e) => handleClassChange(e.target.value)}
-                className="select select-xs select-warning"
-                required
-              >
-                <option value="all">---Select---</option>
-                {assetClasses?.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex flex-col  gap-2">
-              <span className="font-bold text-primary">Asset Type </span>
-              <select
-                name="assetType"
-                defaultValue=""
-                className="select select-xs select-warning"
-              >
-                <option value="">---Select---</option>
-                {assettypes?.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </>
-        )}
-
-        {(searchType === "assetLocation" || searchType === "assetClass") && (
-          <>
-            <label className="label items-end">
-              <input
-                name="isBookVal1"
-                type="checkbox"
-                className="checkbox checkbox-warning checkbox-md"
-              />
-              <span>Book Value 1 only</span>
-            </label>
-            <label className="flex flex-col  gap-2">
-              <span className="font-bold text-primary">Sort By</span>
-
-              <select
-                name="sortBy"
-                defaultValue="assetNumber"
-                className="select select-xs select-warning"
-              >
-                <option value="assetNumber">Asset Number(Default)</option>
-                <option value="assetClass">Asset Class</option>
-                <option value="assetType">Asset Type</option>
-                <option value="assetDescription">Asset Description</option>
-                <option value="capDate">Acquisition date</option>
-                <option value="acquisationVal">Acquisition Value</option>
-                <option value="department">Department</option>
-                <option value="locationType">Location Type</option>
-                <option value="location">Location</option>
-                <option value="assetUser">Asset User</option>
-              </select>
-            </label>
-          </>
-        )}
-        <div className="flex gap-2 ">
-          <button type="submit" className="btn btn-xs">
-            Search
-          </button>
-        </div>
-      </form>
+      </div>
 
       {assetLoading ? (
         <div className="flex flex-col h-full justify-center items-center ">
