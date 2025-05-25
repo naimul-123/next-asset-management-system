@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 export async function DELETE(req) {
   try {
     const { id } = await req.json();
-    console.log(id);
+
     if (!id) {
       return NextResponse.json(
         { error: "Missing required field: id." },

@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { getData, postData } from "../../../lib/api";
+import { deleteData, getData, postData } from "../../../lib/api";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa";
@@ -25,18 +25,34 @@ const ManageAssets = () => {
   const [assetInfo, setAssetInfo] = useState({});
   const { user } = useAuth();
 
-  console.log(user);
+
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData("/api/getdeptdata"),
   });
 
-  const { data: rejectedassets = [] } = useQuery({
+  const { data: rejectedassets = [], refetch: rejectdRefetch } = useQuery({
     queryKey: ["rejectedassets"],
-    queryFn: async () => await getData("/api/getrejectedassets"),
+    queryFn: async () => await getData("/api/rejectedassets"),
   });
 
-  console.log(rejectedassets);
+  const handleDeleteRejectedAssets = () => {
+    Swal.fire({
+      title: "Do you want to delete the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Don't Delete`
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await deleteData('/api/rejectedassets', { rejectedassets, role: user.role });
+        if (res?.success) {
+          Swal.fire(res.message);
+          rejectdRefetch();
+        }
+      }
+    });
+  }
 
   const departments = departmentData?.map((dept) => dept.department);
 
@@ -454,9 +470,9 @@ const ManageAssets = () => {
             </button>
           </div>
         </form>
-        {user.role === "admin" && rejectedassets?.length > 0 && (
+        {user.role && rejectedassets?.length > 0 && (
           <div>
-            <button className="btn btn-error btn-soft">
+            <button className="btn btn-error btn-soft" onClick={handleDeleteRejectedAssets}>
               {rejectedassets?.length} rejected assets. click to remove this
             </button>
           </div>

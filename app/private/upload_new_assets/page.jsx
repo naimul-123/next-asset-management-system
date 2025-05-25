@@ -37,7 +37,7 @@ const UploadNewAssets = () => {
     });
     return map;
   }, [assetTypesInfo]);
-  console.log(data);
+
   const handleFileUpload = async (e) => {
     setData([]);
     const file = e.target.files[0];
@@ -152,34 +152,12 @@ const UploadNewAssets = () => {
   const handleSavedata = async () => {
     try {
       if (missingtypesAssets.length > 0 || missingLocations.length > 0) {
+        Swal.fire("Missing asset type or missing asset location of some assets");
         return;
-        // } else {
-        //   const newAssets = data.map((d) => {
-        //     const newAsset = {
-        //       assetNumber: d.assetNumber,
-        //       assetType: d.assetType,
-        //       assetClass: d.assetNumber,
-        //       accumDep: d.accumDep,
-        //       acquisVal: d.acquisVal,
-        //       bookVal: d.bookVal,
-        //     };
-        //     return newAsset;
-        //   });
 
-        //   const newLocations = data.map((d) => {
-        //     const newLoc = {
-        //       assetNumber: d.assetNumber,
-        //       locationInfo: d.locationInfo,
-        //     };
-        //     return newLoc;
-        //   });
-        //   console.log(newLocations);
-        //   console.log(newAssets);
-        //   return;
-        // }
       } else {
         const res = await postData("/api/uploadnewassets", data);
-        console.log(res);
+
         if (res.data.message) {
           Swal.fire(res.data.message);
           setData([]);
@@ -359,15 +337,14 @@ const UploadNewAssets = () => {
                           </div>
                         </div>
                       </td>
-                      <td colSpan={5} className="w-full">
-                        {" "}
-                        <AssetLocationInput
-                          departmentData={departmentData}
-                          handleAssetTypeChange={handleAssetTypeChange}
-                          rowData={rowData}
-                          handleLocationInfo={handleLocationInfo}
-                        />
-                      </td>
+
+                      <AssetLocationInput
+                        departmentData={departmentData}
+                        handleAssetTypeChange={handleAssetTypeChange}
+                        rowData={rowData}
+                        handleLocationInfo={handleLocationInfo}
+                      />
+
                     </tr>
                   ))}
               </tbody>
