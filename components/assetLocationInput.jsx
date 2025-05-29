@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const AssetLocationInput = ({
   rowData,
@@ -83,6 +84,16 @@ const AssetLocationInput = ({
       location,
       assetUser,
     };
+    if (
+      !assetLocation?.department ||
+      !assetLocation?.locationType ||
+      !assetLocation?.location ||
+      !assetLocation?.assetUser
+    ) {
+      Swal.fire("Missing department or location type or location or assetUser");
+      return;
+    }
+
     const data = {
       assetNumber: rowData.assetNumber,
       assetLocation,

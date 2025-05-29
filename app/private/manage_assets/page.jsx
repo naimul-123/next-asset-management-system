@@ -243,6 +243,7 @@ const ManageAssets = () => {
   };
   const handleLocationInfo = (assetInfo) => {
     const { assetNumber, assetLocation } = assetInfo;
+
     const data = {
       ...assetLocation,
       assetNumbers: [assetNumber],
