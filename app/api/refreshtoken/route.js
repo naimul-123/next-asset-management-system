@@ -1,28 +1,55 @@
-import { postData } from "@/lib/api"; // or your own method
-import { jwtDecode } from "jwt-decode";
+import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
-// Helper to get cookie by name
-const getCookie = (name) => {
-  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? decodeURIComponent(match[2]) : null;
-};
+const secretKey = process.env.SECRET_KEY;
 
-const refreshSession = async () => {
+export async function POST(req) {
   try {
-    const token = getCookie("token");
+    const token = req.cookies.get("token")?.value;
 
-    if (!token) return; // ✅ Do nothing if token doesn't exist
-
-    const decoded = jwtDecode(token);
-    const exp = decoded.exp * 1000; // convert to milliseconds
-    const now = Date.now();
-
-    // Only refresh if token is going to expire within 15 seconds
-    if (exp - now < 15 * 1000) {
-      await postData("/api/refreshtoken");
+    if (!token) {
+      return NextResponse.json({ error: "No token found" }, { status: 401 });
     }
+
+    // Verify and decode existing token
+    const decoded = jwt.verify(token, secretKey);
+
+    // Prepare new token payload
+    const payload = {
+      name: decoded.name,
+      sap: decoded.sap,
+      role: decoded.role,
+      isSuperAdmin: decoded.isSuperAdmin,
+    };
+
+    const newToken = jwt.sign(payload, secretKey, { expiresIn: "5m" });
+    const newExpiredTime = Date.now() + 5 * 60 * 1000;
+
+    const response = NextResponse.json(
+      { success: true, message: "Token refreshed" },
+      { status: 200 }
+    );
+
+    // Set refreshed cookies
+    response.cookies.set("token", newToken, {
+      httpOnly: true,
+      maxAge: 300,
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    });
+    response.cookies.set("expiredTime", newExpiredTime.toString(), {
+      httpOnly: false,
+      maxAge: 300,
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return response;
   } catch (error) {
-    console.error("Token refresh failed", error);
-    // logout(); // optional: uncomment to logout on error
+    console.error("Refresh token failed:", error);
+    return NextResponse.json(
+      { error: "Invalid or expired token" },
+      { status: 401 }
+    );
   }
-};
+}

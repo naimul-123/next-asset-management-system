@@ -5,5 +5,6 @@ export async function POST() {
     success: true,
   });
   response.cookies.delete("token");
+  response.cookies.delete("expiredTime");
   return response;
 }

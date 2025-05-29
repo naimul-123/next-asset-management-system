@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }) => {
     inactivityTimeoutRef.current = setTimeout(() => {
       console.log("Inactive. Logging out.");
       logout();
-    }, 60 * 1000); // 1 minute timeout
+    }, 5 * 60 * 1000); // 5 minute timeout
   };
 
   const setupInactivityListeners = () => {

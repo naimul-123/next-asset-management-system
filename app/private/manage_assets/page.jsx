@@ -25,7 +25,6 @@ const ManageAssets = () => {
   const [assetInfo, setAssetInfo] = useState({});
   const { user } = useAuth();
 
-
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],
     queryFn: () => getData("/api/getdeptdata"),
@@ -42,17 +41,20 @@ const ManageAssets = () => {
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: "Delete",
-      denyButtonText: `Don't Delete`
+      denyButtonText: `Don't Delete`,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await deleteData('/api/rejectedassets', { rejectedassets, role: user.role });
+        const res = await deleteData("/api/rejectedassets", {
+          rejectedassets,
+          role: user.role,
+        });
         if (res?.success) {
           Swal.fire(res.message);
           rejectdRefetch();
         }
       }
     });
-  }
+  };
 
   const departments = departmentData?.map((dept) => dept.department);
 
@@ -74,7 +76,6 @@ const ManageAssets = () => {
       .locations.find((loc) => loc.locationType === selectedType).location;
     setLocations(locations);
   };
-  // asset by class code
 
   const { data: assetClasses = [] } = useQuery({
     queryKey: ["assetClasses"],
@@ -270,33 +271,22 @@ const ManageAssets = () => {
     });
   };
   const handleDownloadAssets = (data) => {
-    // 1) Convert your data to a worksheet
     const worksheet = XLSX.utils.json_to_sheet(data);
-
-    // 2) Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-    // 3) Write workbook to binary array
     const wbout = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
-
-    // 4) Create a Blob from that array
     const blob = new Blob([wbout], {
       type: "application/octet-stream",
     });
-
-    // 5) Create a link and trigger a download
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = "data.xlsx";
     document.body.appendChild(anchor);
     anchor.click();
-
-    // 6) Cleanup
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
   };
@@ -392,7 +382,6 @@ const ManageAssets = () => {
               )}
             </>
           )}
-
           {searchType === "assetClass" && (
             <>
               <label className="flex flex-col  gap-2">
@@ -431,7 +420,6 @@ const ManageAssets = () => {
               </label>
             </>
           )}
-
           {(searchType === "assetLocation" || searchType === "assetClass") && (
             <>
               <label className="label items-end">
@@ -472,7 +460,10 @@ const ManageAssets = () => {
         </form>
         {user.role && rejectedassets?.length > 0 && (
           <div>
-            <button className="btn btn-error btn-soft" onClick={handleDeleteRejectedAssets}>
+            <button
+              className="btn btn-error btn-soft"
+              onClick={handleDeleteRejectedAssets}
+            >
               {rejectedassets?.length} rejected assets. click to remove this
             </button>
           </div>
