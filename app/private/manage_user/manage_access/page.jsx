@@ -1,18 +1,19 @@
 "use client";
-import { useAuth } from "@/contexts/authContext";
+
 import { deleteData, getData, postData, updateData } from "@/lib/api";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 const ManageRole = () => {
-  const { user } = useAuth();
+  const { data: session, status } = useSession();
   const [rolename, setRoleName] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [editId, setEditId] = useState(null); // NEW: store editing ID
   const { data: classes } = useQuery({
     queryKey: ["classes"],
-    queryFn: () => getData(`/api/assetClass?role=${user.role}`),
+    queryFn: () => getData(`/api/assetClass?role=${session?.user.role}`),
   });
 
   const controlMutation = useMutation({
@@ -47,11 +48,11 @@ const ManageRole = () => {
     mutationFn: (updatedData) => updateData("/api/updatecontrol", updatedData),
     onSuccess: (result) => {
       console.log(result);
-      if (result.success) {
+      if (result?.data?.success) {
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: result.message,
+          title: result?.data.message,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -59,12 +60,11 @@ const ManageRole = () => {
         setPermissions([]);
         setEditId(null);
         controlRefetch();
-      }
-      else {
+      } else {
         Swal.fire({
           position: "top-end",
           icon: "error",
-          title: result.error,
+          title: result?.data?.error,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -73,7 +73,7 @@ const ManageRole = () => {
     onError: (error) => {
       Swal.fire({
         icon: "error",
-        title: error.message,
+        title: error?.data?.error,
       });
     },
   });
@@ -137,7 +137,6 @@ const ManageRole = () => {
 
   return (
     <div className="space-y-6 min-w-full max-h-full">
-
       {/* Add New Control */}
       <div className="bg-[#f7f7f7] p-4 rounded-xl space-y-4">
         <h2 className="text-3xl font-bold text-info">
@@ -152,11 +151,10 @@ const ManageRole = () => {
           onChange={(e) => setRoleName(e.target.value)}
         />
         <div className="border shadow rounded-xl px-4 py-3 space-y-3">
-          <h2 className="font-bold font-work-sans text-2xl text-info">Select controls</h2>
+          <h2 className="font-bold font-work-sans text-2xl text-info">
+            Select controls
+          </h2>
           <div className="flex flex-wrap  gap-3">
-
-
-
             {classes?.map((cls) => (
               <label key={cls} className="flex items-center gap-2">
                 <input
@@ -170,12 +168,12 @@ const ManageRole = () => {
           </div>
         </div>
 
-
         <div className="flex flex-wrap gap-3 text-white">
           <button
             onClick={handleAddControl}
-            className={` btn btn-soft btn-sm ${editId ? "btn-success" : "btn-info"
-              }`}
+            className={` btn btn-soft btn-sm ${
+              editId ? "btn-success" : "btn-info"
+            }`}
           >
             {editId ? "Update" : "Create"}
           </button>

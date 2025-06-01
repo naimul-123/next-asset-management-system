@@ -1,33 +1,35 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
 import bcrypt from "bcrypt";
+import { error } from "console";
 export async function PUT(req) {
   try {
+    const client = await clientPromise;
+    const db = client.db("deadstock");
+    const userDb = db.collection("users");
     const { sap } = await req.json();
 
     if (!sap) {
       return NextResponse.json({ error: "SAP is required" }, { status: 400 });
     }
 
-    const client = await clientPromise;
-    const db = client.db("deadstock");
-    const userDb = db.collection("users");
-
     // Check if user exists
     const user = await userDb.findOne({ sap });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Invalid SAP ID or password" },
+        { status: 404 }
+      );
     }
-    const isresetedPas = await bcrypt.compare('12345', user.password);
+    const isresetedPas = await bcrypt.compare("12345", user.password);
     // If password is already default
     if (isresetedPas) {
       return NextResponse.json(
         {
-          message: "Password is already set to the default value",
-          success: false,
+          error: "Password is already set to the default value",
         },
-        { status: 200 }
+        { status: 401 }
       );
     }
     const saltRounds = 10;
@@ -41,7 +43,7 @@ export async function PUT(req) {
     if (result.modifiedCount > 0) {
       return NextResponse.json(
         {
-          message: "Password has been reset to the default",
+          message: "Password has been reset to the default.",
           success: true,
         },
         { status: 200 }

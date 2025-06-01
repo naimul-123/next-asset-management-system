@@ -57,10 +57,10 @@ const ManageUser = () => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         const res = await updateData(`/api/updaterole`, data);
-        if (res?.message) {
+        if (res?.data?.message) {
           userRefetch();
           Swal.fire({
-            text: res.message,
+            text: res?.data?.message,
             icon: "success",
           });
         }
@@ -79,10 +79,10 @@ const ManageUser = () => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         const res = await updateData(`/api/resetpassword`, { sap });
-        if (res?.message) {
+        if (res?.data?.message) {
           userRefetch();
           Swal.fire({
-            text: res.message,
+            text: res?.data?.message,
             icon: "success",
           });
         }
@@ -91,6 +91,7 @@ const ManageUser = () => {
       }
     });
   };
+
   const handleDeletUser = (sap) => {
     Swal.fire({
       title: "Do you want to delete this user?",
@@ -177,7 +178,9 @@ const ManageUser = () => {
             </select>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="btn btn-success mt-7 btn-sm w-full btn-soft">Add</button>
+            <button className="btn btn-success mt-7 btn-sm w-full btn-soft">
+              Add
+            </button>
           </div>
         </div>
       </form>
@@ -224,7 +227,6 @@ const ManageUser = () => {
                     </select>
                   </td>
                   <td className="flex flex-wrap gap-3">
-
                     <button
                       className="btn btn-xs btn-soft btn-success"
                       onClick={() => handleResetPassword(user.sap)}
@@ -237,7 +239,6 @@ const ManageUser = () => {
                     >
                       Delete
                     </button>
-
                   </td>
                 </tr>
               ))
@@ -253,7 +254,6 @@ const ManageUser = () => {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 };
