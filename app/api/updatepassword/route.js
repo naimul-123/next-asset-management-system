@@ -1,27 +1,59 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
+import bcrypt from "bcrypt"; // ✅ Import bcrypt
 
 export async function PUT(req) {
   try {
-    const { sap, password } = await req.json();
-    if (!sap || !password) {
+    const client = await clientPromise;
+    const db = client.db("deadstock");
+    const userDb = db.collection("users");
+
+    const { sap, password, newpassword } = await req.json();
+
+    if (!sap || !password || !newpassword) {
       return NextResponse.json(
         { error: "SAP and password are required" },
         { status: 400 }
       );
     }
 
-    const client = await clientPromise;
-    const db = client.db("deadstock");
-    const userDb = db.collection("users");
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid SAP ID or password" },
+        { status: 401 }
+      );
+    }
+
+    // Step 3: Compare plaintext password with hashed one
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: "Invalid SAP ID or password" },
+        { status: 401 }
+      );
+    }
+
+    // Step 4: Check if password is default
+    const isDefaultPassword = await bcrypt.compare("12345", user.password);
+    if (isDefaultPassword) {
+      return NextResponse.json(
+        { error: "Default password could not be saved" },
+        { status: 401 }
+      );
+    }
+    // return NextResponse.json({ isDefaultPassword }, { status: 200 });
+    // ✅ Hash the password before saving
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
 
     const filter = { sap };
-    const updateUser = { $set: { password } };
+    const updateUser = { $set: { password: hashedPassword } }; // ✅ Store hashed password
 
     const result = await userDb.updateOne(filter, updateUser);
 
     if (result.modifiedCount > 0) {
-      // Redirect to login page
       return NextResponse.json(
         {
           message: "Password updated successfully",

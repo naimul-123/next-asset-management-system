@@ -1,37 +1,51 @@
 "use client"
-import { signIn, useSession } from "next-auth/react";
 import { redirect, useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
-// import { useAuth } from '../../contexts/authContext';
+import React, { useState } from 'react'
+import { useAuth } from '../../contexts/authContext';
 import { postData } from '../../lib/api';
 import Swal from 'sweetalert2';
-import PasswordInput from "@/components/passwordInput";
 
 
 const Login = () => {
-    const { data: session, status } = useSession();
-    const [sap, setSap] = useState('')
-    const [password, setPassword] = useState('')
-    const [loginerror, setLoginError] = useState('')
-    const router = useRouter();
 
+    
+    const router = useRouter();
+    const [loginerror, setLoginError] = useState('')
+    const { getUser } = useAuth()
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoginError('')
+        const form = e.target;
+        const sap = form.sapid.value;
+        const password = form.password.value;
         try {
-            const res = await postData('/api/checkisdefault', { sap, password })
-            if (res.data.isDefaultPassword) {
-                router.push(`/resetpassword?sap=${sap}`);
+            const res = await postData("/api/login", {
+                sap, password
+            })
+
+            if (res?.data?.redirected) {
+                router.push(res.data.url)
+                return
             }
-            else {
-                await signIn('credentials', { sap, password, redirect: true, callbackUrl: '/' })
-            };
+
+            if (res.data.success) {
+                Swal.fire({
+                    title: res.data.message,
+                    timer: 1500,
+                    icon: "success"
+                });
+                getUser();
+                router.push("/")
+            }
+
         } catch (error) {
-            setLoginError(error.response.data.error);
+            setLoginError(error.response?.data?.error);
         }
-    };
 
 
+
+
+    }
 
     return (
 
@@ -43,19 +57,14 @@ const Login = () => {
                     <label className="label">
                         <span className="label-text">SAP ID</span>
                     </label>
-                    <input name='sapid' type="text" placeholder="SAP ID" className="input input-bordered input-sm"
-                        onChange={(e) => setSap(e.target.value)}
-                        required />
+                    <input name='sapid' type="text" placeholder="SAP ID" className="input input-bordered input-sm" required />
                 </div>
 
                 <div className="form-control">
                     <label className="label">
                         <span className="label-text">Password</span>
                     </label>
-                    <PasswordInput fieldName="password" handler={setPassword} />
-                    {/* <input name='password' type="password" placeholder="password" className="input input-bordered input-sm" required
-                        onChange={(e) => setPassword(e.target.value)}
-                    /> */}
+                    <input name='password' type="password" placeholder="password" className="input input-bordered input-sm" required />
 
                 </div>
                 <div className="form-control mt-2 justify-center">

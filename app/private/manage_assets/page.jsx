@@ -5,12 +5,15 @@ import { deleteData, getData, postData } from "../../../lib/api";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa";
-import { useAuth } from "@/contexts/authContext";
+
 
 import AssetLocationInput from "@/components/assetLocationInput";
 import DeptChangeForm from "@/components/DeptChangeForm";
+import { useSession } from "next-auth/react";
 
 const ManageAssets = () => {
+  const { data: session, status } = useSession();
+  const user = session?.user || null
   const [searchType, setSearchType] = useState("");
   const [location, setLocation] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -23,7 +26,7 @@ const ManageAssets = () => {
   const queryClient = useQueryClient();
   const [assettypes, setTypes] = useState([]);
   const [assetInfo, setAssetInfo] = useState({});
-  const { user } = useAuth();
+
 
   const { data: departmentData = [], refetch: deptRefetch } = useQuery({
     queryKey: ["departments"],

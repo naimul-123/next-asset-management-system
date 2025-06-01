@@ -1,16 +1,17 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SessionProvider } from 'next-auth/react';
 import "./globals.css";
 import Header from "../components/Header";
 import { useState } from "react";
-import { AuthProvider } from "../contexts/authContext";
-export default function RootLayout({ children }) {
+export default function RootLayout({ children, session }) {
+
   const [queryClient] = useState(() => new QueryClient());
   return (
     <html lang="en">
       <body>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
+          <SessionProvider>
             <div className="flex flex-col h-screen  max-w-screen-2xl mx-auto text-dark  print:h-fit">
               <Header />
               <main className="flex flex-1 print:h-fit h-[calc(100vh-150px)] border print:border-none">
@@ -25,7 +26,7 @@ export default function RootLayout({ children }) {
                 </aside>
               </footer>
             </div>
-          </AuthProvider>
+          </SessionProvider>
         </QueryClientProvider>
       </body>
     </html>

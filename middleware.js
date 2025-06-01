@@ -1,38 +1,41 @@
-import { decodedToken } from "./lib/decodetoken";
+import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 export async function middleware(request) {
-  const token = request.cookies.get("token")?.value;
+  const token = await getToken({ req: request, secret: process.env.SECRET_KEY });
 
+  // If no token, redirect to login
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const user = await decodedToken(token);
-
-  if (!user || (user.exp && user.exp < Math.floor(Date.now() / 1000))) {
+  // Check if token has expired
+  const now = Math.floor(Date.now() / 1000); // Current time in seconds
+  if (token.exp && token.exp < now) {
+    // Token is expired
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Base access for moderators and all other non-admin roles
+  // Check user's role and permissions
+  const { role, isSuperAdmin } = token;
 
   const allowedRoutes = [
-    /^\/private\/asset_entry.*/,
-    /^\/private\/asset_summary.*/,
-    /^\/private\/manage_assets.*/,
+    /^\/private\/asset_entry.*/i,
+    /^\/private\/asset_summary.*/i,
+    /^\/private\/manage_assets.*/i,
   ];
 
-  // admin additional access
-  if (user.role === "admin" && user.isSuperAdmin) {
-    allowedRoutes.push(...[/^\/private\/manage_user.*/, /^\/private\/update_assets.*/, /^\/private\/manage_location.*/]);
+  if (role === "admin" && isSuperAdmin) {
+    allowedRoutes.push(
+      /^\/private\/manage_user.*/i,
+      /^\/private\/update_assets.*/i,
+      /^\/private\/manage_location.*/i
+    );
+  } else {
+    allowedRoutes.push(/^\/private\/upload_new_assets.*/i);
   }
-  else {
-    allowedRoutes.push(/^\/private\/upload_new_assets.*/);
-  }
-  // admin additional access
 
   const pathName = new URL(request.url).pathname;
-
   const hasAccess = allowedRoutes.some((pattern) => pattern.test(pathName));
 
   if (!hasAccess) {

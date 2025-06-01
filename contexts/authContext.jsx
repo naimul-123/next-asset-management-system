@@ -19,81 +19,89 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const queryClient = useQueryClient();
-
   const inactivityTimeoutRef = useRef(null);
+  const userRef = useRef(null);
+
+  // Keep userRef in sync with user state
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   const logout = async () => {
     try {
-      const res = await axios.post("/api/logout");
-      if (res.success) {
-        setUser(null);
-      }
+      await axios.post("/api/logout");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
       queryClient.clear();
       setUser(null);
+      userRef.current = null;
       document.cookie =
         "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       router.push("/login");
     }
   };
 
-  const getCookie = (name) => {
-    const match = document.cookie.match(
-      new RegExp("(^| )" + name + "=([^;]+)")
-    );
-    return match ? decodeURIComponent(match[2]) : null;
-  };
-
   const refreshSession = async () => {
     try {
-      await postData("/api/refreshtoken");
+      const res = await postData("/api/refreshtoken");
+      if (res?.data?.success) {
+        getUser(); // update user info
+      }
     } catch (error) {
       console.error("Token refresh failed", error);
-    }
-  };
-  const resetInactivityTimer = () => {
-    if (inactivityTimeoutRef.current) {
-      clearTimeout(inactivityTimeoutRef.current);
-    }
-
-    // Only try to refresh token if user is logged in
-    if (user) {
-      const token = getCookie("token");
-
-      if (token) {
-        try {
-          const decoded = jwtDecode(token);
-          const exp = decoded.exp * 1000; // ms
-          const now = Date.now();
-
-          // Only refresh if token will expire in the next 15 seconds
-          if (exp - now <= 15 * 1000) {
-            refreshSession(); // Refresh only if necessary
-          }
-        } catch (error) {
-          console.error("Token decoding failed", error);
-        }
-      }
-    }
-
-    inactivityTimeoutRef.current = setTimeout(() => {
-      console.log("Inactive. Logging out.");
       logout();
-    }, 5 * 60 * 1000); // 5 minute timeout
+    }
   };
+
+  const resetInactivityTimer = () => {
+    const currentUser = userRef.current;
+    const now = Date.now();
+
+    if (currentUser?.exp) {
+      const tokenExpiry = currentUser.exp * 1000;
+      const timeLeft = tokenExpiry - now;
+
+      // Refresh session if token expires within 60 seconds
+      if (timeLeft > 0 && timeLeft < 60 * 1000) {
+        refreshSession();
+      }
+
+      // Clear previous timer
+      if (inactivityTimeoutRef.current) {
+        clearTimeout(inactivityTimeoutRef.current);
+      }
+
+
+      inactivityTimeoutRef.current = setTimeout(() => {
+        console.log("User inactive. Logging out.");
+        getUser();
+      }, 10000);
+    }
+  };
+
+
+  const debounce = (fn, delay) => {
+    let timer;
+    return (...args) => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
+    };
+  };
+
+  const debouncedResetInactivityTimer = debounce(resetInactivityTimer, 1000);
 
   const setupInactivityListeners = () => {
     const events = ["mousemove", "keydown", "click", "scroll"];
     events.forEach((event) =>
-      window.addEventListener(event, resetInactivityTimer)
+      window.addEventListener(event, debouncedResetInactivityTimer)
     );
-    resetInactivityTimer();
+
+    resetInactivityTimer(); // Run initially
 
     return () => {
       events.forEach((event) =>
-        window.removeEventListener(event, resetInactivityTimer)
+        window.removeEventListener(event, debouncedResetInactivityTimer)
       );
       if (inactivityTimeoutRef.current) {
         clearTimeout(inactivityTimeoutRef.current);
@@ -116,8 +124,15 @@ export const AuthProvider = ({ children }) => {
   const getUser = async () => {
     try {
       const res = await getData("/api/getUser");
-      if (res.payload) {
-        setUser(res.payload);
+      if (res?.payload) {
+        setUser((prevUser) => {
+          // Avoid unnecessary re-renders
+          if (JSON.stringify(prevUser) !== JSON.stringify(res.payload)) {
+            userRef.current = res.payload;
+            return res.payload;
+          }
+          return prevUser;
+        });
       } else {
         logout();
       }
@@ -131,11 +146,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     getUser();
     setupAxiosInterceptors();
-    const cleanupActivity = setupInactivityListeners();
-
-    return () => {
-      cleanupActivity();
-    };
+    const cleanup = setupInactivityListeners();
+    return () => cleanup();
   }, []);
 
   const authInfo = {

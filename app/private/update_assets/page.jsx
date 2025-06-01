@@ -3,17 +3,19 @@ import { useEffect, useMemo, useState } from "react";
 import { postData } from "../../../lib/api";
 import * as XLSX from "xlsx";
 import AssetTypeInput from "@/components/assetTypeInput";
-import { useAuth } from "@/contexts/authContext";
+import { useSession } from "next-auth/react";
+
 
 const UpdateAssets = () => {
   const [error, setError] = useState("");
   const [requiredError, setRequiredError] = useState("");
   const [data, setData] = useState([]);
-
+  const { data: session, status } = useSession()
   const [assetTypesInfo, setAssetTypesInfo] = useState([]);
   const [missingtypesAssets, setMissingtypesAssets] = useState([]);
 
-  const { user } = useAuth();
+  const user = session?.user
+    || null
   // console.log(user);
   const requiredFields = [
     "assetNumber",

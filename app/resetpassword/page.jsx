@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { validatePassword } from "../../lib/passwordvalidation";
 import { updateData } from "../../lib/api";
+import PasswordInput from "@/components/passwordInput";
 
 const ResetPassword = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [password, setPassword] = useState("");
+  const [newpassword, setNewPassword] = useState("");
   const [repass, setRepass] = useState("");
   const [sap, setSap] = useState("");
   const [error, setError] = useState([]);
@@ -20,18 +20,18 @@ const ResetPassword = () => {
   }, []);
 
   const handlePasswordChange = (pas) => {
-    setRepass("");
+
     setError([]);
     const passErrors = validatePassword(pas);
     setError(passErrors);
     if (!passErrors) {
-      setPassword(pas);
+      setNewPassword(pas);
       matchpass();
     }
   };
 
   const matchpass = (v) => {
-    if (password !== v) {
+    if (newpassword !== v) {
       setRetypeError("Retyped password dose not match with password");
     } else {
       setRetypeError("");
@@ -45,9 +45,11 @@ const ResetPassword = () => {
     e.preventDefault();
     const form = e.target;
     const password = form.password.value;
-    console.log(password);
-    if (!error && !retypeError) {
-      const res = await updateData("/api/updatepassword", { sap, password });
+
+    console.log({ password, newpassword, sap });
+
+    if (!error && !retypeError && !!password && !!newpassword && !!sap) {
+      const res = await updateData("/api/updatepassword", { sap, password, newpassword });
       if (res.success) {
         redirect(res.redirectTo);
       }
@@ -55,57 +57,47 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="hero bg-base-200">
-      <div className="hero-content flex-col lg:flex-row-reverse">
-        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-          <form className="card-body" onSubmit={handleResetPassword}>
-            <div className="form-control w-full max-w-xs">
-              <div className="label">
-                <span className="label-text">Password </span>
-              </div>
-              <label className="input input-bordered input-sm flex items-center gap-2">
-                <input
-                  type={isOpen ? "text" : "password"}
-                  name="password"
-                  className="grow"
-                  onChange={(e) => handlePasswordChange(e.target.value)}
-                />
-                <span onClick={() => setIsOpen(!isOpen)}>
-                  {isOpen ? <FaEyeSlash /> : <FaEye />}
-                </span>
-              </label>
-              {error && (
-                <div className="label flex-col max-w-48 ">
-                  <span className="text-xs max-w-xs text-red">{error}</span>
-                </div>
-              )}
-            </div>
-            <div className="form-control w-full max-w-xs">
-              <div className="label">
-                <span className="label-text">Retype Password </span>
-              </div>
-              <label className="input input-sm input-bordered flex items-center gap-2">
-                <input
-                  type="password"
-                  className="grow"
-                  onChange={(e) => handleRetypePassword(e.target.value)}
-                />
-              </label>
-              {retypeError && (
-                <div className="label flex-col max-w-48 ">
-                  <span className="text-xs max-w-xs text-red">
-                    {retypeError}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="form-control mt-2">
-              <button className="btn btn-info btn-soft w-full" disabled={error}>Reset</button>
-            </div>
-          </form>
+
+    <div className="flex flex-col items-center mx-auto w-full max-w-xs  justify-center">
+      <form className="flex flex-col space-y-2  mx-auto w-full max-w-xs bg-base-200 rounded-xl justify-center p-8 " onSubmit={handleResetPassword}>
+        <div className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Password</span>
+          </div>
+          <PasswordInput cls="grow" fieldName="password" />
         </div>
-      </div>
+        <div className="form-control w-full">
+          <div className="label">
+            <span className="label-text">New Password </span>
+          </div>
+          <PasswordInput cls="grow" fieldName="newpassword" handler={handlePasswordChange} />
+          {error.length > 0 && (
+            <div className="flex flex-wrap ">
+              <span className="text-xs text-red my-2">{error}</span>
+            </div>
+          )}
+        </div>
+        <div className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Retype New Password </span>
+          </div>
+          <PasswordInput cls="grow" fieldName="npassword" handler={handleRetypePassword} />
+
+          {retypeError && (
+            <div className="flex flex-wrap">
+              <span className="text-xs text-red my-2">
+                {retypeError}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="form-control w-full">
+          <button className="btn btn-info btn-soft w-full" disabled={error || retypeError}>Reset</button>
+        </div>
+      </form>
     </div>
+
+
   );
 };
 

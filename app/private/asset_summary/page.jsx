@@ -1,17 +1,18 @@
 "use client";
 
-import { useAuth } from '@/contexts/authContext';
+
 import { getData } from '../../../lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 
 const AssetSummary = () => {
     const [openIndex, setOpenIndex] = useState(null);
     const [printMode, setPrintMode] = useState(false);
-    const { user } = useAuth();
+    const { data: session, status } = useSession()
     const { data: assetSummary = [], isLoading } = useQuery({
         queryKey: ['assetsummary'],
-        queryFn: () => getData(`/api/getSummary?role=${user?.role}`),
+        queryFn: () => getData(`/api/getSummary?role=${session?.user?.role}`),
     });
 
     // Automatically expand all rows during print

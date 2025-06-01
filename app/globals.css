@@ -70,3 +70,8 @@ body {
 .swal2-popup {
   z-index: 9999 !important;
 }
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongodb";
-
+import bcrypt from "bcrypt";
 export async function PUT(req) {
   try {
     const { sap } = await req.json();
@@ -19,9 +19,9 @@ export async function PUT(req) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
+    const isresetedPas = await bcrypt.compare('12345', user.password);
     // If password is already default
-    if (user.password === "12345") {
+    if (isresetedPas) {
       return NextResponse.json(
         {
           message: "Password is already set to the default value",
@@ -30,11 +30,12 @@ export async function PUT(req) {
         { status: 200 }
       );
     }
-
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash("12345", saltRounds);
     // Update password to default
     const result = await userDb.updateOne(
       { sap },
-      { $set: { password: "12345" } }
+      { $set: { password: hashedPassword } }
     );
 
     if (result.modifiedCount > 0) {

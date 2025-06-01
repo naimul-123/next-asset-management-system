@@ -15,7 +15,9 @@ export async function POST(req) {
       );
       return response;
     } else {
-      const result = await userDb.insertOne({ ...userInfo, password: "12345" });
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash('12345', saltRounds);
+      const result = await userDb.insertOne({ ...userInfo, password: hashedPassword });
       if (result.acknowledged) {
         const response = NextResponse.json(
           { message: "User added successfully" },
