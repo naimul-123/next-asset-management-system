@@ -19,7 +19,7 @@ const ManageUser = () => {
       sap: form.sap.value,
       role: form.role.value,
     };
-    console.log(userData);
+
 
     if (userData.name && userData.sap && userData.role) {
       const res = await postData("/api/addUser", userData);
@@ -46,7 +46,7 @@ const ManageUser = () => {
     queryKey: ["roles"],
     queryFn: () => getData("/api/getroles"),
   });
-
+  console.log(usersData);
   const handleRoleChange = (data) => {
     Swal.fire({
       title: "Do you want to change role?",
@@ -199,8 +199,8 @@ const ManageUser = () => {
             </tr>
           </thead>
           <tbody>
-            {usersData ? (
-              usersData.map((user, idx) => (
+            {usersData.length > 0 ? (
+              usersData?.map((user, idx) => (
                 <tr key={user.sap}>
                   <th>{idx + 1}</th>
                   <td>{user.name}</td>
@@ -226,16 +226,18 @@ const ManageUser = () => {
                       ))}
                     </select>
                   </td>
-                  <td className="flex flex-wrap gap-3">
+                  <td className="flex flex-wrap gap-3 justify-center">
                     <button
                       className="btn btn-xs btn-soft btn-success"
                       onClick={() => handleResetPassword(user.sap)}
+                      disabled={user.isDefaultPassword}
                     >
                       Reset Password
                     </button>
                     <button
                       onClick={() => handleDeletUser(user.sap)}
                       className="btn btn-xs btn-error btn-soft"
+
                     >
                       Delete
                     </button>

@@ -1,4 +1,5 @@
 "use client";
+import { GoPasskeyFill } from "react-icons/go";
 import React from "react";
 import Image from "next/image";
 import logo from "@/public/bb_logo.png";
@@ -36,13 +37,15 @@ const Header = () => {
       <div className="flex grow  flex-col justify-between py-2 px-4 h-full   items-end font-semibold text-sm ">
         <div className="grow">
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex justify-evenly items-center gap-2">
               {/* <p>{session?.user.exp > 0 ? `Session expires at ${new Date(user.exp * 1000).toLocaleTimeString()}` : null}</p> */}
-              <h3 className="flex item-center gap-1">
+              <h3 className="flex item-center gap-2">
                 <FaUser />
-                Welcome {session?.user?.name}
+                <span> Welcome {session?.user?.name}</span>
+
               </h3>
-              <Link href={`/resetpassword?sap=${session?.user?.sap}`}>
+              <Link href={`/resetpassword?sap=${session?.user?.sap}`} className="flex item-center btn btn-xs btn-warning text-black btn-outline ">
+                <GoPasskeyFill />
                 Reset Password
               </Link>
               <button
@@ -66,17 +69,15 @@ const Header = () => {
         </div>
         <div className="flex text-sm gap-2 ">
           <Link
-            className={`flex items-center  hover:link ${
-              pathname === "/" ? " link " : ""
-            }  `}
+            className={`flex items-center  hover:link ${pathname === "/" ? " link " : ""
+              }  `}
             href="/"
           >
             <FaHome className="" />
           </Link>
           <Link
-            className={`flex items-center hover:link ${
-              pathname === "/view_asset" ? " link" : ""
-            }  `}
+            className={`flex items-center hover:link ${pathname === "/view_asset" ? " link" : ""
+              }  `}
             href="/view_asset"
           >
             View Asset
@@ -87,9 +88,8 @@ const Header = () => {
               {user.role === "admin" && (
                 <>
                   <Link
-                    className={`hover:link ${
-                      pathname === "/private/manage_user" ? " link " : ""
-                    }  `}
+                    className={`hover:link ${pathname === "/private/manage_user" ? " link " : ""
+                      }  `}
                     href="/private/manage_user"
                   >
                     Manage User
@@ -97,17 +97,15 @@ const Header = () => {
                 </>
               )}
               <Link
-                className={`hover:link ${
-                  pathname === "/private/asset_summary" ? " link " : ""
-                }  `}
+                className={`hover:link ${pathname === "/private/asset_summary" ? " link " : ""
+                  }  `}
                 href="/private/asset_summary"
               >
                 Asset Summary
               </Link>
               <Link
-                className={`hover:link ${
-                  pathname === "/private/manage_assets" ? " link " : ""
-                }  `}
+                className={`hover:link ${pathname === "/private/manage_assets" ? " link " : ""
+                  }  `}
                 href="/private/manage_assets"
               >
                 Manage Assets
@@ -115,17 +113,15 @@ const Header = () => {
               {user.role === "admin" ? (
                 <>
                   <Link
-                    className={`hover:link ${
-                      pathname === "/private/manage_location" ? " link " : ""
-                    }  `}
+                    className={`hover:link ${pathname === "/private/manage_location" ? " link " : ""
+                      }  `}
                     href="/private/manage_location"
                   >
                     Manage Location
                   </Link>
                   <Link
-                    className={`hover:link ${
-                      pathname === "/private/update_assets" ? " link " : ""
-                    }  `}
+                    className={`hover:link ${pathname === "/private/update_assets" ? " link " : ""
+                      }  `}
                     href="/private/update_assets"
                   >
                     Update All Assets
@@ -133,9 +129,8 @@ const Header = () => {
                 </>
               ) : (
                 <Link
-                  className={`hover:link ${
-                    pathname === "/private/upload_new_assets" ? " link " : ""
-                  }  `}
+                  className={`hover:link ${pathname === "/private/upload_new_assets" ? " link " : ""
+                    }  `}
                   href="/private/upload_new_assets"
                 >
                   Upload New Assets
