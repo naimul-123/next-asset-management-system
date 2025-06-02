@@ -447,7 +447,7 @@ const ManageAssets = () => {
                   <option value="assetType">Asset Type</option>
                   <option value="assetDescription">Asset Description</option>
                   <option value="capDate">Acquisition date</option>
-                  <option value="acquisationVal">Acquisition Value</option>
+                  <option value="acquisVal">Acquisition Value</option>
                   <option value="department">Department</option>
                   <option value="locationType">Location Type</option>
                   <option value="location">Location</option>
@@ -481,7 +481,7 @@ const ManageAssets = () => {
       ) : (
         assets?.length > 0 && (
           <div className="overflow-auto">
-            <table className="table table-xs table-zebra table-pin-rows">
+            <table className="table table-xs last:mb-16 table-zebra table-pin-rows">
               <thead className="">
                 <tr className="bg-stone-100 border-b-0">
                   <th colSpan={12}>
@@ -505,13 +505,12 @@ const ManageAssets = () => {
                     </div>
                   </th>
                 </tr>
-                <tr className=" text-primary bg-gray-bright">
+                <tr className="top-8 text-primary bg-gray-bright">
                   <th className="py-4">SL</th>
                   <th className="py-4">Asset Number</th>
                   <th className="py-4">Asset Class</th>
                   <th className="py-4">Asset Type</th>
                   <th className="py-4">Asset Description</th>
-
                   <th className="py-4">Department</th>
                   <th className="py-4">Location Type</th>
                   <th className="py-4">Location</th>
@@ -522,7 +521,7 @@ const ManageAssets = () => {
 
               <tbody>
                 {assets?.map((data, index) => (
-                  <tr key={index}>
+                  <tr key={index} className="">
                     <td>
                       <label className="flex items-center gap-2">
                         {isEdit && (

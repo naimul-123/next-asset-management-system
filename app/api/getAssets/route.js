@@ -211,14 +211,14 @@ export async function GET(request) {
       },
 
       // Sorting logic
-      ...(sortBy === "acquisationVal"
+      ...(sortBy === "acquisVal"
         ? [
           {
             $addFields: {
               sortKey: {
                 $toDouble: {
                   $replaceAll: {
-                    input: "$acquisationVal",
+                    input: "$acquisVal",
                     find: ",",
                     replacement: "",
                   },

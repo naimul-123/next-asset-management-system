@@ -421,9 +421,21 @@ const UploadNewAssets = () => {
           </div>
         </>
       ) : (
-        <div className="form-control">
+        <><div className="form-control">
           <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
         </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold text-green">Please make a excel file with below headings and than upload the file.</h3>
+            <table className="table border">
+              <thead>
+                <tr className="bg-ColumbiaBlue">
+                  {requiredFields?.map(field => <>
+                    <th key={field} className="border">{field}</th>
+                  </>)}
+                </tr>
+              </thead>
+            </table>
+          </div></>
       )}
     </div>
   );

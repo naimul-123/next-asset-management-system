@@ -120,7 +120,7 @@ const ManageLocation = () => {
   }
   return (
 
-    <div className="flex flex-col overflow-auto justify-between min-w-full h-[calc(100vh-148px)] space-y-6">
+    <div className="flex flex-col overflow-auto  min-w-full h-[calc(100vh-148px)] space-y-6">
       {/* Form */}
       <form
         onSubmit={handleAdd}
@@ -128,7 +128,7 @@ const ManageLocation = () => {
       >
         <h2 className="text-2xl font-semibold border-b pb-2">Add Location / Type</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 items-end">
           {/* Department */}
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Select Department</legend>
