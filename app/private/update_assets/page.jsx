@@ -225,7 +225,6 @@ const UpdateAssets = () => {
         <>
           <div className="form-control">
             <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
-
           </div>
 
           <div className="space-y-2">
@@ -233,9 +232,9 @@ const UpdateAssets = () => {
             <table className="table border">
               <thead>
                 <tr className="bg-ColumbiaBlue">
-                  {requiredFields?.map(field => <>
+                  {requiredFields?.map(field =>
                     <th key={field} className="border">{field}</th>
-                  </>)}
+                  )}
                 </tr>
               </thead>
             </table>

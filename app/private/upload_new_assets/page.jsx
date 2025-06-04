@@ -4,10 +4,8 @@ import { getData, postData } from "../../../lib/api";
 import * as XLSX from "xlsx";
 import AssetTypeInput from "@/components/assetTypeInput";
 import AssetLocationInput from "@/components/assetLocationInput";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import DeptChangeForm from "@/components/DeptChangeForm";
-import { FaDownload } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
 
 const UploadNewAssets = () => {
   const [error, setError] = useState({});
@@ -15,9 +13,7 @@ const UploadNewAssets = () => {
   const [assetTypesInfo, setAssetTypesInfo] = useState([]);
   const [missingtypesAssets, setMissingtypesAssets] = useState([]);
   const [missingLocations, setMissingLocations] = useState([]);
-  const [locationError, setLocationError] = useState("");
-  const [selectedItems, setSelectedItmes] = useState([]);
-  const [action, setAction] = useState("");
+
   const requiredFields = [
     "assetNumber",
     "assetDescription",
@@ -192,100 +188,10 @@ const UploadNewAssets = () => {
     setData(updated);
   };
 
-  const handleSelectAll = (isSelect) => {
-    if (isSelect) {
-      const selected = assets?.map((data) => data.assetNumber);
-      setSelectedItmes(selected);
-    } else {
-      setSelectedItmes([]);
-    }
-  };
-  const handleSelectItem = (isSelect, number) => {
-    if (isSelect) {
-      setSelectedItmes((prev) => [...prev, number]);
-    } else {
-      const remaining = selectedItems.filter((item) => item !== number);
-      setSelectedItmes(remaining);
-    }
-  };
-  const updateAssetsLocation = useMutation({
-    mutationFn: (data) => postData("/api/updateAssetsLocation", data),
-    queryKey: ["updateAssetsLocation"],
-  });
 
-  const updateAssetsUser = useMutation({
-    mutationFn: (data) => postData("/api/updateAssetsUser", data),
-    queryKey: ["updateAssetsUser"],
-  });
 
-  const handleAction = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const assetUser = form.assetUser.value;
-    if (action === "changeUser") {
-      const data = { assetUser, assetNumbers: selectedItems };
-      updateAssetsUser.mutate(data, {
-        onSuccess: (result) => {
-          console.log(result);
-          if (result.data.success) {
-            queryClient.invalidateQueries(["assets"]);
-            Swal.fire({
-              position: "top-end",
-              title: result.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          } else {
-            Swal.fire({
-              position: "top-end",
-              title: result.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          }
-          form.reset();
-          setSelectedItmes([]);
-          setSelecteddept("");
-          setlocationType("");
-        },
-      });
-    }
 
-    if (action === "changeLocation") {
-      const department = form.department.value;
-      const locationType = form.locationType.value;
-      const location = form.location.value;
-      const data = {
-        department,
-        location,
-        locationType,
-        assetUser,
-        assetNumbers: selectedItems,
-      };
-      updateAssetsLocation.mutate(data, {
-        onSuccess: (result) => {
-          if (result.data.success) {
-            queryClient.invalidateQueries(["assets"]);
-            Swal.fire({
-              position: "top-end",
-              title: result.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          } else {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: result.data.message,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          }
-          form.reset();
-        },
-      });
-    }
-  };
+
 
   return (
     <div className="mx-auto w-full flex flex-col h-full space-y-1 ">
@@ -429,9 +335,9 @@ const UploadNewAssets = () => {
             <table className="table border">
               <thead>
                 <tr className="bg-ColumbiaBlue">
-                  {requiredFields?.map(field => <>
+                  {requiredFields?.map(field =>
                     <th key={field} className="border">{field}</th>
-                  </>)}
+                  )}
                 </tr>
               </thead>
             </table>
